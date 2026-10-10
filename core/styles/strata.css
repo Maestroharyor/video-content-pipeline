@@ -1,0 +1,202 @@
+/* "strata" theme (PROJECT.theme = 'strata') — built for projects/where-app-stores-data.
+   Storage is layers: the ground is a set of shelf rules, every surface is a flat slate card with a 3px accent
+   spine on its left edge, and labels are JetBrains Mono. Deliberately no glass gradients, no `filter: blur()` and
+   no `backdrop-filter`: the aurora header records that either one drops 4K capture from ~20 f/s to ~3 f/s.
+   Everything is scoped to #stage.theme-strata, so the stock look and the aurora deck are untouched.
+   The four templates this deck adds (tiers · matrix · stackcode · quota) are styled here too, the same way
+   aurora.css carries hop / anatomy / tree: they are deck templates, not part of the default set. */
+
+#stage.theme-strata{
+  --bg0:#07090E; --bg1:#0F1420; --bg2:#151C2B; --bd:#212A3C; --bd2:#2C384F;
+  --tx:#F4F7FF; --tx2:#A5B0C6; --tx3:#6A7791;
+  --amber:#F59E0B; --rose:#FB7185; --blue:#5FA8F5; --violet:#A78BFA; --green:#34D399; --teal:#2DD4BF; --orange:#FF9900;
+  --spine:#2C384F;
+  background:#07090E;
+}
+/* alpha captures (the social cuts' text pass, assemble --over) must stay transparent: #stage.theme-strata (1,1,0)
+   outranks base.css's #stage.transparent, as in lanes/forge */
+#stage.theme-strata.transparent{background:transparent}
+/* ---------- ground: shelves, not a dot grid ---------- */
+#stage.theme-strata .bgfx .grid{
+  opacity:.5;
+  background-image:repeating-linear-gradient(0deg,rgba(150,172,210,.09) 0 1.5px,transparent 1.5px 104px);
+  background-size:auto;
+}
+#stage.theme-strata .bgfx .glow.a{background:radial-gradient(52% 40% at 22% 18%,rgba(245,158,11,.10),transparent 70%)}
+#stage.theme-strata .bgfx .glow.b{background:radial-gradient(60% 44% at 84% 92%,rgba(95,168,245,.08),transparent 70%)}
+#stage.theme-strata .bgfx .vig{background:radial-gradient(128% 104% at 50% 42%,transparent 54%,rgba(0,0,0,.66))}
+
+/* ---------- type ---------- */
+#stage.theme-strata .eyebrow{font:700 var(--eb-size) JB;letter-spacing:.26em}
+#stage.theme-strata .h1{letter-spacing:-.026em}
+#stage.theme-strata .h1 em{background-size:100% 3px;background-position:0 96%}
+/* the footnote stays Inter: JetBrains Mono at 30px wraps a 90-character note onto three lines, and the third
+   one lands below the 870 caption line (core/grid.js) */
+#stage.theme-strata .foot{font:500 var(--foot-size) Inter;color:var(--tx3);line-height:1.46}
+#stage.theme-strata .strike path{stroke-width:6}
+#stage.theme-strata .sub{color:var(--tx2)}
+
+/* ---------- surfaces: flat slate, square corners, accent spine ---------- */
+#stage.theme-strata .panel,#stage.theme-strata .cmp,#stage.theme-strata .code,#stage.theme-strata .node,
+#stage.theme-strata .rowbar.big,#stage.theme-strata .chk,#stage.theme-strata .bbox,#stage.theme-strata .badge.note,
+#stage.theme-strata .tr,#stage.theme-strata .mx,#stage.theme-strata .qs,#stage.theme-strata .sc-pane{
+  background:var(--bg1);border:1px solid var(--bd);border-left:3px solid var(--spine);border-radius:6px;
+  box-shadow:0 18px 44px rgba(0,0,0,.5);
+}
+#stage.theme-strata .cmp{padding:34px 38px}
+#stage.theme-strata .cmp .lb{font:700 22px JB;letter-spacing:.2em;text-transform:uppercase;color:var(--tx3)}
+#stage.theme-strata .rowbar.big{border-radius:6px;font:600 31px Inter;font-size:calc(31px * var(--ts,1))}
+#stage.theme-strata .rowbar .tail{font:700 23px JB;letter-spacing:.06em;opacity:1;color:var(--tx3)}
+#stage.theme-strata .ltile,#stage.theme-strata .ltile.lg{border-radius:8px;box-shadow:0 10px 26px rgba(0,0,0,.5)}
+#stage.theme-strata .badge{border-radius:4px;font-family:JB;font-weight:700;letter-spacing:.02em;padding:13px 20px}
+#stage.theme-strata .badge.note{font-family:Inter;letter-spacing:0;border-radius:6px}
+/* the spine takes the row's accent where one is given */
+#stage.theme-strata .a>.spine,#stage.theme-strata .tr.a,#stage.theme-strata .qs.a,#stage.theme-strata .sc-pane.a{--spine:var(--amber)}
+#stage.theme-strata .tr.r,#stage.theme-strata .qs.r,#stage.theme-strata .sc-pane.r{--spine:var(--rose)}
+#stage.theme-strata .tr.b,#stage.theme-strata .qs.b,#stage.theme-strata .sc-pane.b{--spine:var(--blue)}
+#stage.theme-strata .tr.v,#stage.theme-strata .qs.v,#stage.theme-strata .sc-pane.v{--spine:var(--violet)}
+#stage.theme-strata .tr.g,#stage.theme-strata .qs.g,#stage.theme-strata .sc-pane.g{--spine:var(--green)}
+#stage.theme-strata .tr.t,#stage.theme-strata .qs.t,#stage.theme-strata .sc-pane.t{--spine:var(--teal)}
+
+/* ---------- tiers: the category shelf map ---------- */
+.tr{position:absolute;display:flex;align-items:center;gap:26px;padding:0 30px;overflow:hidden}
+.tr .tk{font:700 25px JB;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap}
+.tr.a .tk{color:var(--amber)} .tr.r .tk{color:var(--rose)} .tr.b .tk{color:var(--blue)}
+.tr.v .tk{color:var(--violet)} .tr.g .tk{color:var(--green)} .tr.t .tk{color:var(--teal)}
+.tr .tarrow{flex:0 0 46px;height:2px;background:var(--bd2);position:relative}
+.tr .tarrow::after{content:'';position:absolute;right:0;top:-4px;border:5px solid transparent;border-left-color:var(--bd2)}
+.tr .tm{font:700 34px ID;color:var(--tx);white-space:nowrap;letter-spacing:-.01em}
+.tr .tm.sm{font-size:29px}
+.tr .tc{display:flex;flex-wrap:wrap;gap:10px;margin-left:auto;justify-content:flex-end;max-width:560px}
+.tr .tc i{font:600 21px JB;font-style:normal;color:var(--tx2);background:var(--bg2);border:1px solid var(--bd);
+  border-radius:3px;padding:7px 12px;white-space:nowrap}
+.tr .ttail{margin-left:auto;font:700 24px JB;color:var(--tx3);white-space:nowrap}
+.tr.qta .ttail{color:var(--blue)}
+/* 9:16: an 800px shelf cannot hold the category, the mechanism and the chips on one line, so the chips wrap
+   under them as a second line, left-aligned with the category */
+#stage.canvas-vertical .tr{flex-wrap:wrap;align-content:center;row-gap:14px}
+#stage.canvas-vertical .tr .tc{flex:0 0 100%;max-width:none;margin-left:0;justify-content:flex-start}
+
+/* ---------- matrix: task x stack grid ---------- */
+.mx{position:absolute;overflow:hidden;padding:0}
+.mx .mxh{display:flex;align-items:stretch;border-bottom:1px solid var(--bd)}
+.mx .mxr{display:flex;align-items:stretch;border-bottom:1px solid var(--bd)}
+.mx .mxr:last-child{border-bottom:0}
+.mx .mxl{display:flex;align-items:center;gap:14px;padding:0 20px;box-sizing:border-box;border-right:1px solid var(--bd)}
+.mx .mxl b{font:700 24px JB;letter-spacing:.08em;text-transform:uppercase;color:var(--tx2);white-space:nowrap}
+.mx .mxr.a .mxl b{color:var(--amber)} .mx .mxr.r .mxl b{color:var(--rose)}
+.mx .mxr.b .mxl b{color:var(--blue)} .mx .mxr.v .mxl b{color:var(--violet)}
+.mx .mxc{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;box-sizing:border-box;
+  border-right:1px solid var(--bd);padding:10px 8px}
+.mx .mxc:last-child{border-right:0}
+.mx .mxc img{width:40px;height:40px;border-radius:6px;background:#fff}
+.mx .mxc span{font:700 20px JB;color:var(--tx3);letter-spacing:.06em;text-align:center;line-height:1.2}
+.mx .mxcell{display:grid;place-items:center;box-sizing:border-box;border-right:1px solid var(--bd);padding:8px;overflow:hidden}
+.mx .mxcell:last-child{border-right:0}
+.mx .mxcell em{font:600 20px JB;font-style:normal;color:var(--tx);text-align:center;line-height:1.24;
+  max-width:100%;overflow-wrap:break-word}
+.mx .mxcell.empty::after{content:'';width:22px;height:2px;background:var(--bd2)}
+/* 9:16 (matrix.js gives the label column 64px): the task label reads bottom to top beside its row, and an API name
+   that still outgrows a ~120px cell breaks inside the word rather than running under its neighbour */
+#stage.canvas-vertical .mx .mxl{justify-content:center;padding:0}
+#stage.canvas-vertical .mx .mxl b{writing-mode:vertical-rl;transform:rotate(180deg);font-size:20px}
+#stage.canvas-vertical .mx .mxcell em{overflow-wrap:anywhere}
+
+/* ---------- stackcode: code pane + the write-path rail ---------- */
+.sc-rail{position:absolute;display:flex;align-items:center;gap:0;height:62px}
+.sc-rail .st{display:flex;align-items:center;gap:12px;padding:0 20px;height:62px;box-sizing:border-box;
+  background:var(--bg1);border:1px solid var(--bd);border-radius:5px}
+.sc-rail .st img{width:30px;height:30px;border-radius:4px;background:#fff}
+.sc-rail .st span{font:700 22px JB;letter-spacing:.08em;text-transform:uppercase;color:var(--tx3);white-space:nowrap}
+.sc-rail .st.lit{border-color:var(--amber);background:#20180A}
+.sc-rail .st.lit span{color:#FFD98C}
+.sc-rail .sl{flex:0 0 46px;height:2px;background:var(--bd2);position:relative}
+.sc-rail .sl::after{content:'';position:absolute;right:-1px;top:-4px;border:5px solid transparent;border-left-color:var(--bd2)}
+.sc-tok{position:absolute;width:16px;height:16px;border-radius:3px;background:var(--amber);box-shadow:0 0 22px rgba(245,158,11,.8);opacity:0}
+.sc-pane{position:absolute;overflow:hidden}
+.sc-pane .pb{display:flex;align-items:center;gap:12px;height:46px;padding:0 18px;border-bottom:1px solid var(--bd);
+  font:700 21px JB;letter-spacing:.08em;text-transform:uppercase;color:var(--tx3)}
+.sc-pane .pb img{width:26px;height:26px;border-radius:4px;background:#fff}
+.sc-pane .pb i{font-style:normal;margin-left:auto;color:var(--tx3);opacity:.7;text-transform:none;letter-spacing:0}
+.sc-pane pre{margin:0;padding:18px 20px;font:400 22px JB;line-height:1.52;color:var(--tx2);white-space:pre}
+.sc-pane.tight pre{font-size:19px;line-height:1.46}
+.sc-pane pre .cl{display:block;opacity:0}
+.sc-chip{position:absolute;font:700 26px JB;color:#FFD98C;background:#20180A;border:1px solid rgba(245,158,11,.55);
+  border-radius:4px;padding:12px 18px;white-space:nowrap}
+
+/* ---------- quota: capacity gauges on one shelf ---------- */
+.qs{position:absolute;display:flex;align-items:center;gap:22px;padding:0 26px;overflow:hidden}
+.qs .qk{font:700 24px JB;letter-spacing:.1em;text-transform:uppercase;white-space:nowrap;width:270px;color:var(--tx2)}
+.qs.a .qk{color:var(--amber)} .qs.r .qk{color:var(--rose)} .qs.b .qk{color:var(--blue)} .qs.v .qk{color:var(--violet)}
+.qs .qt2{position:relative;flex:1;height:22px;background:var(--bg2);border:1px solid var(--bd);border-radius:3px;overflow:hidden}
+.qs .qf{position:absolute;left:0;top:0;bottom:0;width:100%;transform:scaleX(0);transform-origin:left center;background:var(--bd2)}
+.qs.a .qf{background:linear-gradient(90deg,#8A5A08,var(--amber))}
+.qs.b .qf{background:linear-gradient(90deg,#1E4E7A,var(--blue))}
+.qs.r .qf{background:linear-gradient(90deg,#7A2E3A,var(--rose))}
+.qs.v .qf{background:linear-gradient(90deg,#4A3A82,var(--violet))}
+.qs .qv{font:700 26px JB;color:var(--tx);width:210px;text-align:right;white-space:nowrap}
+.qs .qv.q{color:var(--blue)}
+.q-ceil{position:absolute;width:2px;background:var(--rose);opacity:0}
+.q-ceil b{position:absolute;left:14px;top:-4px;font:700 21px JB;color:var(--rose);white-space:nowrap}
+.q-err{position:absolute;font:700 23px JB;color:#FFB4C0;background:#2A1017;border:1px solid rgba(251,113,133,.6);
+  border-radius:4px;padding:11px 16px;white-space:nowrap}
+.q-cnt{position:absolute;font:800 96px JB;color:var(--amber);letter-spacing:-.03em;line-height:1}
+.q-cnt.b{color:var(--blue)}
+.q-note{position:absolute;font:500 27px Inter;line-height:1.44;color:var(--tx2)}
+.q-chips{position:absolute;display:flex;flex-wrap:wrap;gap:10px}
+.q-chips i{font:600 22px JB;font-style:normal;color:var(--tx2);background:var(--bg2);border:1px solid var(--bd);
+  border-radius:3px;padding:8px 13px;white-space:nowrap}
+
+/* ---------- device triptych (the opening slide's three platforms) ---------- */
+.d-tile{position:absolute;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:10px;
+  padding:0 28px;background:var(--bg1);border:1px solid var(--bd);border-left:3px solid var(--spine);border-radius:6px;
+  box-shadow:0 18px 44px rgba(0,0,0,.5)}
+.d-tile.a{--spine:var(--amber)} .d-tile.b{--spine:var(--blue)} .d-tile.v{--spine:var(--violet)}
+.d-tile .di{display:grid;place-items:center;width:52px;height:52px;color:var(--tx3)}
+.d-tile .di svg{width:52px;height:52px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.d-tile.a .di{color:var(--amber)} .d-tile.b .di{color:var(--blue)} .d-tile.v .di{color:var(--violet)}
+.d-tile b{font:800 38px ID;color:var(--tx);letter-spacing:-.015em}
+.d-tile i{font:600 22px JB;font-style:normal;color:var(--tx3);letter-spacing:.04em}
+.tr .ti{display:grid;place-items:center;width:40px;height:40px;flex:0 0 40px;color:currentColor}
+.tr .ti svg{width:40px;height:40px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tr.a .ti{color:var(--amber)} .tr.r .ti{color:var(--rose)} .tr.b .ti{color:var(--blue)}
+.tr.v .ti{color:var(--violet)} .tr.g .ti{color:var(--green)} .tr.n .ti{color:var(--tx3)}
+.sc-rail .st.done{border-color:rgba(245,158,11,.30);background:#141A26}
+.sc-rail .st.done span{color:var(--tx2)}
+
+/* ---------- rail: the write path as a chain ---------- */
+.rl-stage{position:absolute;display:flex;flex-direction:column;align-items:flex-start;justify-content:center;gap:8px;
+  padding:0 22px;background:var(--bg1);border:1px solid var(--bd);border-left:3px solid var(--spine);border-radius:6px;
+  box-shadow:0 16px 40px rgba(0,0,0,.5);overflow:hidden}
+.rl-stage.a{--spine:var(--amber)} .rl-stage.r{--spine:var(--rose)} .rl-stage.b{--spine:var(--blue)}
+.rl-stage.v{--spine:var(--violet)} .rl-stage.g{--spine:var(--green)} .rl-stage.t{--spine:var(--teal)}
+.rl-stage.n{--spine:var(--bd2)}
+.rl-stage img{width:44px;height:44px;border-radius:6px;background:#fff}
+.rl-stage .ri{display:grid;place-items:center;width:44px;height:44px;color:var(--tx3)}
+.rl-stage .ri svg{width:44px;height:44px;fill:none;stroke:currentColor;stroke-width:1.7;stroke-linecap:round;stroke-linejoin:round}
+.rl-stage.a .ri{color:var(--amber)} .rl-stage.r .ri{color:var(--rose)} .rl-stage.b .ri{color:var(--blue)}
+.rl-stage.v .ri{color:var(--violet)} .rl-stage.g .ri{color:var(--green)}
+.rl-stage b{font:800 var(--ns,30px) ID;color:var(--tx);letter-spacing:-.015em;line-height:1.1;overflow-wrap:anywhere}
+.rl-stage i{font:600 var(--ss,20px) JB;font-style:normal;color:var(--tx3);letter-spacing:.03em;line-height:1.2;overflow-wrap:anywhere}
+/* 9:16 rail card (rail.js vhtml): icon | name over subtitle | chips, one line of the stacked chain */
+.rl-stage.row{display:grid;grid-template-columns:44px 1fr auto;grid-template-areas:"ic n ch" "ic s ch";column-gap:22px;row-gap:4px;align-content:center;align-items:center}
+.rl-stage.row .ri,.rl-stage.row img{grid-area:ic}
+.rl-stage.row b{grid-area:n;align-self:end}
+.rl-stage.row>i{grid-area:s;align-self:start}
+.rl-stage.row .rc{grid-area:ch;margin-top:0;justify-content:flex-end;max-width:300px}
+.rl-stage.row b:last-of-type:not(:has(+ i)){grid-row:1 / span 2;align-self:center}
+.rl-edge{position:absolute;overflow:visible;opacity:0}
+.rl-edge path{fill:none;stroke:var(--bd2);stroke-width:3;stroke-linecap:round}
+.rl-edge marker path{fill:var(--bd2);stroke:none}
+.rl-edge.back path{stroke:var(--green);stroke-dasharray:12 10}
+.rl-edge.back marker path{fill:var(--green)}
+.rl-loop{position:absolute;text-align:center;font:700 22px JB;color:var(--green);letter-spacing:.08em;opacity:0}
+.rl-tok{position:absolute;font:700 22px JB;color:#0A0E18;background:var(--amber);border-radius:4px;padding:8px 14px;
+  white-space:nowrap;box-shadow:0 0 26px rgba(245,158,11,.7);opacity:0;z-index:5}
+.rl-stage .rc{display:flex;flex-wrap:wrap;gap:6px;margin-top:2px}
+.rl-stage .rc i{font:700 18px JB;font-style:normal;color:var(--tx2);background:var(--bg2);border:1px solid var(--bd);
+  border-radius:3px;padding:5px 9px;letter-spacing:.02em}
+/* base.css gives `.code .cl:empty` a non-breaking space so a blank line keeps its height; stackcode's pane is
+   its own element, and without this the blank lines collapsed and every pane rendered shorter than the height
+   the template computed from its line count. */
+.sc-pane pre .cl:empty::before{content:"\00a0"}

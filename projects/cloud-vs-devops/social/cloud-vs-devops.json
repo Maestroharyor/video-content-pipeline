@@ -1,0 +1,63 @@
+{
+  "version": 1,
+  "id": "cloud-vs-devops",
+  "title": "Cloud Engineer vs DevOps Engineer",
+  "brand": "lifetechfacts",
+  "source": {
+    "repo": "vid",
+    "project": "cloud-vs-devops",
+    "asset": "renders/final/cloud-vs-devops.mp4",
+    "poster": "renders/poster/03-enter-roles.png"
+  },
+  "link": {
+    "url": "",
+    "label": "",
+    "bio": ""
+  },
+  "alt": [
+    {
+      "asset": "renders/poster/03-enter-roles.png",
+      "text": "Two lanes: cloud engineer (servers, infrastructure) beside DevOps engineer (build, test, deploy)."
+    }
+  ],
+  "platforms": {
+    "youtube": {
+      "title": "Cloud Engineer vs DevOps Engineer: Do You Have to Choose?",
+      "description": "Cloud engineer and DevOps engineer job posts often read like the same role. Same platforms, same tools, and sometimes they are expected from the same person.\n\nSo who actually does what? We follow one startup building a video platform, from its first servers to its first broken release, and watch where each role takes over.\n\nIf you are choosing which path to learn, or reading a job post that seems to want both, start here.\n\n0:00 Building the next YouTube\n0:31 Why these roles get confused\n1:09 The software developer\n1:51 The cloud engineer\n2:43 Putting the platform on AWS\n3:43 Keeping the cloud bill in check\n4:50 The DevOps engineer\n5:56 When a deployment fails\n6:45 Where do you draw the line?\n7:51 Which role should you pursue?\n8:33 Summary\n\nWatch next\nDNS Explained: The 4 Servers Behind Every Page Load https://youtu.be/cF1y_R49NJM\nLocalStorage vs IndexedDB vs SQLite: Which Should You Use? https://youtu.be/YnKJV6QJ7u4\n\nSubscribe: https://www.youtube.com/@lifetechfacts?sub_confirmation=1\nInstagram: https://www.instagram.com/lifetechfacts\nFacebook: https://www.facebook.com/lifetechfacts",
+      "hashtags": [
+        "CloudEngineering",
+        "DevOps",
+        "AWS",
+        "CICD",
+        "TechCareers"
+      ]
+    },
+    "instagram": {
+      "body": "Same tools. Different job.\n\nCloud engineers and DevOps engineers both live in AWS, Docker and Terraform, which is why so many job posts blur them into one role.\n\nHere's the split.\n\nThe cloud engineer builds the place your app runs, and answers for it. Servers, storage, networking, security, and the monthly bill.\n\nThe DevOps engineer builds the road your code takes to get there. Pipelines, tests, deploys, and the rollback when a release breaks.\n\nIn a small team, one person does both. In a bigger company, they're separate teams.\n\nIf you're choosing which to learn first, pick the problem you'd rather be paged about at 3 a.m.\n\nThe full breakdown is on YouTube, link in bio.",
+      "hashtags": [
+        "CloudEngineering",
+        "DevOps",
+        "TechCareers",
+        "AWS",
+        "SoftwareEngineering"
+      ]
+    },
+    "tiktok": {
+      "body": "They're not the same job.\n\nA cloud engineer decides where your app lives. EC2 for the servers, S3 for the videos, CloudFront to get them to viewers fast. Then keeps the bill from running away.\n\nA DevOps engineer decides how new code gets there. Push, test, build, deploy, and roll back when a release breaks.\n\nBoth touch Terraform and Docker, and that overlap is why job posts mix them up.\n\nWhich one would you pick?",
+      "hashtags": [
+        "DevOps",
+        "CloudEngineering",
+        "TechTok",
+        "TechCareers",
+        "AWS"
+      ]
+    },
+    "whatsapp-status": {
+      "body": "Finally broke down cloud engineer vs DevOps engineer. One owns where the app runs, the other owns how the code gets there. New video is up."
+    },
+    "whatsapp-telegram": {
+      "body": "Hi everyone, new video on LifeTech Facts.\n\nIt's on a mix-up that catches a lot of people, and a lot of job posts: cloud engineer or DevOps engineer, and what each one actually does.\n\nWe follow one startup building a video app and watch both roles at work. The cloud engineer sets it up on AWS with EC2, S3 and CloudFront, and keeps the bill under control. The DevOps engineer builds the pipeline that tests and ships every change, and rolls it back when a release breaks.\n\nWorth the nine minutes if you're choosing between the two, or reading a job post that seems to want both."
+    }
+  },
+  "notes": "Instagram and TikTok are written for the vertical best-of (social/renders/social/best-of/cloud-vs-devops-social-best-of.mp4). The video is not published yet: add the youtu.be link to link.url and as the last line of the WhatsApp/Telegram post once it is live. Cost figures in the video are illustrative, so none appear here."
+}

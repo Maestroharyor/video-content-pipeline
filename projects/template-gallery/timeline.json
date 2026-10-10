@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "fps": 30,
+  "total": 36,
+  "vo": null,
+  "words": "vo.json",
+  "xf": {
+    "type": "push",
+    "dur": 0.4
+  },
+  "motion": 2,
+  "slides": [
+    { "id": "s01", "slug": "01-title", "start": 0, "end": 3 },
+    { "id": "s02", "slug": "02-statement", "start": 3, "end": 6 },
+    { "id": "s03", "slug": "03-compare", "start": 6, "end": 9 },
+    { "id": "s04", "slug": "04-list", "start": 9, "end": 12, "beats": { "r1": [ 9.3, 9.6 ], "r2": [ 9.9, 10.2 ], "r3": [ 10.5, 10.8 ] },
+      "hero": "r3"
+    },
+    { "id": "s05", "slug": "05-list-rowbar", "start": 12, "end": 15 },
+    { "id": "s06", "slug": "06-logos", "start": 15, "end": 18 },
+    { "id": "s07", "slug": "07-code", "start": 18, "end": 21 },
+    { "id": "s08", "slug": "08-console", "start": 21, "end": 24 },
+    { "id": "s09", "slug": "09-chart", "start": 24, "end": 27 },
+    { "id": "s10", "slug": "10-checklist", "start": 27, "end": 30 },
+    { "id": "s11", "slug": "11-diagram", "start": 30, "end": 33 },
+    { "id": "s12", "slug": "12-outro", "start": 33, "end": 36, "motion": 3 }
+  ],
+  "lead": 0.1
+}

@@ -1,0 +1,142 @@
+/* "wire" theme (PROJECT.theme = 'wire') — built for projects/mcp-server-tutorial.
+   The video is about a protocol, so the deck looks like one on the wire: a near-black ground with a faint packet-trace
+   grid (dots on a 48px pitch, every fourth a little brighter), every surface a message frame with a mono header strip
+   that names what it is (`tools/call`, `server`, `GET /tasks`), and orange request packets travelling along the lines
+   between nodes. Flat frames, 10px corners, hairline borders, no glass. No `filter: blur()` and no `backdrop-filter`
+   (the aurora header records what they cost a 4K capture); every glow is a radial-gradient.
+   The two templates this deck adds, wire.js (the node canvas) and chat.js (an AI client window), are styled at the bottom. */
+
+#stage.theme-wire{
+  --bg0:#07090D; --bg1:#0E1218; --bg2:#151A22; --bd:#212834; --bd2:#2E3746;
+  --tx:#F3F5F9; --tx2:#A3ADBD; --tx3:#687385;
+  --orange:#FF8A3D; --amber:#FFC145; --green:#4BE08A; --rose:#FF6B7A; --blue:#5CC8FF; --violet:#A891FF; --teal:#3DDBC8;
+  --wire:#FF8A3D; --wire2:rgba(255,138,61,.16);
+  background:#07090D;
+}
+/* alpha captures (dual-render's caption pass, overlays) must stay transparent: see the note in forge.css */
+#stage.theme-wire.transparent{background:transparent}
+
+/* ---------- ground: a packet-trace grid, not a dot field ---------- */
+#stage.theme-wire .bgfx .grid{
+  opacity:.9;
+  background-image:
+    radial-gradient(circle,rgba(160,175,200,.16) 1.6px,transparent 2px),
+    radial-gradient(circle,rgba(160,175,200,.07) 1.1px,transparent 1.5px);
+  background-size:192px 192px,48px 48px;
+  background-position:0 0,0 0;
+}
+#stage.theme-wire .bgfx .glow.a{background:radial-gradient(52% 40% at 82% 18%,rgba(255,138,61,.10),transparent 72%)}
+#stage.theme-wire .bgfx .glow.b{background:radial-gradient(60% 44% at 10% 96%,rgba(92,200,255,.06),transparent 74%)}
+#stage.theme-wire .bgfx .vig{background:radial-gradient(120% 100% at 50% 46%,transparent 56%,rgba(0,0,0,.62))}
+
+/* ---------- surfaces: message frames ---------- */
+#stage.theme-wire .panel,#stage.theme-wire .cmp,#stage.theme-wire .code,#stage.theme-wire .node,
+#stage.theme-wire .chk,#stage.theme-wire .bbox,#stage.theme-wire .badge.note,#stage.theme-wire .card,
+#stage.theme-wire .rowbar.big,#stage.theme-wire .mcard{
+  background:#0E1218;
+  border:1.5px solid var(--bd2);
+  border-radius:10px;
+  box-shadow:0 24px 56px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.04);
+}
+#stage.theme-wire .cmp.o,#stage.theme-wire .card.o,#stage.theme-wire .panel.o{border-color:rgba(255,138,61,.7);box-shadow:0 24px 56px rgba(0,0,0,.5),0 0 0 4px rgba(255,138,61,.08)}
+#stage.theme-wire .rowbar{border-radius:8px}
+#stage.theme-wire .badge{border-radius:8px;letter-spacing:-.01em}
+#stage.theme-wire .badge.o{background:#2A1609;border-color:rgba(255,138,61,.75);color:#FFC49B}
+#stage.theme-wire .chip{border-radius:8px;font-family:JB;letter-spacing:-.02em}
+#stage.theme-wire .chip.o{background:#2A1609;border-color:rgba(255,138,61,.7);color:#FFC49B}
+#stage.theme-wire .eyebrow{font-family:JB;font-weight:700;letter-spacing:.06em;text-transform:none}
+#stage.theme-wire .eyebrow::before{content:'// ';opacity:.55}
+#stage.theme-wire .cst-card{border-radius:12px}
+#stage.theme-wire .bub{border-radius:12px}
+
+/* ============================================================================
+   wire.js: the node canvas
+   ============================================================================ */
+#stage.theme-wire .wr-n,.wr-n{position:absolute;background:#0E1218;border:1.5px solid var(--bd2);border-radius:10px;
+  box-shadow:0 22px 50px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.04),0 0 0 calc(var(--ack,0) * 10px) rgba(255,138,61,calc(var(--ack,0) * .35));
+  overflow:hidden;opacity:0}
+.wr-n .wr-tag{height:38px;display:flex;align-items:center;gap:10px;padding:0 16px;border-bottom:1.5px solid var(--bd);
+  background:#121821;font:600 19px JB;color:var(--tx3);letter-spacing:-.01em;white-space:nowrap}
+.wr-n .wr-tt{display:inline-block;overflow:hidden;white-space:nowrap;vertical-align:bottom}
+.wr-n .wr-tag i{width:9px;height:9px;border-radius:50%;background:var(--bd2);flex:none;--dot:var(--green)}
+.wr-n .wr-tag i{background:color-mix(in srgb,var(--dot) calc(var(--lit,0) * 100%),var(--bd2));box-shadow:0 0 calc(var(--lit,0) * 10px) var(--dot)}
+.wr-n.hub .wr-tag i{--dot:var(--wire)} .wr-n.ai .wr-tag i{--dot:var(--blue)}
+.wr-n .wr-b{display:flex;align-items:center;gap:16px;padding:0 20px;height:calc(100% - 38px)}
+.wr-n .wr-ic{width:58px;height:58px;flex:none;display:grid;place-items:center;border-radius:10px;background:#F3F5F9}
+.wr-n .wr-ic img{width:40px;height:40px;object-fit:contain}
+.wr-n .wr-ic.gl{background:#1A212C;border:1.5px solid var(--bd2)}
+.wr-n .wr-ic svg{width:34px;height:34px;fill:none;stroke:var(--tx2);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.wr-n .wr-t{display:flex;flex-direction:column;min-width:0}
+.wr-n .wr-t b{font:800 30px ID;color:var(--tx);letter-spacing:-.015em;white-space:nowrap}
+.wr-n .wr-t small{font:500 20px JB;color:var(--tx3);margin-top:4px;white-space:nowrap}
+/* the protocol node: MCP is the orange one on every canvas */
+.wr-n.hub{border-color:var(--wire);box-shadow:0 22px 50px rgba(0,0,0,.5),0 0 0 calc(6px + var(--ack,0) * 10px) rgba(255,138,61,calc(.09 + var(--ack,0) * .3)),
+  0 0 calc(40px + var(--glow,0) * 50px) rgba(255,138,61,calc(.12 + var(--glow,0) * .14))}
+.wr-n.hub .wr-tag{background:#2A1609;color:#FFC49B;border-bottom-color:rgba(255,138,61,.45)}
+.wr-n.hub .wr-ic{background:#F3F5F9;box-shadow:0 0 0 3px var(--wire),0 0 18px rgba(255,138,61,.45)}
+.wr-n.dash{border-style:dashed;background:transparent;box-shadow:none}
+.wr-e{position:absolute;overflow:visible;pointer-events:none}
+.wr-e path{fill:none;stroke:var(--bd2);stroke-width:3;stroke-linecap:round}
+.wr-e.hot path{stroke:var(--wire)}
+.wr-e.dash path{stroke-dasharray:10 12}
+.wr-e.ai path{stroke:var(--blue)}
+.wr-el{position:absolute;transform:translate(-50%,-50%);font:600 19px JB;color:var(--tx2);background:#07090D;padding:3px 10px;border-radius:6px;
+  border:1.5px solid var(--bd);white-space:nowrap;opacity:0;z-index:3}
+.wr-el.hot{color:#FFC49B;border-color:rgba(255,138,61,.5)}
+.wr-pk{position:absolute;left:0;top:0;width:16px;height:16px;border-radius:4px;background:var(--wire);opacity:0;
+  box-shadow:0 0 0 4px rgba(255,138,61,.2),0 0 18px rgba(255,138,61,.6);z-index:2}
+.wr-pk.ai{background:var(--blue);box-shadow:0 0 0 4px rgba(92,200,255,.2),0 0 18px rgba(92,200,255,.6)}
+.wr-gh{position:absolute;padding:18px 26px;border:2px dashed var(--bd2);border-radius:10px;font:700 30px ID;color:var(--tx2);opacity:0;white-space:nowrap}
+.wr-gh .wr-x{position:absolute;left:-12px;right:-12px;top:50%;height:6px;margin-top:-3px;background:var(--rose);border-radius:3px;transform-origin:left;transform:scaleX(0)}
+.wr-q{position:absolute;width:56px;height:56px;margin:-28px 0 0 -28px;border-radius:50%;background:#1A212C;border:2px solid var(--bd2);
+  display:grid;place-items:center;font:800 34px ID;color:var(--tx2);opacity:0;z-index:3}
+
+/* ============================================================================
+   chat.js: an AI client window beside the app it talks to
+   ============================================================================ */
+.ch-win{position:absolute;background:#0E1218;border:1.5px solid var(--bd2);border-radius:12px;overflow:hidden;opacity:0;
+  box-shadow:0 26px 60px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.04)}
+.ch-win .ch-top{height:48px;display:flex;align-items:center;gap:10px;padding:0 18px;background:#121821;border-bottom:1.5px solid var(--bd)}
+.ch-win .ch-top i{width:12px;height:12px;border-radius:50%;background:#2E3746}
+.ch-win .ch-top b{margin-left:10px;font:600 20px JB;color:var(--tx2)}
+.ch-win .ch-top .ch-ai{margin-left:auto;width:30px;height:30px;color:var(--blue)}
+.ch-win .ch-top .ch-ai svg{width:30px;height:30px;fill:none;stroke:currentColor;stroke-width:1.8}
+.ch-body{position:absolute;left:0;right:0;top:48px;bottom:0;padding:22px}
+.ch-msg{position:absolute;max-width:80%;padding:16px 22px;border-radius:14px;font:600 26px Inter;line-height:1.3;opacity:0}
+.ch-msg.u{right:22px;background:#1D2531;color:var(--tx);border-bottom-right-radius:4px}
+.ch-msg.a{left:22px;background:#10202E;border:1.5px solid rgba(92,200,255,.35);color:#CFEAFF;border-bottom-left-radius:4px}
+.ch-call{position:absolute;left:22px;right:22px;border:1.5px solid rgba(255,138,61,.6);border-radius:10px;background:#1A1009;opacity:0;overflow:hidden}
+.ch-call .ch-h{display:flex;align-items:center;gap:10px;height:40px;padding:0 16px;background:#2A1609;font:700 19px JB;color:#FFC49B}
+.ch-call .ch-h i{width:9px;height:9px;border-radius:50%;background:var(--wire)}
+.ch-call pre{margin:0;padding:12px 16px;font:500 20px/1.45 JB;color:var(--tx2);white-space:pre}
+.ch-call pre .k{color:#FFC49B} .ch-call pre .s{color:#9FE6BE} .ch-call pre .n{color:#A891FF}
+.ch-tool{position:absolute;left:22px;right:22px;height:56px;display:flex;align-items:center;gap:14px;padding:0 18px;border:1.5px solid var(--bd2);
+  border-radius:8px;background:#121821;font:600 23px JB;color:var(--tx);opacity:0}
+.ch-tool i{width:10px;height:10px;border-radius:50%;background:var(--wire);flex:none}
+.ch-tool small{margin-left:auto;font:500 18px JB;color:var(--tx3)}
+.ch-tool.on{border-color:var(--wire);background:#2A1609}
+.ch-dots{position:absolute;left:22px;display:flex;align-items:center;gap:10px;padding:14px 20px;border-radius:14px;background:#10202E;
+  border:1.5px solid rgba(92,200,255,.35);opacity:0}
+.ch-dots i{width:12px;height:12px;border-radius:50%;background:var(--blue)}
+.ch-dots span{margin-left:8px;font:500 20px JB;color:#8FB8D8}
+/* the app (task manager) */
+.ch-task{position:absolute;left:22px;right:22px;height:62px;display:flex;align-items:center;gap:16px;padding:0 18px;border-radius:8px;background:#121821;
+  border:1.5px solid var(--bd);font:600 24px Inter;color:var(--tx);opacity:0}
+.ch-task .bx{width:26px;height:26px;border-radius:6px;border:2px solid var(--bd2);flex:none}
+.ch-task .bx.dn{background:var(--green);border-color:var(--green)}
+.ch-task small{margin-left:auto;font:500 18px JB;color:var(--tx3)}
+/* the tool card: name / description / inputSchema, each field lights on its word */
+.ch-fld{position:absolute;left:22px;right:22px;padding:14px 18px;border-radius:8px;border:1.5px solid var(--bd);background:#121821;opacity:.35}
+.ch-fld small{display:block;font:600 17px JB;color:var(--tx3);text-transform:none;letter-spacing:0}
+.ch-fld code{display:block;margin-top:6px;font:600 24px JB;color:var(--tx);white-space:pre}
+.ch-fld.on{border-color:var(--wire);background:#1A1009}
+.ch-fld.on small{color:#FFC49B}
+.ch-chip{position:absolute;padding:12px 20px;border-radius:8px;border:1.5px solid rgba(255,138,61,.7);background:#2A1609;color:#FFC49B;
+  font:700 24px JB;letter-spacing:-.02em;opacity:0;white-space:nowrap}
+.ch-q{position:absolute;padding:18px 26px;border-radius:14px;background:#10202E;border:2px solid rgba(92,200,255,.6);color:#CFEAFF;
+  font:800 30px ID;letter-spacing:-.01em;opacity:0;white-space:nowrap}
+.ch-q::after{content:'';position:absolute;left:44px;bottom:-14px;width:24px;height:24px;background:#10202E;border-right:2px solid rgba(92,200,255,.6);
+  border-bottom:2px solid rgba(92,200,255,.6);transform:rotate(45deg)}
+
+/* s12: the placeholder that sits under the live coding (never visible in the delivered cut) */
+.lv-ph{position:absolute;left:0;top:0;width:1920px;height:1080px;display:grid;place-items:center;font:700 40px JB;color:var(--tx3)}

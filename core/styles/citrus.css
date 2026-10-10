@@ -1,0 +1,217 @@
+/* "Citrus Press" theme — scoped to #stage.theme-citrus (PROJECT.theme = 'citrus').
+   Built for projects/lovable-oj: a Rust dev server benchmarked against Vite.
+
+   The colour argument IS the story: OJ orange (#F97316, which is also Rust's orange) against Vite violet
+   (#A855F7) fading to Vite's yellow (#FFC53D). Nothing else on the deck is allowed to be saturated, so a
+   coloured pixel always means "this is the side of the comparison we are talking about".
+
+   Surfaces are deliberately flat and square-ish (10px radii, 1px hairlines, one 4px accent "rind" down the
+   left edge) so the deck reads as measurement rather than as glass. That also separates it from `forge`,
+   which is the other dark-orange theme in this repo: forge is gradient-filled with 18px corners and a top
+   accent stripe; citrus is flat with 10px corners and a left rind.
+
+   No `filter: blur()` and no `backdrop-filter` anywhere: the header of core/styles/aurora.css records that
+   either one drops 4K capture from ~20 f/s to ~3 f/s. Every glow below is a radial-gradient. */
+
+#stage.theme-citrus{
+  --bg0:#0A0B0D; --bg1:#14161B; --bg2:#1B1E25; --bd:#2A2E37; --bd2:#373C48;
+  --tx:#F7F5F2; --tx2:#A9ADB8; --tx3:#70757F;
+  --teal:#2FD4C4; --violet:#A855F7; --green:#3DD68C; --rose:#F4525F; --amber:#FFC53D; --blue:#4EA8F7; --orange:#F97316;
+  --oj:#F97316; --oj2:#FB923C; --vite:#A855F7; --vite2:#FFC53D; --rust:#CE422B;
+  background:#0A0B0D;
+}
+/* The stage's own background must go for an alpha capture, or every reveal in scripts/dual-render.js renders
+   black: #stage.theme-citrus (1,2,0) outranks base.css's #stage.transparent (1,1,0). */
+#stage.theme-citrus.transparent{background:transparent}
+
+/* ---------- ground: press ribs + two opposing fields ---------- */
+/* vertical hairlines only, like the ribs of a press; the horizontal lines of base.css's grid are dropped */
+#stage.theme-citrus .bgfx .grid{
+  opacity:.5;
+  background-image:linear-gradient(90deg,rgba(249,115,22,.10) 1px,transparent 1px);
+  background-size:72px 72px;
+}
+#stage.theme-citrus .bgfx .glow.a{background:radial-gradient(56% 40% at 14% 10%,rgba(249,115,22,.16),transparent 70%)}
+#stage.theme-citrus .bgfx .glow.b{background:radial-gradient(62% 44% at 88% 94%,rgba(168,85,247,.15),transparent 72%)}
+#stage.theme-citrus .bgfx .vig{
+  background:
+    radial-gradient(84% 52% at 50% -8%,rgba(249,115,22,.07),transparent 60%),
+    radial-gradient(128% 102% at 50% 46%,transparent 52%,rgba(0,0,0,.70));
+}
+
+/* ---------- surfaces: flat, square, one rind down the left ---------- */
+#stage.theme-citrus .panel,#stage.theme-citrus .cmp,#stage.theme-citrus .code,#stage.theme-citrus .node,
+#stage.theme-citrus .chk,#stage.theme-citrus .bbox,#stage.theme-citrus .badge.note,#stage.theme-citrus .card,
+#stage.theme-citrus .cbar,#stage.theme-citrus .rowbar.big,#stage.theme-citrus .mcard{
+  background:var(--bg1);
+  border:1px solid var(--bd);
+  border-left:4px solid var(--edge,var(--bd2));
+  border-radius:10px;
+  box-shadow:0 26px 60px rgba(0,0,0,.55);
+}
+#stage.theme-citrus .panel.t,#stage.theme-citrus .cmp.t,#stage.theme-citrus .card.t,#stage.theme-citrus .mcard.t{--edge:var(--teal)}
+#stage.theme-citrus .panel.v,#stage.theme-citrus .cmp.v,#stage.theme-citrus .card.v,#stage.theme-citrus .mcard.v{--edge:var(--vite)}
+#stage.theme-citrus .panel.g,#stage.theme-citrus .cmp.g,#stage.theme-citrus .card.g,#stage.theme-citrus .mcard.g{--edge:var(--green)}
+#stage.theme-citrus .panel.r,#stage.theme-citrus .cmp.r,#stage.theme-citrus .card.r,#stage.theme-citrus .mcard.r{--edge:var(--rose)}
+#stage.theme-citrus .panel.a,#stage.theme-citrus .cmp.a,#stage.theme-citrus .card.a,#stage.theme-citrus .mcard.a{--edge:var(--amber)}
+#stage.theme-citrus .panel.b,#stage.theme-citrus .cmp.b,#stage.theme-citrus .card.b,#stage.theme-citrus .mcard.b{--edge:var(--blue)}
+#stage.theme-citrus .panel.o,#stage.theme-citrus .cmp.o,#stage.theme-citrus .card.o,#stage.theme-citrus .mcard.o{--edge:var(--oj)}
+
+/* ---------- type ---------- */
+/* the eyebrow carries a short orange rule instead of sitting on its own: the deck's one recurring mark */
+#stage.theme-citrus .eyebrow{
+  font:700 var(--eb-size) JB;letter-spacing:.24em;padding-left:34px;
+}
+#stage.theme-citrus .eyebrow::before{
+  content:'';position:absolute;left:0;top:50%;width:22px;height:4px;margin-top:-2px;background:currentColor;
+}
+#stage.theme-citrus .eyebrow.o{color:var(--oj)} #stage.theme-citrus .eyebrow.v{color:var(--vite)}
+#stage.theme-citrus .h1{letter-spacing:-.03em;line-height:1.04}
+#stage.theme-citrus .h1 em{background-size:calc(var(--ul,0) * 100%) .10em;background-position:0 96%}
+#stage.theme-citrus .foot{font:500 var(--foot-size) Inter;color:var(--tx3)}
+#stage.theme-citrus .sub{font:500 var(--sub-size) Inter;color:var(--tx2)}
+
+/* ---------- badges, rowbars, chips ---------- */
+#stage.theme-citrus .badge{
+  font:700 calc(26px * var(--ts,1)) JB;letter-spacing:.06em;text-transform:uppercase;
+  border-radius:6px;padding:12px 18px;border-width:1px;background:var(--bg2);
+}
+#stage.theme-citrus .badge.o{border-color:var(--oj);color:#FFC79A;background:rgba(249,115,22,.12)}
+#stage.theme-citrus .badge.v{border-color:var(--vite);color:#DCC2FF;background:rgba(168,85,247,.12)}
+#stage.theme-citrus .badge.g{border-color:var(--green);color:#A6EFC9;background:rgba(61,214,140,.12)}
+#stage.theme-citrus .badge.r{border-color:var(--rose);color:#FFB3B9;background:rgba(244,82,95,.12)}
+#stage.theme-citrus .badge.a{border-color:var(--amber);color:#FFE3A0;background:rgba(255,197,61,.12)}
+#stage.theme-citrus .badge.b{border-color:var(--blue);color:#B7DCFF;background:rgba(78,168,247,.12)}
+#stage.theme-citrus .badge.t{border-color:var(--teal);color:#A5EFE7;background:rgba(47,212,196,.12)}
+#stage.theme-citrus .badge.n{border-color:var(--bd2);color:var(--tx2);background:var(--bg2)}
+#stage.theme-citrus .badge.note{
+  font:500 calc(32px * var(--ts,1)) Inter;letter-spacing:0;text-transform:none;line-height:1.44;
+  color:var(--tx2);padding:26px 28px;border-radius:10px;
+}
+#stage.theme-citrus .rowbar{
+  border-radius:8px;border-width:1px;border-left-width:4px;background:var(--bg2);
+  font:600 calc(28px * var(--ts,1)) Inter;
+}
+#stage.theme-citrus .rowbar .tail{font:700 calc(24px * var(--ts,1)) JB;letter-spacing:.04em;opacity:.95}
+#stage.theme-citrus .chip{border-radius:8px;border-width:1px;font:600 calc(30px * var(--ts,1)) Inter}
+
+/* ---------- logo tiles: paper-white, squared ---------- */
+#stage.theme-citrus .ltile,#stage.theme-citrus .hrow .ht,#stage.theme-citrus .bbox .bl{
+  border-radius:16px;box-shadow:0 16px 40px rgba(0,0,0,.55);
+}
+#stage.theme-citrus .ltile.lg{border-radius:22px} #stage.theme-citrus .ltile.xl{border-radius:30px}
+#stage.theme-citrus .ltile.dark{background:var(--bg1);border:1px solid var(--bd2)}
+#stage.theme-citrus .stack .nm{font:700 calc(26px * var(--ts,1)) JB;letter-spacing:.04em;color:var(--tx2)}
+
+/* ---------- chart columns (core/components/cost-chart.js) ---------- */
+#stage.theme-citrus .cbar .col i{border-radius:4px;background:var(--bd2)}
+#stage.theme-citrus .cbar .col i.o{background:linear-gradient(180deg,var(--oj2),var(--oj))}
+#stage.theme-citrus .cbar .col i.v{background:linear-gradient(180deg,var(--vite),#7C3AED)}
+#stage.theme-citrus .cbar .col i.a{background:linear-gradient(180deg,var(--vite2),#E9A800)}
+#stage.theme-citrus .cbar .col i.g{background:linear-gradient(180deg,#6FE7AE,var(--green))}
+#stage.theme-citrus .cbar .col i.r{background:linear-gradient(180deg,#FF8189,var(--rose))}
+#stage.theme-citrus .cbar .col em{font:700 calc(26px * var(--ts,1)) JB;color:var(--tx)}
+
+/* ---------- card rows (core/templates/cards.js) ---------- */
+#stage.theme-citrus .mcard .mh b{font:800 calc(32px * var(--ts,1)) ID;letter-spacing:-.02em}
+#stage.theme-citrus .mcard .mh .tag{font:700 calc(21px * var(--ts,1)) JB;letter-spacing:.08em}
+#stage.theme-citrus .mcard .mr .bar{border-radius:3px;height:14px;background:#0D0F13;border:1px solid var(--bd)}
+#stage.theme-citrus .mcard .mr .bar i{border-radius:2px}
+#stage.theme-citrus .mcard .mr .bar i.o{background:var(--oj)} #stage.theme-citrus .mcard .mr .bar i.v{background:var(--vite)}
+
+/* ---------- overlay backing (core/overlay.js) ---------- */
+#stage.theme-citrus .ovl-card{background:rgba(10,11,13,.93);border:1px solid var(--bd2);border-radius:14px;box-shadow:none}
+
+/* ============================================================================
+   The press: head-to-head benchmark bars.
+   No core template draws a horizontal race between two named runtimes with a live number on each bar, and
+   that race is what four of this deck's rows are about. The fill is squeezed in from the left against a
+   recessed track, the value sits at the bar's end, and a dashed marker can be parked at a rival's result so
+   "slightly beating" is a thing you see rather than a thing you are told.
+   ============================================================================ */
+#stage.theme-citrus .pb{position:absolute;left:0;right:0}
+#stage.theme-citrus .pb .pbr{position:absolute;left:0;width:100%}
+#stage.theme-citrus .pb .pbl{
+  display:flex;align-items:center;gap:14px;font:700 26px JB;letter-spacing:.08em;text-transform:uppercase;color:var(--tx3);
+}
+#stage.theme-citrus .pb .pbl img{width:34px;height:34px;border-radius:6px;background:#fff;padding:3px;flex:none}
+#stage.theme-citrus .pb .pbl .pbn{color:var(--tx2)}
+#stage.theme-citrus .pb .pbl .pbtag{
+  margin-left:auto;font:700 22px JB;letter-spacing:.06em;color:var(--tx3);
+}
+#stage.theme-citrus .pb .pbt{
+  position:relative;height:56px;margin-top:14px;border-radius:6px;overflow:hidden;
+  background:#0D0F13;border:1px solid var(--bd);box-shadow:inset 0 2px 6px rgba(0,0,0,.6);
+}
+#stage.theme-citrus .pb .pbf{
+  position:absolute;left:0;top:0;bottom:0;width:100%;border-radius:4px;
+  transform-origin:left center;transform:scaleX(0);
+  background:linear-gradient(90deg,#C2410C,var(--oj) 70%,var(--oj2));
+}
+#stage.theme-citrus .pb .pbf.v{background:linear-gradient(90deg,#6D28D9,var(--vite) 72%,#C084FC)}
+#stage.theme-citrus .pb .pbf.a{background:linear-gradient(90deg,#B45309,var(--vite2) 74%,#FFE08A)}
+#stage.theme-citrus .pb .pbf.g{background:linear-gradient(90deg,#15803D,var(--green) 72%,#86EFAC)}
+#stage.theme-citrus .pb .pbf.d{background:linear-gradient(90deg,#2A2E37,#4A515E)}
+/* the pressed highlight: a hairline along the top of the fill, so a flat bar still has a direction */
+#stage.theme-citrus .pb .pbf::after{content:'';position:absolute;left:0;right:0;top:0;height:2px;background:rgba(255,255,255,.28)}
+#stage.theme-citrus .pb .pbv{
+  position:absolute;right:20px;top:50%;transform:translateY(-50%);
+  font:700 34px JB;letter-spacing:-.02em;color:var(--tx);opacity:0;white-space:nowrap;
+}
+#stage.theme-citrus .pb .pbv.in{color:#1A0E06}                       /* sitting on the fill, not on the track */
+/* a rival's result, parked on the track as a dashed rule */
+#stage.theme-citrus .pb .pbm{position:absolute;top:-10px;bottom:-10px;width:0;border-left:3px dashed var(--vite);opacity:0}
+#stage.theme-citrus .pb .pbm b{
+  position:absolute;left:12px;top:-40px;font:700 22px JB;letter-spacing:.04em;color:var(--vite);white-space:nowrap;
+}
+
+/* ============================================================================
+   Evidence: a captured page framed as a browser window, the clipping card that restates it, and stat tiles.
+   Core has no template that holds a screenshot, and this deck's whole claim is that the announcement and the
+   numbers are real, so the capture is the proof and the card is what survives a phone screen.
+   ============================================================================ */
+#stage.theme-citrus .fg-shot{
+  position:absolute;border-radius:12px;overflow:hidden;
+  border:1px solid var(--bd2);box-shadow:0 34px 80px rgba(0,0,0,.66);
+}
+#stage.theme-citrus .fg-shot .fg-bar{
+  position:absolute;left:0;top:0;right:0;height:52px;background:#101318;border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;gap:10px;padding:0 18px;
+}
+#stage.theme-citrus .fg-shot .fg-dot{width:12px;height:12px;border-radius:50%;background:#2A2E37;flex:none}
+#stage.theme-citrus .fg-shot .fg-url{
+  margin-left:14px;flex:1;height:30px;border-radius:5px;background:#080A0D;border:1px solid var(--bd);
+  font:400 18px JB;color:#7F8794;display:flex;align-items:center;padding:0 14px;letter-spacing:-.01em;overflow:hidden;white-space:nowrap;
+}
+#stage.theme-citrus .fg-shot img{position:absolute;left:0;top:52px;width:100%;display:block}
+#stage.theme-citrus .fg-shot .fg-wash{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(10,11,13,.22),rgba(10,11,13,.78) 54%,rgba(10,11,13,.95));
+}
+#stage.theme-citrus .fg-card{
+  position:absolute;border-radius:10px;padding:30px 32px;background:var(--bg1);
+  border:1px solid var(--bd);border-left:4px solid var(--edge,var(--oj));
+  box-shadow:0 30px 70px rgba(0,0,0,.7);
+}
+#stage.theme-citrus .fg-card .fg-src{
+  display:flex;align-items:center;gap:12px;font:700 22px JB;letter-spacing:.10em;text-transform:uppercase;color:var(--tx3);margin-bottom:16px;
+}
+#stage.theme-citrus .fg-card .fg-src img{width:28px;height:28px;border-radius:5px;background:#fff;padding:2px}
+#stage.theme-citrus .fg-card .fg-h{font:800 46px ID;line-height:1.14;letter-spacing:-.026em;color:var(--tx)}
+#stage.theme-citrus .fg-card .fg-sub{margin-top:14px;font:400 28px Inter;line-height:1.42;color:var(--tx2)}
+#stage.theme-citrus .fg-card .fg-by{margin-top:18px;font:700 22px JB;color:var(--tx3);letter-spacing:-.01em}
+#stage.theme-citrus .fg-card .fg-by b{color:var(--tx2);font-weight:700}
+#stage.theme-citrus .fg-stat{
+  position:absolute;border-radius:10px;padding:22px 24px;background:var(--bg1);
+  border:1px solid var(--bd);border-left:4px solid var(--edge,var(--oj));box-shadow:0 22px 52px rgba(0,0,0,.6);
+}
+#stage.theme-citrus .fg-stat .fg-k{font:700 21px JB;letter-spacing:.08em;text-transform:uppercase;color:var(--tx3)}
+#stage.theme-citrus .fg-stat .fg-v{margin-top:10px;font:700 58px JB;letter-spacing:-.04em;color:var(--edge,var(--oj));line-height:1}
+#stage.theme-citrus .fg-stat .fg-d{margin-top:10px;font:400 24px Inter;color:var(--tx2);line-height:1.34}
+
+/* a quoted source line under a capture or a quote panel: who said it, in mono, with the mark */
+#stage.theme-citrus .fg-by-row{
+  position:absolute;display:flex;align-items:center;gap:14px;font:700 24px JB;letter-spacing:.02em;color:var(--tx3);white-space:nowrap;
+}
+#stage.theme-citrus .fg-by-row img{width:36px;height:36px;border-radius:6px;background:#fff;padding:3px;flex:none}
+#stage.theme-citrus .fg-by-row b{color:var(--tx2);font-weight:700}

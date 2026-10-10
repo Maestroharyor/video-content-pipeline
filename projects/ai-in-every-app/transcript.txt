@@ -1,0 +1,25 @@
+(0:00.10) Don't you guys get tired of the fact that every single app which I have nowadays is just pushing AI on us?
+(0:06.36) The other day I made a video about Windsurf becoming an agentic desktop, and the main aim of an agentic desktop is to be able to orchestrate and manage agents.
+(0:15.64) The same direction Cursor went in, and I'm seeing a lot of code editors do this, and sometimes I just need a code editor.
+(0:23.80) I don't want to manage agents or get AI pushed into my face.
+(0:27.32) I mean, I could mention a lot of them, but you probably have experienced them.
+(0:30.99) It's probably why I prefer using code editors like Zed now, because they have the AI integration, but they don't push it into your face.
+(0:38.52) The main reason I loved Cursor was not because of agents or anything, but while it has that, I prefer writing my code and giving me autocomplete tab suggestions.
+(0:48.12) And while that might be useful in some cases to some people, that is not what I'm after, and that's one of the major reasons I stopped using it.
+(0:55.34) And I get it, I understand companies go where the hype is.
+(0:59.24) They try to adopt all the latest features so that it doesn't seem like they're lagging behind or they're losing.
+(1:05.00) But at this point, it seems they don't really care what users have to say.
+(1:08.84) They are now after impressing their investors.
+(1:11.32) There are some AI features that could really work, maybe a sprinkle here and there, but even apps that do not really need AI, it's like AI is being shoved into there.
+(1:21.52) Which is...
+(1:22.60) tiring.
+(1:23.29) And this really reminded me of a few years back when the Web3 and the crypto boom was happening.
+(1:29.24) We had a similar thing.
+(1:30.92) Everyone started talking about Web3.
+(1:33.16) "Oh yes, we're going to rebuild our apps in Web3, we're going to integrate Web3."
+(1:37.80) And even people that should not be concerned about that, I had at that time period, a lot of people who wanted to build apps, and they would come to me, contract the job to me, and one of the things they mentioned, "Oh yes, Maestro, we need to also have Web3 integration, you know, we have to be able to connect to the blockchain, this is one of our main features."
+(1:56.12) And I would look at this and I would feel, "This is really unnecessary."
+(1:58.92) But yeah, I'm being paid for the money, so I go ahead to do that.
+(2:02.12) And I love the fact that it later settled, and we do Web3 integrations when they are really needed, not just because everyone is talking about it.
+(2:10.04) So yeah, I know AI is not going anywhere, and it's still going to be an innovative invention, but I can't wait to get to the point where it has settled, saturated, and no longer shoved down people's throats.
+(2:21.00) Like and follow for more.

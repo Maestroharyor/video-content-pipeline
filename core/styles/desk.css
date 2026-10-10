@@ -1,0 +1,309 @@
+/* "desk" theme (PROJECT.theme = 'desk') — built for projects/ai-context-window.
+   The script runs on one image for five and a half minutes: a desk, a notebook on it, a filing cabinet beside it,
+   and pages fetched from elsewhere. So the theme is a workspace rather than a palette. The ground is warm graphite
+   with faint desk rules instead of a dot grid, every surface is paper stock with a squared corner and a 3px tab on
+   its TOP edge (strata puts its accent on the left as a spine; a folder's tab is on top, and that difference is the
+   whole point of the two themes not looking alike), and labels are JetBrains Mono small caps.
+   Deliberately no `filter: blur()` and no `backdrop-filter`: the aurora header records that either one drops 4K
+   capture from ~20 f/s to ~3 f/s. Every warm "glow" here is a radial-gradient, which the compositor draws for free.
+   The four templates this deck adds (desk · cabinet · budget · flow) are styled here too, the same way aurora.css
+   carries hop / anatomy / tree and strata.css carries tiers / matrix: they are deck templates, not part of the
+   default set. Everything is scoped to #stage.theme-desk, so the stock look and the other decks are untouched. */
+
+#stage.theme-desk{
+  /* warm graphite, not slate: every other deck in this repo is blue-black, and the desk has to read as wood-and-paper */
+  --bg0:#0C0A08; --bg1:#171310; --bg2:#201A15; --bd:#2E2620; --bd2:#41352B;
+  --tx:#F7F2E9; --tx2:#BCAE9B; --tx3:#7E7263;
+  --amber:#F0A62E; --rose:#F2766F; --blue:#78A9DB; --green:#6CC08C; --teal:#5FC3B4; --violet:#A78BFA; --orange:#FF9900;
+  --paper:#F3E9D6;                 /* the one genuinely light surface: a page. Used sparingly, so it reads as paper */
+  --paper2:#DCCFB6;
+  --wood:#2C221A;                  /* the desk surface: it has to read as an object against #0C0A08, not as a shadow */
+  --wood2:#3E3125;
+  --tab:3px;                       /* the folder tab on the top edge of every surface */
+  background:#0C0A08;
+}
+
+/* ---------- ground: desk rules, not a dot grid ---------- */
+#stage.theme-desk .bgfx .grid{
+  opacity:.5;
+  background-image:repeating-linear-gradient(0deg,rgba(214,186,140,.055) 0 1px,transparent 1px 78px);
+  background-size:auto;
+}
+#stage.theme-desk .bgfx .vig{
+  background:
+    radial-gradient(80% 52% at 62% -6%,rgba(240,166,46,.10),transparent 60%),   /* the lamp, up and to the right */
+    radial-gradient(120% 100% at 50% 48%,transparent 52%,rgba(0,0,0,.70));
+}
+
+/* ---------- surfaces: paper stock, squared, tab on top ---------- */
+#stage.theme-desk .panel,#stage.theme-desk .cmp,#stage.theme-desk .node,#stage.theme-desk .rowbar.big,
+#stage.theme-desk .code,#stage.theme-desk .chk,#stage.theme-desk .bbox,#stage.theme-desk .badge.note,
+#stage.theme-desk .mcard,#stage.theme-desk .card{
+  background:linear-gradient(180deg,var(--bg2),var(--bg1));
+  border:1px solid var(--bd2);
+  border-top:var(--tab) solid var(--acc,var(--amber));
+  border-radius:4px;
+  box-shadow:0 18px 40px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,255,255,.05);
+}
+#stage.theme-desk .cmp .lb{
+  font:700 20px JB;letter-spacing:.20em;text-transform:uppercase;color:var(--tx3);
+}
+#stage.theme-desk .cmp .qt{color:var(--tx)}
+
+/* ---------- type ---------- */
+#stage.theme-desk .eyebrow{font:700 var(--eb-size) JB;letter-spacing:.24em}
+#stage.theme-desk .h1{letter-spacing:-.024em}
+#stage.theme-desk .foot{font:500 var(--foot-size) JB;letter-spacing:.04em;color:var(--tx3)}
+#stage.theme-desk .sub{color:var(--tx2)}
+#stage.theme-desk .badge{border-radius:3px;font-family:JB;letter-spacing:.02em}
+#stage.theme-desk .rowbar{border-radius:3px}
+#stage.theme-desk .rowbar.big{border-top:var(--tab) solid var(--acc,var(--amber))}
+
+/* a mono caption used by every deck template for the little label under an object */
+#stage.theme-desk .dlab{
+  position:absolute;font:700 24px JB;letter-spacing:.20em;text-transform:uppercase;color:var(--tx3);white-space:nowrap;
+}
+#stage.theme-desk .dlab.on{color:var(--acc,var(--amber))}
+
+/* =========================================================================
+   desk template — the workspace scene
+   ========================================================================= */
+/* The surface is drawn as a top plane plus a front edge, so "the desk has a limit" can be shown as the two ends
+   of a real object rather than as a word. dk-plane animates its own width for the slides where the desk grows. */
+#stage.theme-desk .dk-surf{position:absolute}
+#stage.theme-desk .dk-plane{
+  position:absolute;left:0;top:0;width:100%;height:100%;
+  background:linear-gradient(180deg,var(--wood2),var(--wood));
+  border:1px solid #57442F;border-radius:3px;
+  box-shadow:0 30px 60px rgba(0,0,0,.66),inset 0 1px 0 rgba(255,214,150,.13);
+}
+#stage.theme-desk .dk-front{
+  position:absolute;left:0;width:100%;height:16px;
+  background:linear-gradient(180deg,#4C3B2B,#2A2018);
+  border:1px solid #57442F;border-top:none;border-radius:0 0 3px 3px;
+}
+/* the two ends of the desk: what "that desk has a limit" actually means */
+#stage.theme-desk .dk-edge{
+  position:absolute;width:5px;background:var(--acc,var(--amber));border-radius:2px;
+  box-shadow:0 0 22px var(--acc,var(--amber));
+}
+#stage.theme-desk .dk-meas{position:absolute;height:1px;background:var(--tx3)}
+#stage.theme-desk .dk-meas i{position:absolute;top:-7px;width:1px;height:15px;background:var(--tx3)}
+#stage.theme-desk .dk-meas i.r{right:0}
+
+/* the notebook: the one light surface on the desk */
+#stage.theme-desk .dk-note{
+  position:absolute;background:linear-gradient(180deg,var(--paper),var(--paper2));
+  border-radius:3px;border:1px solid #C6B695;
+  box-shadow:0 20px 44px rgba(0,0,0,.62),inset 0 1px 0 rgba(255,255,255,.7);
+  overflow:hidden;
+}
+#stage.theme-desk .dk-note .nh{
+  display:block;padding:14px 22px 10px;font:700 21px JB;letter-spacing:.18em;text-transform:uppercase;
+  color:#6B5B41;border-bottom:1px solid rgba(0,0,0,.14);
+}
+#stage.theme-desk .dk-page{
+  position:absolute;left:18px;display:flex;align-items:center;gap:14px;height:52px;padding:0 16px;
+  border-radius:2px;background:rgba(255,255,255,.5);border-left:3px solid var(--acc,var(--amber));
+}
+#stage.theme-desk .dk-page b{font:600 27px Inter;color:#3A3124;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#stage.theme-desk .dk-page.hot{background:#fff;box-shadow:0 0 0 2px var(--acc,var(--amber))}
+
+/* the reach radius: "on the desk means you can use it" */
+#stage.theme-desk .dk-reach{
+  position:absolute;border:2px dashed var(--acc,var(--amber));border-radius:50%;opacity:.55;
+}
+/* the burial: loose pages covering the desk */
+#stage.theme-desk .dk-pg{
+  position:absolute;background:linear-gradient(180deg,#E8DCC4,#CBBC9E);border:1px solid #B8A886;border-radius:2px;
+  box-shadow:0 8px 18px rgba(0,0,0,.45);
+}
+#stage.theme-desk .dk-pg.line{background:linear-gradient(180deg,#F6EFDD,#E2D6BC)}
+/* the search band that sweeps the pile */
+#stage.theme-desk .dk-sweep{
+  position:absolute;width:150px;border-radius:2px;
+  background:linear-gradient(90deg,transparent,rgba(240,166,46,.26),transparent);
+  border-left:1px solid rgba(240,166,46,.5);border-right:1px solid rgba(240,166,46,.5);
+}
+#stage.theme-desk .dk-hit{
+  position:absolute;height:9px;border-radius:2px;background:var(--acc,var(--amber));
+  box-shadow:0 0 26px var(--acc,var(--amber));
+}
+/* a sticky note: one fact placed on the desk */
+#stage.theme-desk .dk-sticky{
+  position:absolute;display:grid;place-items:center;text-align:center;padding:0 20px;
+  background:linear-gradient(180deg,#F7DE9A,#E9C978);border-radius:2px;
+  box-shadow:0 16px 34px rgba(0,0,0,.5);
+  font:700 26px Inter;color:#4A3A16;line-height:1.24;
+}
+#stage.theme-desk .dk-num{position:absolute;font:800 96px JB;letter-spacing:-.03em;color:var(--acc,var(--amber))}
+#stage.theme-desk .dk-tick{position:absolute;width:74px;height:74px}
+#stage.theme-desk .dk-tick svg{width:100%;height:100%;fill:none;stroke:var(--green);stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round}
+
+/* =========================================================================
+   cabinet template — memory
+   ========================================================================= */
+#stage.theme-desk .cb-body{
+  position:absolute;background:linear-gradient(180deg,#2A2219,#1B1610);
+  border:1px solid #44352A;border-top:var(--tab) solid var(--acc,var(--blue));border-radius:3px;
+  box-shadow:0 26px 58px rgba(0,0,0,.62),inset 0 1px 0 rgba(255,255,255,.05);
+}
+#stage.theme-desk .cb-drawer{
+  position:absolute;left:14px;background:linear-gradient(180deg,#332A20,#241D16);
+  border:1px solid #4A3B2E;border-radius:2px;
+}
+#stage.theme-desk .cb-drawer .hdl{
+  position:absolute;left:50%;top:50%;transform:translate(-50%,-50%);width:112px;height:9px;border-radius:5px;
+  background:#5B4938;box-shadow:inset 0 1px 0 rgba(255,255,255,.14);
+}
+#stage.theme-desk .cb-drawer.open{background:linear-gradient(180deg,#3B3025,#2A221A);border-color:#5B4938}
+/* a folder standing in the open drawer */
+#stage.theme-desk .cb-folder{
+  position:absolute;background:linear-gradient(180deg,#D9C7A0,#C0AC85);
+  border:1px solid #A8936B;border-radius:2px 8px 2px 2px;
+  box-shadow:0 12px 26px rgba(0,0,0,.5);
+  display:flex;align-items:flex-end;padding:0 10px 12px 12px;
+}
+#stage.theme-desk .cb-folder::before{                 /* the tab, the shape that says "folder" */
+  content:'';position:absolute;left:0;top:-13px;width:54%;height:14px;
+  background:linear-gradient(180deg,#E2D2AE,#D9C7A0);border:1px solid #A8936B;border-bottom:none;border-radius:3px 8px 0 0;
+}
+#stage.theme-desk .cb-folder b{font:700 16px Inter;color:#3D3222;line-height:1.2;white-space:normal;
+  word-break:normal;overflow-wrap:normal;hyphens:none}
+#stage.theme-desk .cb-folder.hot{background:linear-gradient(180deg,#F2E3BE,#DDC99C);box-shadow:0 14px 30px rgba(0,0,0,.5),0 0 0 2px var(--acc,var(--blue))}
+/* the arc a stored note travels along */
+#stage.theme-desk .cb-arc{position:absolute;overflow:visible}
+/* `> path`, not `path`: an arrowhead lives in <defs><marker><path>, and a descendant selector hits it too —
+   fill:none erases the head and the 3px dashed stroke redraws it as an outline. Same trap on .fl-arrow. */
+#stage.theme-desk .cb-arc > path{fill:none;stroke:var(--acc,var(--blue));stroke-width:3;stroke-linecap:round;stroke-dasharray:7 9;opacity:.75}
+
+/* =========================================================================
+   budget template — the token bar and its ceiling
+   ========================================================================= */
+#stage.theme-desk .bg-track{
+  position:absolute;background:var(--bg1);border:1px solid var(--bd2);border-radius:3px;overflow:hidden;
+  box-shadow:inset 0 2px 10px rgba(0,0,0,.55);
+}
+#stage.theme-desk .bg-seg{
+  position:absolute;top:0;height:100%;display:flex;align-items:center;justify-content:center;
+  border-right:1px solid rgba(0,0,0,.45);transform-origin:left center;
+}
+/* the segment names, hung under the bar on two staggered rows and tied to their band by a hairline */
+#stage.theme-desk .bg-legs{position:absolute}
+#stage.theme-desk .bg-leg{position:absolute;white-space:nowrap}
+#stage.theme-desk .bg-leg i{position:absolute;left:0;width:1px;background:var(--acc,var(--amber));opacity:.55}
+#stage.theme-desk .bg-leg.r{text-align:right}
+#stage.theme-desk .bg-leg.r i{left:auto;right:0}
+#stage.theme-desk .bg-leg.r b{padding-left:0;padding-right:12px}
+#stage.theme-desk .bg-leg b{
+  display:block;padding-left:12px;font:700 23px JB;letter-spacing:.10em;text-transform:uppercase;color:var(--acc,var(--amber));
+}
+/* the ceiling: where the budget stops being a number and starts being a wall */
+#stage.theme-desk .bg-cap{position:absolute;width:5px;background:var(--rose);border-radius:2px;box-shadow:0 0 24px var(--rose)}
+#stage.theme-desk .bg-caplab{position:absolute;font:700 23px JB;letter-spacing:.16em;text-transform:uppercase;color:var(--rose)}
+#stage.theme-desk .bg-flash{position:absolute;border-radius:3px;background:var(--rose);opacity:0}
+
+/* =========================================================================
+   flow template — the RAG pipeline, one fixed arrangement the narration walks across
+   ========================================================================= */
+#stage.theme-desk .fl-book{
+  position:absolute;background:linear-gradient(180deg,#3E2F22,#2A2018);
+  border:1px solid #57432F;border-radius:3px;box-shadow:0 20px 44px rgba(0,0,0,.6);
+}
+#stage.theme-desk .fl-book i{position:absolute;left:0;width:100%;height:3px;background:rgba(243,233,214,.22)}
+#stage.theme-desk .fl-book .sp{
+  position:absolute;left:0;top:0;width:16px;height:100%;background:linear-gradient(180deg,#6B5335,#4A3823);border-radius:3px 0 0 3px;
+}
+#stage.theme-desk .fl-chunk{
+  position:absolute;background:linear-gradient(180deg,#E8DCC4,#CFC0A2);border:1px solid #B5A582;border-radius:2px;
+  display:grid;place-items:center;box-shadow:0 8px 18px rgba(0,0,0,.42);
+}
+#stage.theme-desk .fl-chunk span{font:700 19px JB;color:#4A3E28;letter-spacing:.06em}
+#stage.theme-desk .fl-chunk.hot{
+  background:linear-gradient(180deg,#FCEFC9,#F2DEA8);border-color:var(--acc,var(--green));
+  box-shadow:0 10px 24px rgba(0,0,0,.45),0 0 0 2px var(--acc,var(--green)),0 0 30px rgba(108,192,140,.5);
+}
+#stage.theme-desk .fl-store{
+  position:absolute;background:linear-gradient(180deg,var(--bg2),var(--bg1));
+  border:1px solid var(--bd2);border-top:var(--tab) solid var(--acc,var(--green));border-radius:3px;
+  box-shadow:0 20px 44px rgba(0,0,0,.58);
+}
+#stage.theme-desk .fl-store .sh{
+  display:block;padding:12px 18px 10px;font:700 20px JB;letter-spacing:.18em;text-transform:uppercase;color:var(--tx3);
+  border-bottom:1px solid var(--bd);
+}
+#stage.theme-desk .fl-store .fs-row{
+  position:absolute;left:16px;height:26px;display:flex;align-items:center;gap:7px;
+}
+#stage.theme-desk .fl-store .fs-row u{
+  display:block;height:8px;border-radius:2px;background:var(--bd2);text-decoration:none;
+}
+#stage.theme-desk .fl-store .fs-row.hot u{background:var(--acc,var(--green));box-shadow:0 0 14px var(--acc,var(--green))}
+#stage.theme-desk .fl-q{
+  position:absolute;padding:12px 20px;border-radius:3px;background:var(--bg2);
+  border:1px solid var(--bd2);border-top:var(--tab) solid var(--acc,var(--green));
+  font:600 25px Inter;color:var(--tx);white-space:nowrap;box-shadow:0 14px 30px rgba(0,0,0,.5);
+}
+#stage.theme-desk .fl-arrow{position:absolute;overflow:visible}
+#stage.theme-desk .fl-arrow > path{fill:none;stroke:var(--acc,var(--green));stroke-width:4;stroke-linecap:round}
+#stage.theme-desk .fl-arrow.dump > path{stroke:var(--rose);stroke-width:14;opacity:.85}
+#stage.theme-desk .fl-tag{
+  position:absolute;padding:9px 16px;border-radius:3px;font:700 23px JB;letter-spacing:.04em;
+  background:#3A1B1B;border:1px solid rgba(242,118,111,.6);color:#FFC0BB;white-space:nowrap;
+}
+
+/* =========================================================================
+   swap template — "the heavy thing, crossed out -> the light thing instead"
+   ========================================================================= */
+#stage.theme-desk .sw-head{position:absolute;left:0;width:100%;height:40px}
+#stage.theme-desk .sw-head span{
+  position:absolute;font:700 22px JB;letter-spacing:.20em;text-transform:uppercase;color:var(--tx3);
+}
+#stage.theme-desk .sw-row{position:absolute;left:0;width:100%}
+#stage.theme-desk .sw-from,#stage.theme-desk .sw-to{
+  position:absolute;display:flex;align-items:center;padding:0 26px;border-radius:4px;
+  background:linear-gradient(180deg,var(--bg2),var(--bg1));border:1px solid var(--bd2);
+  box-shadow:0 14px 30px rgba(0,0,0,.5);
+}
+#stage.theme-desk .sw-from{border-top:var(--tab) solid #4A3A34}
+#stage.theme-desk .sw-to{border-top:var(--tab) solid var(--acc,var(--teal))}
+#stage.theme-desk .sw-from b,#stage.theme-desk .sw-to b{
+  font:600 31px Inter;line-height:1.24;color:var(--tx);
+}
+#stage.theme-desk .sw-from b{color:var(--tx2)}
+/* The strike is measured onto the text by strikeText(), one stroke per rendered line, so a `from` that wraps
+   to two lines gets two strokes. It used to be a single rule at top:50%, which fell in the leading gap between
+   those two lines and read as an underline of the first. 6px suits 31px body text; the deck's statement strikes
+   are 8px because they cross 44px quotes. */
+#stage.theme-desk .sw-row .strike path{stroke-width:6;filter:drop-shadow(0 0 10px rgba(242,118,111,.45))}
+#stage.theme-desk .sw-arw{position:absolute;display:grid;place-items:center}
+#stage.theme-desk .sw-arw svg{width:74px;height:24px;fill:none;stroke:var(--acc,var(--teal));stroke-width:2.6;stroke-linecap:round;stroke-linejoin:round}
+
+/* =========================================================================
+   imagery — recurring person, and rows of official marks
+   ========================================================================= */
+/* One CC0 DiceBear figure (notionists, Zoish) on four slides with the same seed. The paper disc and the circular
+   crop are baked into the file by the backgroundColor/radius request params, so this is a plain img: the theme
+   only supplies the ring, the shadow and the caption. The point of reusing one seed is s24 -> s25, where the same
+   face appears over a desk with a note and then over an empty one. A different face on each would read as two
+   people rather than as one person whose session ended. */
+#stage.theme-desk .avt{position:absolute;display:flex;flex-direction:column;align-items:center}
+#stage.theme-desk .avt img{
+  width:100%;aspect-ratio:1;border-radius:50%;display:block;
+  border:3px solid var(--wood2);box-shadow:0 16px 34px rgba(0,0,0,.55);
+}
+#stage.theme-desk .avt .nm{
+  margin-top:16px;font:700 21px JB;letter-spacing:.16em;text-transform:uppercase;color:var(--tx3);
+  white-space:nowrap;
+}
+#stage.theme-desk .avt.lit img{border-color:var(--acc,var(--amber))}
+
+/* A row of real product marks, used only where the spoken line is about real products. The tiles are the stock
+   .ltile (white face, dark mark), which is what s18's Anthropic mark and s23's Go mark already look like, so the
+   marks read as one family across the deck rather than as a new element. */
+#stage.theme-desk .dk-marks{position:absolute}
+#stage.theme-desk .dk-marks .nm{font:600 24px Inter;color:var(--tx3);line-height:1.2}
+#stage.theme-desk .dk-marks .stack{gap:12px}
+#stage.theme-desk .dk-cap{
+  position:absolute;font:700 21px JB;letter-spacing:.18em;text-transform:uppercase;color:var(--tx3);text-align:center;
+}

@@ -1,0 +1,1815 @@
+1
+00:00:00,130 --> 00:00:01,040
+Imagine you have a
+
+2
+00:00:01,040 --> 00:00:02,070
+startup and you're
+
+3
+00:00:02,070 --> 00:00:03,080
+building the next
+
+4
+00:00:03,080 --> 00:00:04,240
+YouTube, but with
+
+5
+00:00:04,240 --> 00:00:05,400
+social networking
+
+6
+00:00:05,400 --> 00:00:06,700
+features. You've got
+
+7
+00:00:06,700 --> 00:00:07,780
+an idea for the
+
+8
+00:00:07,780 --> 00:00:08,850
+platform, a vision for
+
+9
+00:00:08,850 --> 00:00:10,000
+how it should work,
+
+10
+00:00:10,000 --> 00:00:10,910
+but as soon as you
+
+11
+00:00:10,910 --> 00:00:12,340
+start building, some
+
+12
+00:00:12,340 --> 00:00:13,090
+important questions
+
+13
+00:00:13,090 --> 00:00:13,600
+come up.
+
+14
+00:00:13,600 --> 00:00:14,790
+Who'll make sure your
+
+15
+00:00:14,790 --> 00:00:15,990
+application has all
+
+16
+00:00:15,990 --> 00:00:16,890
+the servers and
+
+17
+00:00:16,890 --> 00:00:18,030
+infrastructure it
+
+18
+00:00:18,030 --> 00:00:19,070
+needs to run in the
+
+19
+00:00:19,070 --> 00:00:20,010
+cloud, and who'll
+
+20
+00:00:20,010 --> 00:00:21,190
+automate the process
+
+21
+00:00:21,190 --> 00:00:22,570
+of building, testing,
+
+22
+00:00:22,570 --> 00:00:23,750
+deploying updates so
+
+23
+00:00:23,750 --> 00:00:24,780
+everything can run
+
+24
+00:00:24,780 --> 00:00:26,540
+smoothly. Well, let's
+
+25
+00:00:26,540 --> 00:00:27,730
+get into it.
+
+26
+00:00:27,730 --> 00:00:28,720
+Now, this is where
+
+27
+00:00:28,720 --> 00:00:29,910
+cloud engineers and
+
+28
+00:00:29,910 --> 00:00:31,380
+DevOps engineers come
+
+29
+00:00:31,380 --> 00:00:32,500
+into the picture.
+
+30
+00:00:32,500 --> 00:00:34,190
+Both work with
+
+31
+00:00:34,190 --> 00:00:35,500
+platforms and tools
+
+32
+00:00:35,500 --> 00:00:37,140
+like AWS, Azure,
+
+33
+00:00:37,140 --> 00:00:39,130
+Docker, Terraform, and
+
+34
+00:00:39,130 --> 00:00:40,920
+Kubernetes, among many
+
+35
+00:00:40,920 --> 00:00:42,100
+others. And in many
+
+36
+00:00:42,100 --> 00:00:43,190
+organizations,
+
+37
+00:00:43,190 --> 00:00:44,340
+especially here in my
+
+38
+00:00:44,340 --> 00:00:45,450
+country, their
+
+39
+00:00:45,450 --> 00:00:47,150
+responsibilities are
+
+40
+00:00:47,150 --> 00:00:48,600
+often confused.
+
+41
+00:00:48,600 --> 00:00:49,650
+Sometimes even
+
+42
+00:00:49,650 --> 00:00:51,120
+software developers
+
+43
+00:00:51,120 --> 00:00:52,660
+are expected to handle
+
+44
+00:00:52,660 --> 00:00:53,870
+some parts of both
+
+45
+00:00:53,870 --> 00:00:55,530
+roles. So what exactly
+
+46
+00:00:55,530 --> 00:00:56,890
+does each role do, and
+
+47
+00:00:56,890 --> 00:00:57,750
+where do their
+
+48
+00:00:57,750 --> 00:00:58,910
+responsibilities
+
+49
+00:00:58,910 --> 00:01:00,540
+overlap? Let's use our
+
+50
+00:01:00,540 --> 00:01:01,690
+video hosting and
+
+51
+00:01:01,690 --> 00:01:03,060
+social platform as an
+
+52
+00:01:03,060 --> 00:01:04,360
+example and break it
+
+53
+00:01:04,360 --> 00:01:05,200
+all down.
+
+54
+00:01:05,200 --> 00:01:06,200
+First, let's start
+
+55
+00:01:06,200 --> 00:01:07,040
+with the software
+
+56
+00:01:07,040 --> 00:01:08,160
+developer. For our
+
+57
+00:01:08,160 --> 00:01:09,050
+video hosting and
+
+58
+00:01:09,050 --> 00:01:10,230
+social platform, well,
+
+59
+00:01:10,230 --> 00:01:11,380
+the software developer
+
+60
+00:01:11,380 --> 00:01:11,940
+is going to be
+
+61
+00:01:11,940 --> 00:01:12,740
+responsible for
+
+62
+00:01:12,740 --> 00:01:13,680
+building the
+
+63
+00:01:13,680 --> 00:01:14,500
+application itself.
+
+64
+00:01:14,500 --> 00:01:15,530
+They decide how the
+
+65
+00:01:15,530 --> 00:01:16,300
+app is going to
+
+66
+00:01:16,300 --> 00:01:17,510
+function, implement
+
+67
+00:01:17,510 --> 00:01:18,500
+features like user
+
+68
+00:01:18,500 --> 00:01:19,890
+registration, video
+
+69
+00:01:19,890 --> 00:01:20,960
+uploads, video
+
+70
+00:01:20,960 --> 00:01:22,400
+playback, comments,
+
+71
+00:01:22,400 --> 00:01:23,470
+like, follows,
+
+72
+00:01:23,470 --> 00:01:24,940
+subscriptions, and all
+
+73
+00:01:24,940 --> 00:01:25,600
+that jazz.
+
+74
+00:01:25,600 --> 00:01:26,710
+In simple terms, they
+
+75
+00:01:26,710 --> 00:01:27,630
+are focused on making
+
+76
+00:01:27,630 --> 00:01:28,600
+the application work
+
+77
+00:01:28,600 --> 00:01:29,910
+and giving the users
+
+78
+00:01:29,910 --> 00:01:30,850
+the features they
+
+79
+00:01:30,850 --> 00:01:31,900
+need. Of course,
+
+80
+00:01:31,900 --> 00:01:32,990
+developers should
+
+81
+00:01:32,990 --> 00:01:34,050
+understand the basics
+
+82
+00:01:34,050 --> 00:01:35,090
+of deployment and
+
+83
+00:01:35,090 --> 00:01:35,980
+infrastructure, but
+
+84
+00:01:35,980 --> 00:01:36,580
+they are not
+
+85
+00:01:36,580 --> 00:01:37,490
+necessarily
+
+86
+00:01:37,490 --> 00:01:38,100
+responsible for
+
+87
+00:01:38,100 --> 00:01:39,200
+managing servers,
+
+88
+00:01:39,200 --> 00:01:40,400
+configuring cloud
+
+89
+00:01:40,400 --> 00:01:41,850
+networks, or building
+
+90
+00:01:41,850 --> 00:01:43,150
+complex deployment
+
+91
+00:01:43,150 --> 00:01:44,430
+pipelines. Those
+
+92
+00:01:44,430 --> 00:01:45,820
+responsibilities often
+
+93
+00:01:45,820 --> 00:01:46,570
+fall to other
+
+94
+00:01:46,570 --> 00:01:47,890
+specialists. Now,
+
+95
+00:01:47,890 --> 00:01:49,200
+let's take a look at
+
+96
+00:01:49,200 --> 00:01:50,710
+the cloud engineer.
+
+97
+00:01:50,710 --> 00:01:51,590
+Our platform needs
+
+98
+00:01:51,590 --> 00:01:52,400
+servers to run the
+
+99
+00:01:52,400 --> 00:01:53,770
+application, storage
+
+100
+00:01:53,770 --> 00:01:55,330
+for uploaded videos,
+
+101
+00:01:55,330 --> 00:01:56,990
+databases for user
+
+102
+00:01:56,990 --> 00:01:58,300
+information and social
+
+103
+00:01:58,300 --> 00:01:59,860
+interactions, and a
+
+104
+00:01:59,860 --> 00:02:01,280
+way to deliver those
+
+105
+00:02:01,280 --> 00:02:02,260
+videos efficiently to
+
+106
+00:02:02,260 --> 00:02:03,380
+users around the
+
+107
+00:02:03,380 --> 00:02:04,660
+world. Also, we want
+
+108
+00:02:04,660 --> 00:02:05,750
+to ensure that our
+
+109
+00:02:05,750 --> 00:02:07,540
+platform is always up,
+
+110
+00:02:07,540 --> 00:02:08,260
+not having any
+
+111
+00:02:08,260 --> 00:02:09,470
+downtime and very
+
+112
+00:02:09,470 --> 00:02:10,770
+scalable. This is
+
+113
+00:02:10,770 --> 00:02:12,080
+where a cloud engineer
+
+114
+00:02:12,080 --> 00:02:12,600
+comes in.
+
+115
+00:02:12,600 --> 00:02:13,680
+Cloud engineers work
+
+116
+00:02:13,680 --> 00:02:15,430
+with cloud platforms,
+
+117
+00:02:15,430 --> 00:02:17,640
+such as AWS, Microsoft
+
+118
+00:02:17,640 --> 00:02:19,130
+Azure, and Google
+
+119
+00:02:19,130 --> 00:02:20,770
+Cloud. There are other
+
+120
+00:02:20,770 --> 00:02:22,190
+providers, such as
+
+121
+00:02:22,190 --> 00:02:23,850
+DigitalOcean, Oracle
+
+122
+00:02:23,850 --> 00:02:25,300
+Cloud, and so on.
+
+123
+00:02:25,300 --> 00:02:26,370
+Typically, cloud
+
+124
+00:02:26,370 --> 00:02:27,650
+engineers specialize
+
+125
+00:02:27,650 --> 00:02:29,090
+in one cloud platform,
+
+126
+00:02:29,090 --> 00:02:29,700
+gaining in-depth
+
+127
+00:02:29,700 --> 00:02:30,500
+knowledge of its
+
+128
+00:02:30,500 --> 00:02:31,540
+services and
+
+129
+00:02:31,540 --> 00:02:32,100
+infrastructure.
+
+130
+00:02:32,100 --> 00:02:33,290
+However, they can also
+
+131
+00:02:33,290 --> 00:02:34,260
+learn and work with
+
+132
+00:02:34,260 --> 00:02:35,230
+other platforms as
+
+133
+00:02:35,230 --> 00:02:36,140
+their experience
+
+134
+00:02:36,140 --> 00:02:37,180
+grows. For our
+
+135
+00:02:37,180 --> 00:02:38,640
+platform, let's say
+
+136
+00:02:38,640 --> 00:02:39,980
+we're using AWS.
+
+137
+00:02:39,980 --> 00:02:40,640
+First, we need
+
+138
+00:02:40,640 --> 00:02:41,600
+somewhere to run our
+
+139
+00:02:41,600 --> 00:02:43,030
+back-end application.
+
+140
+00:02:43,030 --> 00:02:44,580
+Our cloud engineer
+
+141
+00:02:44,580 --> 00:02:45,920
+might use Amazon EC2
+
+142
+00:02:45,920 --> 00:02:47,390
+to provision virtual
+
+143
+00:02:47,390 --> 00:02:48,560
+servers. For video
+
+144
+00:02:48,560 --> 00:02:49,950
+storage, they could
+
+145
+00:02:49,950 --> 00:02:51,800
+use Amazon S3 instead
+
+146
+00:02:51,800 --> 00:02:52,930
+of storing large video
+
+147
+00:02:52,930 --> 00:02:54,350
+files directly on
+
+148
+00:02:54,350 --> 00:02:55,600
+application servers.
+
+149
+00:02:55,600 --> 00:02:56,720
+And to deliver those
+
+150
+00:02:56,720 --> 00:02:58,000
+videos efficiently,
+
+151
+00:02:58,000 --> 00:02:59,380
+they might configure
+
+152
+00:02:59,380 --> 00:03:00,430
+Amazon CloudFront, a
+
+153
+00:03:00,430 --> 00:03:01,460
+content delivery
+
+154
+00:03:01,460 --> 00:03:02,900
+network, or CDN, that
+
+155
+00:03:02,900 --> 00:03:04,360
+delivers those content
+
+156
+00:03:04,360 --> 00:03:05,700
+closest to users.
+
+157
+00:03:05,700 --> 00:03:06,460
+They also need to
+
+158
+00:03:06,460 --> 00:03:07,700
+configure networking,
+
+159
+00:03:07,700 --> 00:03:09,480
+including VPCs,
+
+160
+00:03:09,480 --> 00:03:11,390
+subnets, routing, and
+
+161
+00:03:11,390 --> 00:03:12,630
+security groups.
+
+162
+00:03:12,630 --> 00:03:12,990
+But their
+
+163
+00:03:12,990 --> 00:03:14,290
+responsibilities don't
+
+164
+00:03:14,290 --> 00:03:15,270
+end with setting up
+
+165
+00:03:15,270 --> 00:03:16,400
+these resources.
+
+166
+00:03:16,400 --> 00:03:17,380
+They also need to
+
+167
+00:03:17,380 --> 00:03:18,700
+consider security,
+
+168
+00:03:18,700 --> 00:03:20,820
+availability, backups,
+
+169
+00:03:20,820 --> 00:03:22,100
+monitoring, and,
+
+170
+00:03:22,100 --> 00:03:23,830
+importantly, cloud
+
+171
+00:03:23,830 --> 00:03:25,020
+costs, knowing how
+
+172
+00:03:25,020 --> 00:03:26,110
+much is this thing
+
+173
+00:03:26,110 --> 00:03:27,180
+going to cost us in
+
+174
+00:03:27,180 --> 00:03:28,000
+the long run.
+
+175
+00:03:28,000 --> 00:03:28,840
+Because as our
+
+176
+00:03:28,840 --> 00:03:30,230
+platform grows, we are
+
+177
+00:03:30,230 --> 00:03:31,340
+likely to store more
+
+178
+00:03:31,340 --> 00:03:32,570
+videos, serve more
+
+179
+00:03:32,570 --> 00:03:33,780
+users, and consume
+
+180
+00:03:33,780 --> 00:03:34,900
+more bandwidth.
+
+181
+00:03:34,900 --> 00:03:35,900
+All of this can
+
+182
+00:03:35,900 --> 00:03:37,650
+significantly increase
+
+183
+00:03:37,650 --> 00:03:39,370
+our cloud expenses.
+
+184
+00:03:39,370 --> 00:03:40,730
+A cloud engineer needs
+
+185
+00:03:40,730 --> 00:03:41,750
+to analyze all these
+
+186
+00:03:41,750 --> 00:03:43,090
+costs and identify
+
+187
+00:03:43,090 --> 00:03:43,870
+opportunities to
+
+188
+00:03:43,870 --> 00:03:45,000
+optimize them.
+
+189
+00:03:45,000 --> 00:03:46,160
+For example, they
+
+190
+00:03:46,160 --> 00:03:47,270
+might use AWS Cost
+
+191
+00:03:47,270 --> 00:03:48,780
+Explorer to examine
+
+192
+00:03:48,780 --> 00:03:49,700
+our cloud bills,
+
+193
+00:03:49,700 --> 00:03:51,390
+identify expensive
+
+194
+00:03:51,390 --> 00:03:52,100
+resources, and
+
+195
+00:03:52,100 --> 00:03:53,480
+forecast future
+
+196
+00:03:53,480 --> 00:03:54,690
+spending. They could
+
+197
+00:03:54,690 --> 00:03:55,880
+investigate whether
+
+198
+00:03:55,880 --> 00:03:57,120
+we're using oversized
+
+199
+00:03:57,120 --> 00:03:58,410
+EC2 instances or pay
+
+200
+00:03:58,410 --> 00:03:59,370
+for resources we no
+
+201
+00:03:59,370 --> 00:04:00,200
+longer need.
+
+202
+00:04:00,200 --> 00:04:01,260
+They might also move
+
+203
+00:04:01,260 --> 00:04:02,460
+videos that are rarely
+
+204
+00:04:02,460 --> 00:04:04,280
+accessed to cheaper S3
+
+205
+00:04:04,280 --> 00:04:05,850
+storage classes or
+
+206
+00:04:05,850 --> 00:04:07,240
+optimize our content
+
+207
+00:04:07,240 --> 00:04:08,630
+delivery costs.
+
+208
+00:04:08,630 --> 00:04:10,180
+The goal is to balance
+
+209
+00:04:10,180 --> 00:04:11,430
+costs, performance,
+
+210
+00:04:11,430 --> 00:04:12,800
+and reliability.
+
+211
+00:04:12,800 --> 00:04:14,410
+This is also related
+
+212
+00:04:14,410 --> 00:04:15,460
+to FinOps, which
+
+213
+00:04:15,460 --> 00:04:16,720
+focuses on managing
+
+214
+00:04:16,720 --> 00:04:18,050
+and optimizing cloud
+
+215
+00:04:18,050 --> 00:04:19,250
+spending. Cloud
+
+216
+00:04:19,250 --> 00:04:20,590
+engineers often
+
+217
+00:04:20,590 --> 00:04:21,440
+contribute to these
+
+218
+00:04:21,440 --> 00:04:22,940
+activities. Finally,
+
+219
+00:04:22,940 --> 00:04:24,080
+rather than creating
+
+220
+00:04:24,080 --> 00:04:25,040
+all these resources
+
+221
+00:04:25,040 --> 00:04:26,220
+manually, our cloud
+
+222
+00:04:26,220 --> 00:04:28,000
+engineer could use IAC
+
+223
+00:04:28,000 --> 00:04:29,130
+or infrastructure as
+
+224
+00:04:29,130 --> 00:04:30,630
+code tools, such as
+
+225
+00:04:30,630 --> 00:04:32,000
+Terraform or Pulumi,
+
+226
+00:04:32,000 --> 00:04:33,040
+to provision and
+
+227
+00:04:33,040 --> 00:04:33,990
+manage the
+
+228
+00:04:33,990 --> 00:04:35,130
+infrastructure.
+
+229
+00:04:35,130 --> 00:04:36,680
+Essentially, the cloud
+
+230
+00:04:36,680 --> 00:04:36,880
+engineer is
+
+231
+00:04:36,880 --> 00:04:37,750
+responsible for
+
+232
+00:04:37,750 --> 00:04:38,780
+building and
+
+233
+00:04:38,780 --> 00:04:39,550
+maintaining the cloud
+
+234
+00:04:39,550 --> 00:04:40,740
+environment. Our
+
+235
+00:04:40,740 --> 00:04:42,190
+platform needs to
+
+236
+00:04:42,190 --> 00:04:43,340
+operate securely,
+
+237
+00:04:43,340 --> 00:04:44,390
+reliably, and
+
+238
+00:04:44,390 --> 00:04:46,190
+cost-effectively. Now
+
+239
+00:04:46,190 --> 00:04:47,180
+let's take a look at
+
+240
+00:04:47,180 --> 00:04:48,500
+the DevOps engineer.
+
+241
+00:04:48,500 --> 00:04:49,380
+Our developers are
+
+242
+00:04:49,380 --> 00:04:50,330
+constantly writing
+
+243
+00:04:50,330 --> 00:04:51,250
+code and adding new
+
+244
+00:04:51,250 --> 00:04:51,910
+features to the
+
+245
+00:04:51,910 --> 00:04:53,180
+platform. But how do
+
+246
+00:04:53,180 --> 00:04:54,420
+we get those changes
+
+247
+00:04:54,420 --> 00:04:55,440
+into production
+
+248
+00:04:55,440 --> 00:04:56,820
+reliably? How do we
+
+249
+00:04:56,820 --> 00:04:57,990
+ensure to test and
+
+250
+00:04:57,990 --> 00:04:59,280
+maybe set up a staging
+
+251
+00:04:59,280 --> 00:05:00,760
+environment? This is
+
+252
+00:05:00,760 --> 00:05:01,600
+where the DevOps
+
+253
+00:05:01,600 --> 00:05:02,830
+engineer comes in.
+
+254
+00:05:02,830 --> 00:05:03,600
+One of their major
+
+255
+00:05:03,600 --> 00:05:04,690
+responsibilities is
+
+256
+00:05:04,690 --> 00:05:05,470
+automating the
+
+257
+00:05:05,470 --> 00:05:06,490
+software delivery
+
+258
+00:05:06,490 --> 00:05:07,860
+process. For example,
+
+259
+00:05:07,860 --> 00:05:08,960
+they might use tools
+
+260
+00:05:08,960 --> 00:05:10,290
+like GitHub Actions or
+
+261
+00:05:10,290 --> 00:05:11,680
+Jenkins to create
+
+262
+00:05:11,680 --> 00:05:13,340
+CI/CD pipelines that
+
+263
+00:05:13,340 --> 00:05:14,530
+automate building,
+
+264
+00:05:14,530 --> 00:05:15,990
+testing, and deploying
+
+265
+00:05:15,990 --> 00:05:17,200
+our application.
+
+266
+00:05:17,200 --> 00:05:18,250
+They could also use
+
+267
+00:05:18,250 --> 00:05:19,120
+configuration
+
+268
+00:05:19,120 --> 00:05:20,380
+management tools like
+
+269
+00:05:20,380 --> 00:05:21,820
+Ansible to automate
+
+270
+00:05:21,820 --> 00:05:22,900
+tasks such as
+
+271
+00:05:22,900 --> 00:05:24,400
+configuring servers,
+
+272
+00:05:24,400 --> 00:05:25,020
+installing
+
+273
+00:05:25,020 --> 00:05:26,110
+dependencies, and
+
+274
+00:05:26,110 --> 00:05:27,600
+preparing environments
+
+275
+00:05:27,600 --> 00:05:28,830
+for deployment.
+
+276
+00:05:28,830 --> 00:05:30,380
+Whenever a developer
+
+277
+00:05:30,380 --> 00:05:31,550
+pushes code to GitHub,
+
+278
+00:05:31,550 --> 00:05:32,810
+a CI/CD pipeline can
+
+279
+00:05:32,810 --> 00:05:34,320
+automatically install
+
+280
+00:05:34,320 --> 00:05:35,580
+dependencies, run
+
+281
+00:05:35,580 --> 00:05:36,960
+tests, and build the
+
+282
+00:05:36,960 --> 00:05:38,730
+application. Next, the
+
+283
+00:05:38,730 --> 00:05:40,070
+DevOps engineer might
+
+284
+00:05:40,070 --> 00:05:41,350
+use Docker to package
+
+285
+00:05:41,350 --> 00:05:42,630
+the applications and
+
+286
+00:05:42,630 --> 00:05:44,340
+its dependencies into
+
+287
+00:05:44,340 --> 00:05:45,450
+containers. Once the
+
+288
+00:05:45,450 --> 00:05:46,740
+Docker image is ready,
+
+289
+00:05:46,740 --> 00:05:47,900
+the pipeline can push
+
+290
+00:05:47,900 --> 00:05:48,930
+it to the container
+
+291
+00:05:48,930 --> 00:05:50,210
+registry and deploy it
+
+292
+00:05:50,210 --> 00:05:51,240
+to our cloud
+
+293
+00:05:51,240 --> 00:05:52,190
+infrastructure. But
+
+294
+00:05:52,190 --> 00:05:53,090
+what happens if a
+
+295
+00:05:53,090 --> 00:05:54,430
+deployment fails?
+
+296
+00:05:54,430 --> 00:05:55,520
+For example, every new
+
+297
+00:05:55,520 --> 00:05:56,250
+version of our
+
+298
+00:05:56,250 --> 00:05:57,430
+platform introduces a
+
+299
+00:05:57,430 --> 00:05:58,340
+bug, and we need a
+
+300
+00:05:58,340 --> 00:05:59,260
+way to roll back to
+
+301
+00:05:59,260 --> 00:06:00,700
+the previous version.
+
+302
+00:06:00,700 --> 00:06:01,920
+The DevOps engineer
+
+303
+00:06:01,920 --> 00:06:03,050
+can automate this
+
+304
+00:06:03,050 --> 00:06:03,920
+process using
+
+305
+00:06:03,920 --> 00:06:05,380
+deployment strategies
+
+306
+00:06:05,380 --> 00:06:06,170
+and rollback
+
+307
+00:06:06,170 --> 00:06:07,850
+mechanisms. They might
+
+308
+00:06:07,850 --> 00:06:09,220
+also configure health
+
+309
+00:06:09,220 --> 00:06:10,860
+checks, monitoring,
+
+310
+00:06:10,860 --> 00:06:11,860
+and alerting to help
+
+311
+00:06:11,860 --> 00:06:13,440
+identify deployment
+
+312
+00:06:13,440 --> 00:06:13,950
+failures and
+
+313
+00:06:13,950 --> 00:06:15,500
+application issues.
+
+314
+00:06:15,500 --> 00:06:16,550
+Another important
+
+315
+00:06:16,550 --> 00:06:17,610
+responsibility is
+
+316
+00:06:17,610 --> 00:06:18,400
+improving the
+
+317
+00:06:18,400 --> 00:06:20,030
+development workflow.
+
+318
+00:06:20,030 --> 00:06:21,590
+Instead of requiring
+
+319
+00:06:21,590 --> 00:06:22,650
+developers to manually
+
+320
+00:06:22,650 --> 00:06:23,980
+build and deploy every
+
+321
+00:06:23,980 --> 00:06:25,180
+update, the DevOps
+
+322
+00:06:25,180 --> 00:06:26,460
+engineer can automate
+
+323
+00:06:26,460 --> 00:06:27,800
+much of that process.
+
+324
+00:06:27,800 --> 00:06:29,490
+This allows developers
+
+325
+00:06:29,490 --> 00:06:30,550
+to focus more on
+
+326
+00:06:30,550 --> 00:06:32,010
+writing code and less
+
+327
+00:06:32,010 --> 00:06:33,000
+on repetitive
+
+328
+00:06:33,000 --> 00:06:34,600
+deployment tasks.
+
+329
+00:06:34,600 --> 00:06:36,240
+Ultimately, the goal
+
+330
+00:06:36,240 --> 00:06:37,350
+is to make software
+
+331
+00:06:37,350 --> 00:06:38,390
+delivery more
+
+332
+00:06:38,390 --> 00:06:39,990
+reliable, repeatable,
+
+333
+00:06:39,990 --> 00:06:41,300
+and efficient.
+
+334
+00:06:41,300 --> 00:06:42,020
+Now, here's where
+
+335
+00:06:42,020 --> 00:06:42,420
+things get
+
+336
+00:06:42,420 --> 00:06:43,610
+interesting. You might
+
+337
+00:06:43,610 --> 00:06:44,850
+have noticed that both
+
+338
+00:06:44,850 --> 00:06:45,960
+engineers work with
+
+339
+00:06:45,960 --> 00:06:47,250
+tools like Terraform,
+
+340
+00:06:47,250 --> 00:06:48,410
+Docker, monitoring
+
+341
+00:06:48,410 --> 00:06:49,520
+systems, and cloud
+
+342
+00:06:49,520 --> 00:06:50,890
+platforms. So where
+
+343
+00:06:50,890 --> 00:06:52,160
+exactly do we draw the
+
+344
+00:06:52,160 --> 00:06:53,490
+line? In reality,
+
+345
+00:06:53,490 --> 00:06:54,710
+there isn't always a
+
+346
+00:06:54,710 --> 00:06:56,000
+strict boundary.
+
+347
+00:06:56,000 --> 00:06:57,190
+For example, a cloud
+
+348
+00:06:57,190 --> 00:06:58,490
+engineer might create
+
+349
+00:06:58,490 --> 00:06:59,790
+EC2 instances and
+
+350
+00:06:59,790 --> 00:07:01,000
+networking resources,
+
+351
+00:07:01,000 --> 00:07:01,880
+while a DevOps
+
+352
+00:07:01,880 --> 00:07:03,200
+engineer configures
+
+353
+00:07:03,200 --> 00:07:04,360
+the CI/CD pipeline
+
+354
+00:07:04,360 --> 00:07:05,380
+that deploys the
+
+355
+00:07:05,380 --> 00:07:06,780
+applications to those
+
+356
+00:07:06,780 --> 00:07:08,510
+instances. However, a
+
+357
+00:07:08,510 --> 00:07:09,850
+DevOps engineer might
+
+358
+00:07:09,850 --> 00:07:11,100
+also use Terraform or
+
+359
+00:07:11,100 --> 00:07:12,310
+Pulumi to provision
+
+360
+00:07:12,310 --> 00:07:13,600
+the infrastructure,
+
+361
+00:07:13,600 --> 00:07:14,790
+and a cloud engineer
+
+362
+00:07:14,790 --> 00:07:15,770
+might configure
+
+363
+00:07:15,770 --> 00:07:17,400
+deployment automation.
+
+364
+00:07:17,400 --> 00:07:18,550
+Both might work with
+
+365
+00:07:18,550 --> 00:07:19,880
+Docker, Kubernetes,
+
+366
+00:07:19,880 --> 00:07:21,310
+logging, monitoring,
+
+367
+00:07:21,310 --> 00:07:22,400
+and security.
+
+368
+00:07:22,400 --> 00:07:23,470
+Even cost management
+
+369
+00:07:23,470 --> 00:07:24,300
+can overlap.
+
+370
+00:07:24,300 --> 00:07:25,370
+A DevOps engineer
+
+371
+00:07:25,370 --> 00:07:26,710
+might optimize CI/CD
+
+372
+00:07:26,710 --> 00:07:28,200
+infrastructure, while
+
+373
+00:07:28,200 --> 00:07:29,710
+a cloud engineer might
+
+374
+00:07:29,710 --> 00:07:31,590
+focus on overall cloud
+
+375
+00:07:31,590 --> 00:07:33,000
+infrastructure bill.
+
+376
+00:07:33,000 --> 00:07:34,470
+In smaller companies,
+
+377
+00:07:34,470 --> 00:07:35,300
+one engineer might
+
+378
+00:07:35,300 --> 00:07:36,620
+handle both roles.
+
+379
+00:07:36,620 --> 00:07:36,990
+In larger
+
+380
+00:07:36,990 --> 00:07:38,190
+organizations,
+
+381
+00:07:38,190 --> 00:07:39,100
+responsibilities are
+
+382
+00:07:39,100 --> 00:07:40,290
+more likely divided
+
+383
+00:07:40,290 --> 00:07:42,100
+among dedicated teams.
+
+384
+00:07:42,100 --> 00:07:43,100
+This is why job
+
+385
+00:07:43,100 --> 00:07:44,260
+descriptions can
+
+386
+00:07:44,260 --> 00:07:45,880
+sometimes make these
+
+387
+00:07:45,880 --> 00:07:46,900
+roles seem almost
+
+388
+00:07:46,900 --> 00:07:48,300
+identical. So which
+
+389
+00:07:48,300 --> 00:07:49,050
+role should you
+
+390
+00:07:49,050 --> 00:07:50,260
+pursue? If you enjoy
+
+391
+00:07:50,260 --> 00:07:51,330
+working with cloud
+
+392
+00:07:51,330 --> 00:07:52,710
+platforms, designing
+
+393
+00:07:52,710 --> 00:07:54,050
+networks, managing
+
+394
+00:07:54,050 --> 00:07:55,840
+servers, configuring
+
+395
+00:07:55,840 --> 00:07:56,470
+security, and
+
+396
+00:07:56,470 --> 00:07:57,060
+optimizing
+
+397
+00:07:57,060 --> 00:07:58,300
+infrastructure costs,
+
+398
+00:07:58,300 --> 00:07:59,290
+cloud engineering
+
+399
+00:07:59,290 --> 00:08:00,500
+might interest you.
+
+400
+00:08:00,500 --> 00:08:01,260
+If you enjoy
+
+401
+00:08:01,260 --> 00:08:02,570
+automation, CI/CD
+
+402
+00:08:02,570 --> 00:08:04,280
+pipelines, Docker
+
+403
+00:08:04,280 --> 00:08:05,630
+deployment workflows,
+
+404
+00:08:05,630 --> 00:08:06,490
+and improving how
+
+405
+00:08:06,490 --> 00:08:07,250
+software gets
+
+406
+00:08:07,250 --> 00:08:08,350
+delivered, DevOps
+
+407
+00:08:08,350 --> 00:08:09,420
+engineering might be
+
+408
+00:08:09,420 --> 00:08:10,400
+more appealing.
+
+409
+00:08:10,400 --> 00:08:11,260
+However, you don't
+
+410
+00:08:11,260 --> 00:08:12,170
+have to choose one and
+
+411
+00:08:12,170 --> 00:08:13,100
+ignore the other.
+
+412
+00:08:13,100 --> 00:08:13,920
+Learning cloud
+
+413
+00:08:13,920 --> 00:08:15,390
+infrastructure, Linux,
+
+414
+00:08:15,390 --> 00:08:16,880
+networking, Terraform,
+
+415
+00:08:16,880 --> 00:08:18,360
+Docker, and CI/CD will
+
+416
+00:08:18,360 --> 00:08:19,650
+give you skills that
+
+417
+00:08:19,650 --> 00:08:20,430
+are useful in both
+
+418
+00:08:20,430 --> 00:08:21,990
+roles. You could also
+
+419
+00:08:21,990 --> 00:08:23,600
+explore related fields
+
+420
+00:08:23,600 --> 00:08:24,790
+like platform
+
+421
+00:08:24,790 --> 00:08:25,830
+engineering, site
+
+422
+00:08:25,830 --> 00:08:26,660
+reliability
+
+423
+00:08:26,660 --> 00:08:27,920
+engineering, as you
+
+424
+00:08:27,920 --> 00:08:29,000
+gain experience.
+
+425
+00:08:29,000 --> 00:08:30,690
+To summarize, cloud
+
+426
+00:08:30,690 --> 00:08:31,650
+engineers primarily
+
+427
+00:08:31,650 --> 00:08:32,370
+focus on the
+
+428
+00:08:32,370 --> 00:08:33,760
+infrastructure that
+
+429
+00:08:33,760 --> 00:08:35,430
+applications run on.
+
+430
+00:08:35,430 --> 00:08:36,990
+Including provisioning
+
+431
+00:08:36,990 --> 00:08:38,070
+resources, managing
+
+432
+00:08:38,070 --> 00:08:39,460
+security, optimizing
+
+433
+00:08:39,460 --> 00:08:40,560
+performance, and
+
+434
+00:08:40,560 --> 00:08:41,670
+controlling cloud
+
+435
+00:08:41,670 --> 00:08:42,640
+costs. DevOps
+
+436
+00:08:42,640 --> 00:08:43,540
+engineers, on the
+
+437
+00:08:43,540 --> 00:08:44,970
+other hand, primarily
+
+438
+00:08:44,970 --> 00:08:46,300
+focus on automating
+
+439
+00:08:46,300 --> 00:08:47,300
+and improving the
+
+440
+00:08:47,300 --> 00:08:48,800
+processes used to
+
+441
+00:08:48,800 --> 00:08:50,530
+build tests, deploy,
+
+442
+00:08:50,530 --> 00:08:51,190
+and operate
+
+443
+00:08:51,190 --> 00:08:52,530
+applications. Their
+
+444
+00:08:52,530 --> 00:08:53,940
+responsibilities often
+
+445
+00:08:53,940 --> 00:08:55,070
+overlap, but their
+
+446
+00:08:55,070 --> 00:08:56,130
+main areas of focus
+
+447
+00:08:56,130 --> 00:08:57,200
+are different.
+
+448
+00:08:57,200 --> 00:08:57,920
+If you found this
+
+449
+00:08:57,920 --> 00:08:58,920
+video helpful, don't
+
+450
+00:08:58,920 --> 00:09:00,040
+forget to like, share,
+
+451
+00:09:00,040 --> 00:09:00,980
+and subscribe for
+
+452
+00:09:00,980 --> 00:09:01,720
+more. Thanks for
+
+453
+00:09:01,720 --> 00:09:02,780
+watching, and I'll see
+
+454
+00:09:02,780 --> 00:09:04,500
+you in the next one.

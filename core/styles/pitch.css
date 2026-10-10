@@ -1,0 +1,183 @@
+/* "Pitch" theme: scoped to #stage.theme-pitch (PROJECT.theme = 'pitch').
+   Built for projects/how-many-engineers: how many engineers a startup needs, told as a team sheet.
+
+   The ground is a floodlit football pitch at night: mown stripes, a chalk halfway line and centre circle. Every
+   engineer is a numbered jersey card (kit.js, window.TS) and every stage of the company is a formation. Type is
+   chalk white; lime (#C6F24E) is the one saturated colour that means "the team", and red is the referee's card
+   for anything that goes wrong. Jersey numerals are Anton, the only condensed face in assets/fonts, so a number
+   on this deck never looks like a number on any other deck.
+
+   Surfaces are flat dark-green card stock with a 2px chalk hairline and a lime top stitch, 14px corners. No
+   `filter: blur()` and no `backdrop-filter` (aurora.css records the 4K capture cost); every glow is a gradient. */
+
+@font-face{font-family:AN;src:url(../../assets/fonts/Anton-Regular.woff2)format('woff2');font-weight:400;font-display:block}
+
+#stage.theme-pitch{
+  --bg0:#062016; --bg1:#0C2E21; --bg2:#113A2A; --bd:#1D4A37; --bd2:#2A5E47;
+  --tx:#F3F7EE; --tx2:#B4C9BB; --tx3:#7A988A;
+  --lime:#C6F24E; --chalk:#F3F7EE;
+  --teal:#5EEAD4; --violet:#B69CFF; --green:#C6F24E; --rose:#FF5468; --amber:#FFC53D; --blue:#62C6FF; --orange:#FF7A45;
+  background:#062016;
+}
+/* an alpha capture must clear the stage, or every reveal in scripts/dual-render.js renders green:
+   #stage.theme-pitch (1,1,0 + element) outranks base.css's #stage.transparent */
+#stage.theme-pitch.transparent{background:transparent}
+
+/* ---------- ground: mown stripes, halfway line, centre circle, floodlights ---------- */
+#stage.theme-pitch .bgfx .grid{
+  opacity:1;
+  background-image:repeating-linear-gradient(0deg,rgba(255,255,255,.028) 0 150px,transparent 150px 300px);
+  background-size:auto;
+}
+#stage.theme-pitch .bgfx .glow.a{background:radial-gradient(60% 34% at 12% 0%,rgba(230,255,200,.13),transparent 70%)}
+#stage.theme-pitch .bgfx .glow.b{background:radial-gradient(60% 34% at 88% 0%,rgba(230,255,200,.10),transparent 70%)}
+#stage.theme-pitch .bgfx .vig{
+  background:
+    radial-gradient(circle at 50% 1520px,transparent 238px,rgba(243,247,238,.09) 239px 243px,transparent 244px),
+    radial-gradient(circle at 50% 1520px,rgba(243,247,238,.12) 0 9px,transparent 10px),
+    linear-gradient(180deg,transparent 1518px,rgba(243,247,238,.09) 1518px 1522px,transparent 1522px),
+    linear-gradient(90deg,transparent 40px,rgba(243,247,238,.07) 40px 43px,transparent 43px calc(100% - 43px),rgba(243,247,238,.07) calc(100% - 43px) calc(100% - 40px),transparent calc(100% - 40px)),
+    radial-gradient(130% 100% at 50% 40%,transparent 50%,rgba(0,0,0,.62));
+}
+
+/* ---------- surfaces: card stock with a lime top stitch ---------- */
+#stage.theme-pitch .panel,#stage.theme-pitch .cmp,#stage.theme-pitch .cbar,#stage.theme-pitch .badge.note,
+#stage.theme-pitch .ts-panel{
+  background:linear-gradient(180deg,#0F3526,#0B2B1F);
+  border:2px solid var(--bd2);
+  border-top:4px solid var(--edge,var(--bd2));
+  border-radius:14px;
+  box-shadow:0 26px 60px rgba(0,0,0,.5);
+}
+#stage.theme-pitch .panel.g,#stage.theme-pitch .cmp.g,#stage.theme-pitch .ts-panel.g{--edge:var(--lime)}
+#stage.theme-pitch .panel.r,#stage.theme-pitch .cmp.r,#stage.theme-pitch .ts-panel.r{--edge:var(--rose)}
+#stage.theme-pitch .panel.a,#stage.theme-pitch .cmp.a,#stage.theme-pitch .ts-panel.a{--edge:var(--amber)}
+#stage.theme-pitch .panel.v,#stage.theme-pitch .cmp.v,#stage.theme-pitch .ts-panel.v{--edge:var(--violet)}
+#stage.theme-pitch .panel.b,#stage.theme-pitch .cmp.b,#stage.theme-pitch .ts-panel.b{--edge:var(--blue)}
+#stage.theme-pitch .panel.o,#stage.theme-pitch .cmp.o,#stage.theme-pitch .ts-panel.o{--edge:var(--orange)}
+#stage.theme-pitch .cmp .lb{font:700 24px JB;letter-spacing:.16em;color:var(--tx3)}
+#stage.theme-pitch .cmp.g .lb{color:var(--lime)} #stage.theme-pitch .cmp.r .lb{color:var(--rose)}
+#stage.theme-pitch .cmp.v .lb{color:var(--violet)} #stage.theme-pitch .cmp.a .lb{color:var(--amber)}
+#stage.theme-pitch .cmp .qt{font:900 50px ID;letter-spacing:-.02em;line-height:1.08}
+#stage.theme-pitch .strike path,#stage.theme-pitch svg.strike path{stroke:var(--rose)}
+
+/* ---------- type ---------- */
+/* the eyebrow is a kit tag: a lime pill with the section in mono */
+#stage.theme-pitch .eyebrow{
+  font:700 calc(var(--eb-size) * .82) JB;letter-spacing:.2em;padding:10px 18px 9px;border-radius:8px;
+  color:#062016;background:var(--lime);
+}
+#stage.theme-pitch .eyebrow.r{background:var(--rose);color:#fff} #stage.theme-pitch .eyebrow.a{background:var(--amber)}
+#stage.theme-pitch .eyebrow.v{background:var(--violet)} #stage.theme-pitch .eyebrow.b{background:var(--blue)}
+#stage.theme-pitch .eyebrow.o{background:var(--orange);color:#fff} #stage.theme-pitch .eyebrow.g{background:var(--lime)}
+#stage.theme-pitch .h1{font-weight:900;letter-spacing:-.03em;line-height:1.02}
+#stage.theme-pitch .h1 em{background-size:calc(var(--ul,0) * 100%) .09em;background-position:0 97%}
+#stage.theme-pitch .foot{font:500 var(--foot-size) Inter;color:var(--tx3)}
+#stage.theme-pitch .sub{color:var(--tx2)}
+
+/* ---------- badges, chips ---------- */
+#stage.theme-pitch .badge{
+  font:700 calc(28px * var(--ts,1)) JB;letter-spacing:.02em;border-radius:10px;padding:14px 22px;border-width:2px;
+}
+#stage.theme-pitch .badge.g{background:rgba(198,242,78,.12);border-color:var(--lime);color:#E4FBA8}
+#stage.theme-pitch .badge.r{background:rgba(255,84,104,.14);border-color:var(--rose);color:#FFC1C9}
+#stage.theme-pitch .badge.a{background:rgba(255,197,61,.12);border-color:var(--amber);color:#FFE4A3}
+#stage.theme-pitch .badge.v{background:rgba(182,156,255,.12);border-color:var(--violet);color:#DDD0FF}
+#stage.theme-pitch .badge.b{background:rgba(98,198,255,.12);border-color:var(--blue);color:#C4E8FF}
+#stage.theme-pitch .badge.o{background:rgba(255,122,69,.14);border-color:var(--orange);color:#FFD0BD}
+#stage.theme-pitch .badge.n{background:var(--bg2);border-color:var(--bd2);color:var(--tx2)}
+#stage.theme-pitch .chip{border-radius:10px;background:var(--bg2);border-color:var(--bd2)}
+#stage.theme-pitch .chip.g{background:rgba(198,242,78,.12);border-color:var(--lime);color:#E4FBA8}
+
+/* ---------- chart columns (core/components/cost-chart.js) ---------- */
+#stage.theme-pitch .cbar .col i{border-radius:6px 6px 0 0;background:var(--bd2)}
+#stage.theme-pitch .cbar .col i.g{background:linear-gradient(180deg,#DDFB86,var(--lime))}
+#stage.theme-pitch .cbar .col i.d{background:linear-gradient(180deg,#3E6E58,#2A5E47)}
+#stage.theme-pitch .cbar .col i.r{background:linear-gradient(180deg,#FF8A98,var(--rose))}
+#stage.theme-pitch .cbar .col i.a{background:linear-gradient(180deg,#FFD979,var(--amber))}
+#stage.theme-pitch .cbar .col em{font:400 34px AN;letter-spacing:.02em;color:var(--tx)}
+
+/* ---------- burned-in captions: a chalk board strip ---------- */
+#stage.theme-pitch .caps{background:rgba(4,22,15,.86);border-color:rgba(243,247,238,.18);border-radius:14px}
+#stage.theme-pitch .caps span.now{color:var(--lime)}
+
+/* ============================================================================
+   Deck figures (projects/how-many-engineers/kit.js, window.TS)
+   ============================================================================ */
+#stage.theme-pitch .an{font-family:AN;font-weight:400;letter-spacing:.01em;line-height:.9}
+
+/* the player card: a jersey tile with a big numeral and a role underneath */
+#stage.theme-pitch .ts-card{
+  position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;
+  background:linear-gradient(180deg,#123D2C,#0B2B1F);border:2px solid var(--bd2);border-radius:16px;
+  box-shadow:0 20px 44px rgba(0,0,0,.5);overflow:hidden;
+}
+#stage.theme-pitch .ts-card::before{   /* the collar */
+  content:'';position:absolute;left:50%;top:0;width:34%;height:14px;margin-left:-17%;border-radius:0 0 40px 40px;background:var(--kc,var(--lime));
+}
+#stage.theme-pitch .ts-card .no{font:400 var(--ns,120px) AN;line-height:.9;color:var(--kc,var(--lime))}
+#stage.theme-pitch .ts-card .rl{font:700 24px JB;letter-spacing:.1em;text-transform:uppercase;color:var(--tx2);text-align:center;line-height:1.3;padding:0 10px}
+#stage.theme-pitch .ts-card.lit{border-color:var(--kc,var(--lime));box-shadow:0 20px 44px rgba(0,0,0,.5),0 0 60px rgba(198,242,78,.16)}
+#stage.theme-pitch .ts-card.off{border-style:dashed}
+#stage.theme-pitch .ts-card.off .no{color:var(--tx3)}
+#stage.theme-pitch .ts-card.r{--kc:var(--rose)} #stage.theme-pitch .ts-card.o{--kc:var(--orange)}
+#stage.theme-pitch .ts-card.v{--kc:var(--violet)} #stage.theme-pitch .ts-card.b{--kc:var(--blue)} #stage.theme-pitch .ts-card.a{--kc:var(--amber)}
+#stage.theme-pitch .ts-card img.lg{position:absolute;right:16px;top:22px;width:46px;height:46px;border-radius:12px;background:#fff;padding:7px}
+
+/* the roster dot: one person in a headcount */
+#stage.theme-pitch .ts-dot{position:absolute;border-radius:50%;background:#1E5440;border:3px solid #2E6E55;display:grid;place-items:center;font:400 34px AN;color:var(--tx3)}
+#stage.theme-pitch .ts-dot.on{background:var(--lime);border-color:#E4FBA8;color:#062016}
+
+/* the stamp: slams in rotated, like a referee's mark on the sheet */
+#stage.theme-pitch .ts-stamp{
+  position:absolute;font:400 64px AN;letter-spacing:.06em;padding:8px 26px 4px;border:6px solid currentColor;border-radius:12px;
+  color:var(--lime);background:rgba(6,32,22,.55);text-transform:uppercase;white-space:nowrap;
+}
+#stage.theme-pitch .ts-stamp.r{color:var(--rose)}
+
+/* the stage rail: three steps of a season */
+#stage.theme-pitch .ts-rail{position:absolute;left:0;display:flex;gap:14px}
+#stage.theme-pitch .ts-rail .st{
+  flex:1;height:84px;border-radius:12px;background:var(--bg1);border:2px solid var(--bd);display:flex;align-items:center;gap:14px;padding:0 20px;
+  font:700 24px JB;letter-spacing:.06em;text-transform:uppercase;color:var(--tx3);white-space:nowrap;
+}
+#stage.theme-pitch .ts-rail .st b{font:400 40px AN;color:var(--tx3)}
+#stage.theme-pitch .ts-rail .st.done{border-color:var(--bd2);color:var(--tx2)} #stage.theme-pitch .ts-rail .st.done b{color:var(--tx2)}
+#stage.theme-pitch .ts-rail .st.now{background:rgba(198,242,78,.12);border-color:var(--lime);color:#E4FBA8} #stage.theme-pitch .ts-rail .st.now b{color:var(--lime)}
+
+/* the big range numeral on a stage slide */
+#stage.theme-pitch .ts-big{position:absolute;font:400 300px AN;line-height:.86;color:var(--lime);white-space:nowrap}
+#stage.theme-pitch .ts-big small{font-size:.34em;color:var(--tx2);margin-left:18px;letter-spacing:.04em}
+
+/* horizontal bars with a zero line (diverging) and plain load bars */
+#stage.theme-pitch .ts-hb{position:absolute;left:0}
+#stage.theme-pitch .ts-hb .lb{position:absolute;left:0;font:600 30px Inter;color:var(--tx2)}
+#stage.theme-pitch .ts-hb .tr{position:absolute;left:0;height:52px;border-radius:8px;background:rgba(0,0,0,.25);border:1px solid var(--bd)}
+#stage.theme-pitch .ts-hb .fl{position:absolute;top:0;bottom:0;border-radius:6px;transform:scaleX(0)}
+#stage.theme-pitch .ts-hb .fl.g{background:linear-gradient(90deg,#9ED62A,var(--lime))}
+#stage.theme-pitch .ts-hb .fl.r{background:linear-gradient(270deg,#C9303F,var(--rose))}
+#stage.theme-pitch .ts-hb .fl.a{background:linear-gradient(270deg,#D99A12,var(--amber))}
+#stage.theme-pitch .ts-hb .fl.d{background:#3E6E58}
+#stage.theme-pitch .ts-hb .vl{position:absolute;font:400 46px AN;color:var(--tx)}
+#stage.theme-pitch .ts-zero{position:absolute;width:3px;background:var(--chalk);opacity:.5}
+
+/* the pull request mock */
+#stage.theme-pitch .ts-pr{position:absolute;border-radius:14px;background:#0D1117;border:2px solid #30363D;overflow:hidden;box-shadow:0 26px 60px rgba(0,0,0,.55)}
+#stage.theme-pitch .ts-pr .hd{padding:24px 28px;border-bottom:2px solid #30363D;display:flex;align-items:center;gap:16px;font:700 32px Inter;color:#E6EDF3}
+#stage.theme-pitch .ts-pr .hd .pill{font:600 24px Inter;padding:8px 16px;border-radius:30px;background:#238636;color:#fff}
+#stage.theme-pitch .ts-pr .dl{font:700 26px JB;padding:16px 28px;color:#7D8590;border-bottom:1px solid #21262D}
+#stage.theme-pitch .ts-pr .dl .ad{color:#3FB950} #stage.theme-pitch .ts-pr .dl .rm{color:#F85149}
+#stage.theme-pitch .ts-pr .fr{font:400 25px JB;padding:12px 28px;color:#9DA7B3;display:flex;gap:18px;white-space:nowrap}
+#stage.theme-pitch .ts-pr .fr .ad{color:#3FB950;margin-left:auto}
+
+/* the dial */
+#stage.theme-pitch .ts-dial{position:absolute}
+#stage.theme-pitch .ts-dial .ar{position:absolute;inset:0}
+#stage.theme-pitch .ts-dial .nd{position:absolute;left:50%;bottom:0;width:10px;margin-left:-5px;border-radius:6px;transform-origin:50% 100%;background:var(--chalk)}
+#stage.theme-pitch .ts-dial .hub{position:absolute;left:50%;bottom:-18px;width:36px;height:36px;margin-left:-18px;border-radius:50%;background:var(--chalk)}
+#stage.theme-pitch .ts-dial .cap{position:absolute;left:0;right:0;text-align:center;font:700 26px JB;letter-spacing:.12em;text-transform:uppercase;color:var(--tx2)}
+#stage.theme-pitch .ts-dial .val{position:absolute;left:0;right:0;text-align:center;font:900 44px ID;color:var(--tx)}
+
+/* line chart (two series) */
+#stage.theme-pitch .ts-ln text{font:700 26px JB;fill:var(--tx2)}
+#stage.theme-pitch .ts-ln .ax{stroke:rgba(243,247,238,.25);stroke-width:2}

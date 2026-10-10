@@ -1,0 +1,172 @@
+/* "dusk" theme (PROJECT.theme = 'dusk'), built for projects/deno-is-dying.
+   The video is an ending told gently, so the ground is a sunset that runs the whole length of the deck: a low sun
+   (rose into amber) sinks toward one horizon line as the absolute timeline advances (kit.js drives it from bgFrame),
+   under a plum sky with a few fixed stars. Things that end fall below that horizon or are stamped; Cloudflare keeps
+   its own orange. Flat warm panels, 14px corners, hairline borders, an inner top highlight. No filter: blur() and no
+   backdrop-filter (4K capture cost, see aurora.css); every glow is a gradient.
+   Wire nodes (wire.css) and the cast/sticker styles (lanes.css) are linked by the project and re-skinned here.
+   The bottom of the file holds the project's two templates (eol, post) and version B's over/split layouts. */
+#stage.theme-dusk{
+  --bg0:#120B14; --bg1:#1C1320; --bg2:#26192A; --bd:#3A2836; --bd2:#57404F;
+  --tx:#FBF4EE; --tx2:#CDB9B5; --tx3:#8E7682;
+  --rose:#FF6F7D; --amber:#FFB54C; --orange:#F6821F; --green:#7DDBA3; --violet:#B79BFF; --teal:#62D6C6; --blue:#7CC4FF;
+  --wire:#F6821F; --wire2:rgba(246,130,31,.16);
+  --sun:#FF8A5B;
+  background:#120B14;
+}
+#stage.theme-dusk.transparent{background:transparent}   /* alpha captures (dual's over windows) must stay clear */
+
+/* ---------- ground: sky, a sinking sun, one horizon ---------- */
+#stage.theme-dusk .bgfx .grid{inset:0;transform:none!important;opacity:1;
+  background-image:
+    radial-gradient(circle,rgba(255,236,220,.55) 1.2px,transparent 1.8px),
+    radial-gradient(circle,rgba(255,236,220,.30) 1px,transparent 1.5px);
+  background-size:331px 247px,173px 211px;background-position:41px 23px,97px 131px;
+  -webkit-mask-image:linear-gradient(#000,rgba(0,0,0,.4) 45%,transparent 70%);mask-image:linear-gradient(#000,rgba(0,0,0,.4) 45%,transparent 70%)}
+#stage.theme-dusk .bgfx .glow.a{background:radial-gradient(90% 55% at 50% 86%,rgba(120,40,70,.55),rgba(60,24,46,.35) 45%,transparent 75%)}
+#stage.theme-dusk .bgfx .glow.b{background:radial-gradient(42% 26% at 50% 82%,rgba(255,138,91,.20),transparent 72%)}
+#stage.theme-dusk .bgfx .vig{background:radial-gradient(120% 100% at 50% 42%,transparent 56%,rgba(0,0,0,.55))}
+#stage.theme-dusk .bgfx .sun{position:absolute;left:50%;top:0;width:440px;height:440px;margin-left:-220px;border-radius:50%;
+  background:radial-gradient(circle at 50% 40%,#FFD08A 0%,#FF9A5C 38%,#FF6F7D 66%,rgba(255,111,125,0) 71%);opacity:.42}
+#stage.theme-dusk .bgfx .hz{position:absolute;left:0;right:0;top:886px;height:200px;
+  background:linear-gradient(180deg,#160D16,#100A12);border-top:1.5px solid rgba(255,170,130,.30)}
+#stage.theme-dusk .bgfx .hz::before{content:"";position:absolute;inset:0;
+  background:repeating-linear-gradient(180deg,rgba(255,170,130,.07) 0 1.5px,transparent 1.5px 18px);
+  -webkit-mask-image:linear-gradient(#000,transparent 80%);mask-image:linear-gradient(#000,transparent 80%)}
+
+/* the 9:16 canvas (the social cuts): the horizon sits low, just above the caption band, under a bigger sun */
+#stage.theme-dusk.canvas-vertical .bgfx .sun{width:640px;height:640px;margin-left:-320px}
+#stage.theme-dusk.canvas-vertical .bgfx .hz{top:1480px;height:440px}
+#stage.theme-dusk.canvas-vertical .bgfx .glow.a{background:radial-gradient(110% 40% at 50% 78%,rgba(120,40,70,.55),rgba(60,24,46,.35) 45%,transparent 75%)}
+#stage.theme-dusk.canvas-vertical .bgfx .glow.b{background:radial-gradient(60% 20% at 50% 76%,rgba(255,138,91,.20),transparent 72%)}
+
+/* burned-in captions (the social cuts): the base box wraps at 540px and strands a lone last word on its own line */
+#stage.theme-dusk .caps{width:max-content}
+
+/* ---------- type ---------- */
+#stage.theme-dusk .eyebrow{font-family:JB;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+#stage.theme-dusk .h1{letter-spacing:-.03em}
+
+/* ---------- surfaces ---------- */
+#stage.theme-dusk .panel,#stage.theme-dusk .cmp,#stage.theme-dusk .code,#stage.theme-dusk .node,#stage.theme-dusk .chk,
+#stage.theme-dusk .card,#stage.theme-dusk .rowbar,#stage.theme-dusk .mcard,#stage.theme-dusk .wr-n{
+  background:linear-gradient(180deg,rgba(255,240,230,.05),rgba(255,240,230,0) 45%),#1C1320;
+  border:1.5px solid var(--bd2);border-radius:14px;box-shadow:0 24px 56px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,240,230,.06)}
+#stage.theme-dusk .badge{border-radius:10px}
+/* a brand mark inside a badge or a panel label (s23 Tailwind CSS, s10 GitHub): on a light chip so a dark mark reads */
+#stage.theme-dusk .badge .bdi{height:1.15em;width:1.15em;padding:.14em;margin-right:.45em;border-radius:.22em;background:#FBF4EE;vertical-align:-.28em;box-sizing:border-box}
+#stage.theme-dusk .cmp .lb:has(.lbi){display:flex;align-items:center}
+#stage.theme-dusk .lb .lbi{height:1.5em;width:1.5em;padding:.18em;margin-right:.5em;border-radius:.25em;background:#FBF4EE;vertical-align:-.45em;box-sizing:border-box}
+#stage.theme-dusk .wr-n .wr-tag{border-bottom-color:var(--bd)}
+#stage.theme-dusk .wr-n .wr-ic.gl{background:#26192A}
+#stage.theme-dusk .wr-n.hub .wr-tag{background:#2C170C;color:#FFC79A;border-bottom-color:rgba(246,130,31,.45)}
+#stage.theme-dusk .wr-n.ok{border-color:rgba(125,219,163,.75)}
+#stage.theme-dusk .wr-n.ok .wr-tag{background:#12241B;color:#BDEFD2;border-bottom-color:rgba(125,219,163,.4)}
+#stage.theme-dusk .wr-n.ai{border-color:rgba(255,181,76,.7)}
+#stage.theme-dusk .wr-n.ai .wr-tag{background:#2A1E0C;color:#FFDCA6}
+#stage.theme-dusk .wr-el{background:#120B14}
+#stage.theme-dusk .wr-gh{border-color:var(--bd2)}
+#stage.theme-dusk .cst-card{border-radius:18px}
+
+/* ---------- eol: the deadline track (kit.js) ---------- */
+.eol{position:absolute;left:0;top:0}
+.eol-ax{position:absolute;left:0;height:4px;border-radius:2px;background:var(--bd2);transform-origin:left center}
+.eol-mk{position:absolute;width:2px;background:rgba(255,240,230,.28);opacity:0}
+.eol-ml{position:absolute;transform:translateX(-50%);font:700 26px JB;color:var(--tx2);white-space:nowrap;letter-spacing:.02em}
+.eol-ml b{display:block;font:800 40px ID;color:var(--tx);letter-spacing:-.02em;text-align:center}
+.eol-mk.now .eol-ml b{color:var(--tx2)}
+.eol-ln{position:absolute;left:0;height:118px;opacity:0}
+.eol-lb{position:absolute;left:0;top:-44px;font:700 24px JB;letter-spacing:.12em;text-transform:uppercase;color:var(--tx2);white-space:nowrap}
+.eol-bar{position:absolute;left:0;top:0;height:84px;border-radius:12px;overflow:hidden;
+  background:color-mix(in srgb,var(--lc) 14%,#1C1320);border:2px solid color-mix(in srgb,var(--lc) 70%,transparent)}
+.eol-bar .fl{position:absolute;left:0;top:0;bottom:0;width:100%;transform-origin:left center;
+  background:linear-gradient(90deg,color-mix(in srgb,var(--lc) 34%,transparent),color-mix(in srgb,var(--lc) 18%,transparent))}
+.eol-bar .nm{position:absolute;z-index:2;text-shadow:0 2px 8px rgba(18,11,20,.95);left:22px;top:0;bottom:0;display:flex;align-items:center;gap:14px;font:800 32px ID;color:var(--tx);white-space:nowrap}
+.eol-bar .nm img{width:40px;height:40px;border-radius:9px;background:#FBF4EE;padding:5px;box-sizing:border-box}
+.eol-tk{position:absolute;z-index:1;top:60px;bottom:8px;width:calc(var(--tw) - 8px);border-radius:6px;background:color-mix(in srgb,var(--lc) 55%,transparent);opacity:0}
+.eol-st{position:absolute;top:-6px;padding:10px 22px;border:5px solid var(--sc,var(--rose));border-radius:10px;
+  font:900 38px ID;letter-spacing:.03em;text-transform:uppercase;white-space:nowrap;color:var(--sc,var(--rose));
+  background:rgba(18,11,20,.92);opacity:0;transform-origin:50% 50%}
+.eol-cont{position:absolute;overflow:visible;opacity:0}
+.eol-cont path{fill:none;stroke:var(--tx3);stroke-width:4;stroke-dasharray:12 12;stroke-linecap:round}
+.eol-q{position:absolute;padding:14px 24px;border-radius:12px;border:2px dashed var(--tx3);font:800 34px ID;color:var(--tx);
+  background:rgba(18,11,20,.85);white-space:nowrap;opacity:0}
+.eol-chips{position:absolute;left:0;display:flex;gap:16px}
+.eol-chip{padding:12px 22px;border-radius:12px;font:700 28px Inter;color:var(--tx);background:#26192A;border:1.5px solid var(--bd2);opacity:0;white-space:nowrap}
+.eol-chip.a{border-color:rgba(255,181,76,.7);background:#2A1E0C}
+/* the compact pair version B shows over the face on the hook (only inside .ovs) */
+.eol-ovc{display:none}
+
+/* ---------- post: the deno.com announcement, recreated (kit.js) ---------- */
+.pst{position:absolute;left:0;top:0;border-radius:16px;overflow:hidden;background:#FFFFFF;box-shadow:0 30px 80px rgba(0,0,0,.6);opacity:0}
+.pst-bar{height:54px;background:#ECE9E6;display:flex;align-items:center;gap:10px;padding:0 20px}
+.pst-bar i{width:14px;height:14px;border-radius:50%;background:#D6D1CC}
+.pst-url{margin-left:18px;flex:1;height:34px;border-radius:9px;background:#FFFFFF;display:flex;align-items:center;padding:0 16px;
+  font:500 20px Inter;color:#5A5552}
+.pst-body{padding:46px 64px 50px;color:#111}
+.pst-nav{display:flex;align-items:center;gap:14px;font:700 22px Inter;color:#111;margin-bottom:34px}
+.pst-nav img{width:38px;height:38px}
+.pst-ttl{font:800 64px ID;letter-spacing:-.03em;line-height:1.04;color:#0B0B0B}
+.pst-by{display:flex;align-items:center;gap:14px;margin-top:22px;font:500 22px Inter;color:#555}
+.pst-by b{color:#111;font-weight:700}
+.pst-p{margin-top:30px;font:400 27px/1.5 Inter;color:#2A2A2A;position:relative}
+.pst-hl{position:relative;z-index:1}
+.pst-mark{position:absolute;z-index:0;background:rgba(255,181,76,.55);border-radius:4px;transform-origin:left center;transform:scaleX(0)}
+
+/* ---------- version B: over the face (ovs) and side by side (split) ----------
+   Scoped to the 16:9 canvas: on 9:16 (the social cuts lay these slides over a full-bleed face) base.css places them.
+   In an opaque capture (version A) none of this applies. ovs: heading and content stack down the left column over a
+   dark fade, the face (centre-right) stays clear. split: the slide shrinks into the right two thirds on its own plate;
+   dual-render lays the face crop on the left third. Copied from arena.css (projects/mobile-frameworks-2026). */
+#stage.transparent.canvas-horizontal .slide.ovs::before{content:"";position:absolute;left:0;top:0;width:820px;height:1080px;z-index:0;
+  background:linear-gradient(90deg,rgba(18,11,20,.92),rgba(18,11,20,.84) 62%,rgba(18,11,20,0))}
+#stage.transparent.canvas-horizontal .slide.ovs .eyebrow{left:60px!important;top:86px!important;width:620px!important;text-align:left;justify-content:flex-start}
+#stage.transparent.canvas-horizontal .slide.ovs .h1{left:60px!important;top:122px!important;width:620px!important;text-align:left;font-size:54px;line-height:1.06}
+#stage.transparent.canvas-horizontal .slide.ovs .content{left:60px!important;top:300px!important;width:620px!important;scale:.84;transform-origin:0 0}
+#stage.transparent.canvas-horizontal .slide.ovs .rel{display:flex;flex-direction:column;align-items:flex-start;gap:20px;width:620px!important;height:auto!important}
+/* every block drops into the column; only text blocks stretch to it. Logo tiles and stacks keep their own size (a
+   stretched .ltile came out as a white bar, an auto one squashed to the image), and the hero ring (anim.js ring(),
+   inserted after its element) stays absolute or it lands in the flow and pushes the next block down mid-hold. */
+#stage.transparent.canvas-horizontal .slide.ovs .rel>*:not(svg):not(.eol):not(.ring){position:relative!important;left:0!important;top:0!important;min-height:0!important;box-sizing:border-box}
+#stage.transparent.canvas-horizontal .slide.ovs .rel>*:not(svg):not(.eol):not(.ring):not(.ltile):not(.stack):not(.badge){width:620px!important;max-width:620px}
+#stage.transparent.canvas-horizontal .slide.ovs .rel:has(>.stack){flex-direction:row;flex-wrap:wrap;gap:26px}
+#stage.transparent.canvas-horizontal .slide.ovs .rel>.sub{text-align:left!important;font-size:28px}
+#stage.transparent.canvas-horizontal .slide.ovs .cmp .qt{font-size:40px}
+#stage.transparent .slide.ovs .fig{display:none}
+#stage.transparent .slide.ovs .eol{display:none}
+#stage.transparent .slide.ovs .eol-ovc{display:flex;flex-direction:column;gap:20px;position:relative!important}
+#stage.transparent.canvas-horizontal .slide.ovs .eol-ovc{width:620px}
+.eol-ovc .oc{display:flex;align-items:center;gap:20px;padding:22px 26px;border-radius:14px;background:#1C1320;border:2px solid var(--lc);opacity:0}
+.eol-ovc .oc b{font:900 64px ID;color:var(--lc);letter-spacing:-.03em;min-width:150px}
+.eol-ovc .oc span{font:700 30px Inter;color:var(--tx);line-height:1.2}
+.eol-ovc .oc small{display:block;font:600 22px JB;color:var(--tx2);margin-top:4px}
+/* scale .66 + 336px puts the slide's left edge just right of the 640px face third and its content inside 1862 */
+#stage.transparent.canvas-horizontal .slide.split{scale:.66;translate:336px 0;transform-origin:50% 50%}
+#stage.transparent.canvas-horizontal .slide.split::before{content:"";position:absolute;left:-34px;top:-300px;width:2200px;height:1700px;z-index:0;
+  background:linear-gradient(180deg,#1E1120,#120B14 70%);box-shadow:-10px 0 0 rgba(255,138,91,.85),-40px 0 80px rgba(0,0,0,.55)}
+
+/* ---------- 9:16 readability (the social cuts) ----------
+   Phone viewers read at arm's length: every text run renders at 28px or more after vfit (scripts/probe.js SMALL), and
+   anything over the sun gets full white and a shadow ("Runtime" under its tile read grey on rose). The sun is also
+   quieter here, since content sits in front of it. */
+#stage.theme-dusk.canvas-vertical .bgfx .sun{opacity:.30}
+#stage.theme-dusk.canvas-vertical .stack .nm{font-size:34px;color:var(--tx);text-shadow:0 2px 12px rgba(0,0,0,.9)}
+#stage.theme-dusk.canvas-vertical .eol-lb{font-size:30px}
+#stage.theme-dusk.canvas-vertical .eol-mk.now .eol-ml{transform:none}   /* "Today" starts on the axis, not half off the frame */
+#stage.theme-dusk.canvas-vertical .cmp .lb{font-size:34px}
+#stage.theme-dusk.canvas-vertical .wr-n .wr-tag{height:46px;font-size:28px}
+#stage.theme-dusk.canvas-vertical .wr-n .wr-b{height:calc(100% - 46px);padding:0 28px;gap:20px}   /* the body under the taller tag, with room either side */
+#stage.theme-dusk.canvas-vertical .wr-t small{font-size:26px}
+#stage.theme-dusk.canvas-vertical .wr-el{font-size:30px}
+#stage.theme-dusk.canvas-vertical .rel>.badge:not([id$="-neq"]){font-size:30px!important}
+#stage.theme-dusk.canvas-vertical .cst b{font-size:28px}
+#stage.theme-dusk.canvas-vertical .pst-url,#stage.theme-dusk.canvas-vertical .pst-nav,#stage.theme-dusk.canvas-vertical .pst-by{font-size:28px}
+#stage.theme-dusk.canvas-vertical .rel small{font-size:max(28px,1em)}
+/* the JavaScript mark is itself a yellow square: in a white tile it shrank to a blob, so it fills its tile edge to edge */
+#stage.theme-dusk.canvas-vertical .ltile:has(img[src*="javascript"]){background:#F7DF1E}
+#stage.theme-dusk.canvas-vertical .ltile img[src*="javascript"]{width:100%;height:100%}
+/* the track runs to the safe column's right edge on 9:16, so its end label and the "Community?" pill end on it instead of
+   centring past it */
+#stage.theme-dusk.canvas-vertical [id$="m12"] .eol-ml{transform:translateX(-100%)}
+#stage.theme-dusk.canvas-vertical [id$="m12"] .eol-ml b{text-align:right}
+#stage.theme-dusk.canvas-vertical .eol-q{left:auto!important;right:0}

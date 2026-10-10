@@ -1,0 +1,63 @@
+/* "Ink" theme (PROJECT.theme = 'ink'), built for projects/nue-js-runtime (Nub, nubjs.com).
+   Nub's own palette: warm black #100f0d and paper #faf7f0, monochrome, with one ember accent (#FF5B2E, the orange-red
+   of "augments" on the site's hero). Nothing else on the deck is saturated, so ember always means "this is Nub".
+   Paper hairlines and square-ish 12px corners; no grid, a single low ember field. No blur/backdrop-filter (4K capture
+   cost, see aurora.css). The .nk-* classes are the compact lower-third cards that sit over the A-roll (kit.js). */
+#stage.theme-ink{
+  --bg0:#100F0D; --bg1:#1A1815; --bg2:#23201C; --bd:#34302A; --bd2:#4A443B;
+  --tx:#FAF7F0; --tx2:#B9B2A6; --tx3:#7D766B;
+  --orange:#FF5B2E; --amber:#F2B45A; --green:#9BD48A; --rose:#F06A5A; --blue:#8DB6F0; --violet:#B9A2F0; --teal:#7FD6C8;
+  --ink-e:#FF5B2E;
+  background:#100F0D;
+}
+#stage.theme-ink.transparent{background:transparent}   /* (1,2,0) beats base.css's #stage.transparent: alpha captures need it */
+#stage.theme-ink .bgfx .grid{display:none}
+#stage.theme-ink .bgfx .glow.a{background:radial-gradient(70% 38% at 50% 104%,rgba(255,91,46,.13),transparent 70%)}
+#stage.theme-ink .bgfx .glow.b{background:radial-gradient(60% 30% at 50% -6%,rgba(250,247,240,.05),transparent 70%)}
+#stage.theme-ink .bgfx .vig{background:radial-gradient(120% 100% at 50% 45%,transparent 55%,rgba(0,0,0,.5))}
+#stage.theme-ink .eyebrow{font:700 var(--eb-size) JB;letter-spacing:.18em}
+#stage.theme-ink .h1{letter-spacing:-.03em}
+#stage.theme-ink .caps span.now{color:var(--ink-e)}
+#stage.theme-ink .node,#stage.theme-ink .rowbar,#stage.theme-ink .cmp,#stage.theme-ink .panel{background:var(--bg1);border:1.5px solid var(--bd);border-radius:12px;box-shadow:none}
+
+/* ---------- compact cards over the footage ---------- */
+#stage.theme-ink .nk-card{position:absolute;left:60px;width:960px;box-sizing:border-box;padding:30px 40px 34px;border-radius:24px;
+  background:rgba(16,15,13,.90);border:2px solid rgba(250,247,240,.16);box-shadow:0 24px 70px rgba(0,0,0,.45);overflow:hidden}
+#stage.theme-ink .nk-card::before{content:'';position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--ink-e)}
+#stage.theme-ink .nk-eb{font:700 24px JB;letter-spacing:.18em;text-transform:uppercase;color:var(--ink-e);margin-bottom:10px}
+#stage.theme-ink .nk-h1{font:800 54px ID;letter-spacing:-.03em;line-height:1.06;color:var(--tx)}
+#stage.theme-ink .nk-h1 em{font-style:normal;color:var(--ink-e)}
+#stage.theme-ink .nk-row{display:flex;flex-wrap:wrap;gap:14px;margin-top:22px;align-items:center}
+#stage.theme-ink .nk-chip{display:inline-flex;align-items:center;gap:12px;padding:12px 20px;border-radius:12px;font:600 30px Inter;color:var(--tx);
+  background:var(--bg2);border:1.5px solid var(--bd2);white-space:nowrap;position:relative}
+#stage.theme-ink .nk-chip.e{background:rgba(255,91,46,.14);border-color:var(--ink-e);color:var(--tx)}
+#stage.theme-ink .nk-chip.m{font:700 28px JB}
+#stage.theme-ink .nk-chip img{width:34px;height:34px}
+#stage.theme-ink .nk-chip .x{position:absolute;left:10px;right:10px;top:50%;height:4px;background:var(--ink-e);transform-origin:left center;transform:scaleX(0)}
+#stage.theme-ink .nk-code{font:500 30px JB;color:var(--tx2);line-height:1.5;margin-top:18px;white-space:pre}
+#stage.theme-ink .nk-code b{color:var(--tx);font-weight:700} #stage.theme-ink .nk-code i{font-style:normal;color:var(--ink-e)}
+#stage.theme-ink .nk-big{font:900 120px ID;letter-spacing:-.04em;color:var(--ink-e);line-height:1}
+#stage.theme-ink .nk-mark{width:64px;height:64px;border-radius:14px;background:#000;border:2px solid rgba(250,247,240,.5);display:inline-flex;align-items:center;justify-content:center}
+#stage.theme-ink .nk-mark img{width:44px;height:44px}
+
+/* ---------- letter tiles (slides 03, 04) ---------- */
+#stage.theme-ink .nk-tile{position:absolute;width:190px;height:220px;border-radius:22px;background:var(--bg1);border:3px solid var(--bd2);
+  display:flex;align-items:center;justify-content:center;font:900 150px ID;color:var(--tx);letter-spacing:0}
+#stage.theme-ink .nk-tile.e{border-color:var(--ink-e);color:var(--ink-e);background:rgba(255,91,46,.10)}
+
+/* ---------- layer stacks (slide 07) ---------- */
+#stage.theme-ink .nk-stack{position:absolute;width:440px}
+#stage.theme-ink .nk-lab{font:700 28px JB;letter-spacing:.16em;text-transform:uppercase;color:var(--tx3);margin-bottom:18px;text-align:center}
+#stage.theme-ink .nk-layer{height:120px;border-radius:16px;margin-top:14px;display:flex;align-items:center;justify-content:center;gap:16px;
+  font:700 36px ID;color:var(--tx);background:var(--bg1);border:2px solid var(--bd2)}
+#stage.theme-ink .nk-layer img{width:48px;height:48px}
+#stage.theme-ink .nk-layer.e{border-color:var(--ink-e);background:rgba(255,91,46,.12)}
+#stage.theme-ink .nk-layer.ghost{border-style:dashed;color:var(--tx3)}
+#stage.theme-ink .nk-lg{width:46px;height:46px;border-radius:11px;background:#FAF7F0;padding:7px;box-sizing:border-box;flex:none}
+#stage.theme-ink .nk-lg.k{background:#000;padding:0;border:1.5px solid rgba(250,247,240,.45)}
+#stage.theme-ink .nk-arrow{font:700 34px JB;color:var(--tx3)}
+#stage.theme-ink .nk-dim{opacity:.45}
+/* creator portraits (slides 02, 05): round, paper ring, sit on a row's right end or beside a headline */
+#stage.theme-ink .nk-face{position:absolute;border-radius:50%;object-fit:cover;border:4px solid #FAF7F0;box-shadow:0 10px 30px rgba(0,0,0,.45);background:var(--bg2)}
+#stage.theme-ink .nk-face.e{border-color:var(--ink-e)}
+#stage.theme-ink .nk-cap{position:absolute;font:600 22px JB;letter-spacing:.06em;color:var(--tx3);text-align:center}

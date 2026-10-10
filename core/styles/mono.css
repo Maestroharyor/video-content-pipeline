@@ -1,0 +1,35 @@
+/* "mono" theme (PROJECT.theme = 'mono'): pure black, JetBrains Mono uppercase labels, hairline panels, flat surfaces.
+   Scoped under #stage.theme-mono so the default look is untouched. */
+#stage.theme-mono{--bg0:#000;--bg1:#0C0D10;--bg2:#13151A;--bd:#24272E;--bd2:#2E323B;--tx:#F3F4F6;--tx2:#A3A8B3;--tx3:#6B7280;
+  --green:#8FD18F;--rose:#E07A73;--amber:#E8B25A;--blue:#6FB7F0;--violet:#A78BFA;--teal:#5FD3C4;--orange:#F5A340;background:#000}
+#stage.theme-mono .bgfx .grid{display:none} #stage.theme-mono .bgfx .glow{display:none} #stage.theme-mono .bgfx .vig{opacity:.5}
+#stage.theme-mono .eyebrow{font:700 var(--eb-size) JB;letter-spacing:.22em}
+#stage.theme-mono .h1{letter-spacing:-.025em}
+#stage.theme-mono .foot{font:400 var(--foot-size) JB;letter-spacing:.06em;text-transform:uppercase;color:var(--tx3)}
+#stage.theme-mono .sub{font:500 var(--sub-size) Inter;color:var(--tx2)}
+#stage.theme-mono .panel,#stage.theme-mono .cmp,#stage.theme-mono .cbar,#stage.theme-mono .code,#stage.theme-mono .node,#stage.theme-mono .chk,
+#stage.theme-mono .rowbar.big,#stage.theme-mono .bbox,#stage.theme-mono .badge.note,#stage.theme-mono .mcard{box-shadow:none;background:var(--bg1);border:1px solid var(--bd);border-radius:14px}
+#stage.theme-mono .cmp .lb{font:700 20px JB;letter-spacing:.18em;text-transform:uppercase;color:var(--tx3)}
+#stage.theme-mono .rowbar.big{font:600 30px Inter;font-size:calc(30px * var(--ts,1));color:var(--tx);border-radius:12px}
+#stage.theme-mono .rowbar.big .tail{font:700 20px JB;letter-spacing:.14em;text-transform:uppercase;color:var(--tx3);opacity:1}
+#stage.theme-mono .rowbar.g{border-color:var(--green);color:var(--green)} #stage.theme-mono .rowbar.r{border-color:var(--rose);color:var(--rose)}
+#stage.theme-mono .rowbar.a{border-color:var(--amber);color:var(--amber)} #stage.theme-mono .rowbar.b{border-color:var(--blue);color:var(--blue)}
+#stage.theme-mono .rowbar.v{border-color:var(--violet);color:var(--violet)} #stage.theme-mono .rowbar.t{border-color:var(--teal);color:var(--teal)}
+#stage.theme-mono .rowbar.g .tail,#stage.theme-mono .rowbar.r .tail,#stage.theme-mono .rowbar.a .tail,#stage.theme-mono .rowbar.b .tail,#stage.theme-mono .rowbar.v .tail{color:inherit;opacity:.8}
+#stage.theme-mono .badge{font:700 22px JB;font-size:calc(22px * var(--ts,1));letter-spacing:.14em;text-transform:uppercase;border-radius:8px;padding:12px 18px;border-width:1px;background:transparent}
+#stage.theme-mono .badge.t{border-color:var(--teal);color:var(--teal)} #stage.theme-mono .badge.v{border-color:var(--violet);color:var(--violet)}
+#stage.theme-mono .badge.r{border-color:var(--rose);color:var(--rose)} #stage.theme-mono .badge.g{border-color:var(--green);color:var(--green)}
+#stage.theme-mono .badge.a{border-color:var(--amber);color:var(--amber)} #stage.theme-mono .badge.b{border-color:var(--blue);color:var(--blue)}
+#stage.theme-mono .badge.o{border-color:var(--orange);color:var(--orange)} #stage.theme-mono .badge.n{border-color:var(--bd2);color:var(--tx2)}
+#stage.theme-mono .badge.note{font:500 30px Inter;font-size:calc(30px * var(--ts,1));letter-spacing:0;text-transform:none;color:var(--tx2);padding:24px 28px;border-radius:14px;background:var(--bg1)}
+#stage.theme-mono .ltile,#stage.theme-mono .hrow .ht,#stage.theme-mono .bbox .bl{box-shadow:none;border-radius:18px}
+#stage.theme-mono .stack .nm{font:700 22px JB;letter-spacing:.14em;text-transform:uppercase;color:var(--tx2)}
+#stage.theme-mono .hrow .hx i{font:600 22px JB;letter-spacing:.14em;text-transform:uppercase;color:var(--tx3)}
+#stage.theme-mono .chk .tx{font-weight:600} #stage.theme-mono .strike path{stroke:var(--rose)}
+/* mono overrides for the overlay backing and the cards template */
+#stage.theme-mono .ovl-card{background:rgba(6,7,9,.92);border:1px solid var(--bd2);border-radius:22px;box-shadow:none}
+#stage.theme-mono .ovl-card.frame{background:transparent;border:1px dashed #3B4048;border-radius:0}
+#stage.theme-mono .ovl-card.frame i{border-color:#8FD18F}
+#stage.theme-mono .mcard{box-shadow:none;border:1px solid var(--bd);border-radius:14px}
+#stage.theme-mono .mcard .mh b{font:700 24px JB;letter-spacing:.14em;text-transform:uppercase}
+#stage.theme-mono .mcard .mh .tag,#stage.theme-mono .mcard .mr .ml,#stage.theme-mono .mcard .mf{font:700 20px JB;letter-spacing:.14em;text-transform:uppercase}

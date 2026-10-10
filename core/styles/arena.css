@@ -1,0 +1,432 @@
+/* "Arena" theme: scoped to #stage.theme-arena (PROJECT.theme = 'arena').
+   Built for projects/mobile-frameworks-2026: ten frameworks scored over nine rounds, told as a live sports broadcast.
+
+   The ground is an indoor arena at night seen from the commentary gantry: deep navy, two floodlight beams from the
+   top corners and a dot-matrix LED band along the floor. Every surface is a broadcast graphic: dark slate panels
+   with a clipped top-right corner and a coloured top rail, score bugs with a red "live" dot, and every number is
+   an amber LED readout in JetBrains Mono. Frameworks keep one colour each for the whole deck (--fw on the row),
+   never the section accent, so React Native is cyan on every board, table and tier.
+
+   No `filter` and no `backdrop-filter` anywhere (aurora.css records the 4K capture cost); glows are gradients and
+   text-shadow. */
+
+.theme-arena{
+  --bg0:#050913; --bg1:#0D1426; --bg2:#121B31; --bd:#1E2A45; --bd2:#2A3A5E;
+  --tx:#F4F7FF; --tx2:#B4C1DC; --tx3:#8A9AC0;
+  --teal:#2DE1C2; --violet:#A98BFF; --green:#3DDC84; --rose:#FF5C7A; --amber:#FFC23D; --blue:#4A9DFF; --orange:#FF8A3D;
+  --led:#FFC23D; --led-dim:rgba(255,194,61,.16); --live:#FF3B4E;
+  --cut:22px;                                   /* the clipped corner every broadcast panel carries */
+  --ar-panel:linear-gradient(180deg,rgba(255,255,255,.045),rgba(255,255,255,.012) 40%,transparent),var(--bg1);
+}
+/* ---------- ground: floodlights + LED floor ---------- */
+.theme-arena .bgfx{background:
+  radial-gradient(60% 38% at 50% 108%,rgba(74,157,255,.16),transparent 70%),
+  radial-gradient(120% 80% at 50% -10%,#0B1530 0%,#050913 62%)}
+.theme-arena .bgfx .grid{opacity:.07;background-size:24px 24px;
+  background-image:radial-gradient(circle,#3A4E7E 1.4px,transparent 1.6px);inset:auto -60px -60px -60px;height:260px;
+  -webkit-mask-image:linear-gradient(transparent,#000 70%);mask-image:linear-gradient(transparent,#000 70%)}
+.theme-arena .bgfx::before,.theme-arena .bgfx::after{content:"";position:absolute;top:-30%;width:62%;height:150%;pointer-events:none;
+  background:linear-gradient(180deg,rgba(190,215,255,.10),rgba(190,215,255,0) 72%)}
+.theme-arena .bgfx::before{left:-14%;transform:rotate(-24deg);clip-path:polygon(44% 0,56% 0,100% 100%,0 100%)}
+.theme-arena .bgfx::after{right:-14%;transform:rotate(24deg);clip-path:polygon(44% 0,56% 0,100% 100%,0 100%)}
+.theme-arena .bgfx .vig{background:radial-gradient(130% 100% at 50% 40%,transparent 55%,rgba(0,0,0,.55))}
+
+/* ---------- heading: the eyebrow is a score bug, the headline sits centred over the content ---------- */
+.theme-arena .eyebrow{left:calc((var(--sw) - var(--h1-w)) / 2);width:var(--h1-w);text-align:center;font:800 24px Inter;letter-spacing:.22em;color:var(--tx2)}
+.theme-arena .eyebrow::before{content:"";display:inline-block;width:12px;height:12px;border-radius:50%;background:var(--live);
+  margin-right:16px;vertical-align:2px;box-shadow:0 0 0 5px rgba(255,59,78,.18)}
+.theme-arena .h1{left:calc((var(--sw) - var(--h1-w)) / 2);text-align:center;font-weight:900;line-height:1.08;letter-spacing:-.028em}
+.theme-arena .h1 .ln{display:inline-block;margin:0 .13em}
+.theme-arena .foot{left:calc((var(--sw) - var(--h1-w)) / 2);width:var(--h1-w);text-align:center;top:900px;font-size:24px;color:var(--tx3)}
+
+/* ---------- shared surfaces ---------- */
+.theme-arena .ar-pan{position:absolute;background:var(--ar-panel);border:2px solid var(--bd);
+  clip-path:polygon(0 0,calc(100% - var(--cut)) 0,100% var(--cut),100% 100%,0 100%);
+  box-shadow:inset 0 3px 0 var(--rail,var(--bd2))}
+.theme-arena .led{font-family:JB;font-weight:700;color:var(--led);text-shadow:0 0 18px rgba(255,194,61,.45);letter-spacing:-.02em;
+  font-variant-numeric:tabular-nums}
+.theme-arena .ar-src{position:absolute;right:0;font:600 19px Inter;color:var(--tx3);letter-spacing:.02em;white-space:nowrap;opacity:0}
+.theme-arena .ar-src b{color:var(--tx2);font-weight:700}
+.theme-arena .ar-tag{display:inline-flex;align-items:center;gap:10px;padding:8px 16px;border-radius:10px;font:700 21px JB;
+  background:var(--bg2);border:2px solid var(--bd2);color:var(--tx2);white-space:nowrap}
+.theme-arena .ar-tag.fix{white-space:normal;line-height:1.35;display:block;border-color:rgba(255,194,61,.6);background:#2B2210;color:#FFE1A0}
+.theme-arena .ar-tag.fix::before{content:"Correction";font:800 15px Inter;letter-spacing:.14em;text-transform:uppercase;color:var(--led);margin-right:4px}
+
+/* a framework mark: a logo on a white tile, or a lettered tile */
+.theme-arena .mk{flex:none;position:relative;display:grid;place-items:center;background:#fff;border-radius:12px;overflow:hidden}
+/* absolutely centred: a % height inside an auto-sized grid row resolves to nothing and the mark rides to the top */
+.theme-arena .mk img{position:absolute;left:14%;top:14%;width:72%;height:72%;object-fit:contain}
+.theme-arena .mk.dk{background:#141C30;border:2px solid var(--bd2)}
+.theme-arena .mk.lt{font:900 22px ID;color:#fff}
+
+/* ---------- board: ten bars for one category ---------- */
+.theme-arena .bd-row{position:absolute;left:0;display:flex;align-items:center;gap:16px;padding:0 18px 0 10px;border-radius:12px;
+  background:rgba(255,255,255,.025);border:2px solid transparent}
+.theme-arena .bd-row.lit{border-color:var(--fw);background:linear-gradient(90deg,color-mix(in srgb,var(--fw) 22%,transparent),rgba(255,255,255,.02) 60%)}
+.theme-arena .bd-row .nm{flex:none;font:700 25px Inter;color:var(--tx);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.theme-arena .bd-row .tr{position:relative;flex:1;height:22px;border-radius:11px;background:#0A1122;border:1px solid var(--bd);overflow:hidden}
+.theme-arena .bd-row .tr i{position:absolute;left:0;top:0;bottom:0;border-radius:11px;transform-origin:left;transform:scaleX(0);
+  background:linear-gradient(90deg,color-mix(in srgb,var(--fw) 55%,#0A1122),var(--fw))}
+.theme-arena .bd-row .tr u{position:absolute;inset:0;opacity:0;border-radius:11px;
+  background:repeating-linear-gradient(135deg,rgba(5,9,19,.75) 0 7px,transparent 7px 14px)}
+.theme-arena .bd-row .vl{flex:none;position:relative;width:92px;padding-right:16px;box-sizing:border-box;text-align:right;font-size:30px}
+/* the asterisk hangs in the slot to the right, so starred and plain values share one right edge */
+.theme-arena .bd-row .vl sup{position:absolute;right:0;top:-2px;font-size:20px;color:var(--led)}
+.theme-arena .bd-co{position:absolute;padding:20px 24px 20px 28px;--rail:var(--fw)}
+.theme-arena .bd-co b{display:block;font:800 26px ID;color:var(--tx);letter-spacing:-.01em}
+.theme-arena .bd-co span{display:block;margin-top:6px;font:500 22px Inter;color:var(--tx2);line-height:1.35}
+.theme-arena .bd-co .lgs{display:flex;flex-wrap:wrap;gap:10px;margin-top:12px}
+.theme-arena .bd-co .k{position:absolute;left:0;top:0;bottom:0;width:6px;background:var(--fw)}
+.theme-arena .bd-leg{position:absolute;font:600 20px Inter;color:var(--tx3);white-space:nowrap}
+.theme-arena .bd-leg i{display:inline-block;width:36px;height:16px;border-radius:8px;vertical-align:-1px;margin-right:10px;border:1px solid var(--bd2);
+  background:repeating-linear-gradient(135deg,var(--tx3) 0 5px,transparent 5px 10px)}
+.theme-arena .bd-cap{position:absolute;font:800 20px Inter;letter-spacing:.18em;text-transform:uppercase;color:var(--tx3)}
+.theme-arena .bd-stamp{position:absolute;padding:14px 34px;border:6px solid var(--rose);border-radius:14px;color:var(--rose);
+  font:900 64px ID;letter-spacing:.04em;text-transform:uppercase;transform:rotate(-8deg);opacity:0;white-space:nowrap;background:rgba(5,9,19,.6)}
+
+/* ---------- league table / standings ---------- */
+.theme-arena .lg-row{position:absolute;left:0;display:flex;align-items:center;gap:18px;padding:0 22px 0 14px;border-radius:12px;
+  background:rgba(255,255,255,.03);border:2px solid transparent}
+.theme-arena .lg-row.top{border-color:var(--fw);background:linear-gradient(90deg,color-mix(in srgb,var(--fw) 20%,transparent),rgba(255,255,255,.02) 70%)}
+.theme-arena .lg-row .rk{flex:none;width:44px;font:800 24px JB;color:var(--tx3);text-align:center}
+.theme-arena .lg-row .nm{flex:1;font:700 26px Inter;color:var(--tx);white-space:nowrap}
+.theme-arena .lg-row .pt{flex:none;width:130px;text-align:right;font-size:32px}
+.theme-arena .lg-row .pt.mask{color:var(--tx3);text-shadow:none}
+.theme-arena .lg-row .sw{flex:none;width:8px;align-self:stretch;margin:10px 0;border-radius:4px;background:var(--fw)}
+.theme-arena .lg-gap{position:absolute;display:flex;align-items:center;gap:12px;opacity:0}
+.theme-arena .lg-gap svg{overflow:visible}
+.theme-arena .lg-gap svg path{fill:none;stroke:var(--led);stroke-width:4;stroke-linecap:round}
+.theme-arena .lg-gap b{padding:10px 18px;border-radius:12px;background:#2B2210;border:2px solid rgba(255,194,61,.7);font:800 30px JB;color:var(--led);white-space:nowrap}
+.theme-arena .lg-head{position:absolute;left:0;display:flex;justify-content:space-between;font:800 18px Inter;letter-spacing:.18em;text-transform:uppercase;color:var(--tx3)}
+
+/* ---------- round card ---------- */
+.theme-arena .rd-card{position:absolute;padding:48px 52px;--rail:var(--acc)}
+.theme-arena .rd-card .no{font:800 24px Inter;letter-spacing:.26em;text-transform:uppercase;color:var(--acc)}
+.theme-arena .rd-card .cn{margin-top:18px;font:900 74px ID;line-height:1.02;letter-spacing:-.03em;color:var(--tx)}
+.theme-arena .rd-card .wt{display:inline-flex;align-items:baseline;gap:14px;margin-top:30px;padding:14px 26px;border-radius:14px;background:#140F04;border:2px solid rgba(255,194,61,.5)}
+.theme-arena .rd-card .wt .led{font-size:58px}
+.theme-arena .rd-card .wt span{font:700 22px Inter;color:var(--tx2);letter-spacing:.06em}
+.theme-arena .rd-chips{display:flex;flex-wrap:wrap;gap:14px;margin-top:34px}
+.theme-arena .rd-chips .chip{padding:14px 22px;font-size:26px;border-radius:14px}
+.theme-arena .rd-st{position:absolute;padding:26px 28px 22px;--rail:var(--led)}
+.theme-arena .rd-st .hd{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:12px;font:800 17px Inter;letter-spacing:.12em;text-transform:uppercase;color:var(--tx2);white-space:nowrap}
+.theme-arena .rd-st .hd b{font:800 20px JB;letter-spacing:0;color:var(--led);text-transform:none;white-space:nowrap}
+.theme-arena .rd-st .sr{display:flex;align-items:center;gap:14px;height:46px;padding:0 10px;border-radius:9px}
+.theme-arena .rd-st .sr .rk{width:30px;font:700 19px JB;color:var(--tx3);text-align:center}
+.theme-arena .rd-st .sr .nm{flex:1;font:600 21px Inter;color:var(--tx2);white-space:nowrap}
+.theme-arena .rd-st .sr .led{font-size:23px}
+.theme-arena .rd-st .sr.top{background:color-mix(in srgb,var(--fw) 16%,transparent);box-shadow:inset 4px 0 0 var(--fw)}
+.theme-arena .rd-st .sr.top .nm{color:var(--tx);font-weight:700}
+
+/* ---------- generic say / vs / panels ---------- */
+.theme-arena .sy-q{position:absolute;left:0;padding:48px 56px;--rail:var(--acc)}
+.theme-arena .sy-q .lb{display:block;font:800 20px Inter;letter-spacing:.22em;text-transform:uppercase;color:var(--acc);margin-bottom:14px}
+.theme-arena .sy-q .qt{display:block;font:800 52px ID;line-height:1.14;letter-spacing:-.02em;color:var(--tx)}
+.theme-arena .sy-chips{position:absolute;left:0;display:flex;justify-content:center;flex-wrap:wrap;gap:18px}
+.theme-arena .strike path{stroke:var(--rose);stroke-width:9;fill:none;stroke-linecap:round}
+.theme-arena .vs-p{position:absolute;padding:40px 44px;display:flex;flex-direction:column;gap:18px;--rail:var(--fw,var(--acc))}
+.theme-arena .vs-p .hd{display:flex;align-items:center;gap:20px}
+.theme-arena .vs-p .hd b{font:900 40px ID;letter-spacing:-.02em;color:var(--tx)}
+.theme-arena .vs-p .lb{font:800 19px Inter;letter-spacing:.2em;text-transform:uppercase;color:var(--fw,var(--acc))}
+.theme-arena .vs-p .qt{font:600 30px Inter;line-height:1.36;color:var(--tx2)}
+.theme-arena .vs-p .qt em{font-style:normal;color:var(--tx)}
+.theme-arena .vs-sep{position:absolute;display:grid;place-items:center;border-radius:50%;background:#140F04;border:3px solid rgba(255,194,61,.6);font:900 46px ID;color:var(--led)}
+.theme-arena .pn{position:absolute;padding:36px 40px;--rail:var(--fw,var(--acc))}
+.theme-arena .pn .lb{font:800 19px Inter;letter-spacing:.2em;text-transform:uppercase;color:var(--fw,var(--acc))}
+.theme-arena .pn b{display:block;margin-top:14px;font:900 40px ID;letter-spacing:-.02em;line-height:1.1;color:var(--tx)}
+.theme-arena .pn span{display:block;margin-top:14px;font:500 25px Inter;line-height:1.42;color:var(--tx2)}
+.theme-arena .pn .ar-tag{margin-top:18px}
+
+/* ---------- stat cards ---------- */
+.theme-arena .s2{position:absolute;padding:36px 40px 34px;--rail:var(--acc)}
+.theme-arena .s2 .lb{font:800 19px Inter;letter-spacing:.2em;text-transform:uppercase;color:var(--acc)}
+.theme-arena .s2 .tt{margin-top:10px;font:800 32px ID;letter-spacing:-.01em;line-height:1.18;color:var(--tx)}
+.theme-arena .s2 .big{margin-top:16px;font-size:120px;line-height:1}
+.theme-arena .s2 .big small{font-size:56px;color:var(--tx3);text-shadow:none;margin:0 14px}
+.theme-arena .s2 .br{display:flex;align-items:center;gap:16px;margin-top:22px}
+.theme-arena .s2 .br .nm{flex:none;width:210px;font:700 24px Inter;color:var(--tx);white-space:nowrap}
+.theme-arena .s2 .br .tr{position:relative;flex:1;height:30px;border-radius:8px;background:#0A1122;border:1px solid var(--bd);overflow:hidden}
+.theme-arena .s2 .br .tr i{position:absolute;left:0;top:0;bottom:0;transform-origin:left;transform:scaleX(0);background:var(--fw)}
+.theme-arena .s2 .br .led{flex:none;width:130px;text-align:right;font-size:34px}
+.theme-arena .s2 .nt{margin-top:22px;font:500 21px Inter;color:var(--tx3);line-height:1.4}
+
+/* ---------- grid10 / tiles ---------- */
+.theme-arena .g10{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:14px;--rail:var(--fw)}
+.theme-arena .g10 .nm{font:700 23px Inter;color:var(--tx);text-align:center;line-height:1.2;white-space:nowrap}
+.theme-arena .g10-cnt{position:absolute;display:flex;align-items:center;gap:22px;padding:16px 30px;border-radius:16px;background:#140F04;border:2px solid rgba(255,194,61,.55)}
+.theme-arena .g10-cnt .led{font-size:64px;line-height:1}
+.theme-arena .g10-cnt span{font:800 28px ID;color:var(--tx)}
+
+/* ---------- track: four lanes ---------- */
+.theme-arena .tk-l{position:absolute;top:0;padding:30px 26px;display:flex;flex-direction:column;gap:16px;--rail:var(--lc)}
+.theme-arena .tk-l .q{position:absolute;inset:0;display:grid;place-items:center;font:900 140px ID;color:var(--bd2)}
+.theme-arena .tk-l .hd{font:900 36px ID;letter-spacing:-.02em;color:var(--tx);line-height:1.05}
+.theme-arena .tk-l .ds{font:500 21px Inter;color:var(--tx2);line-height:1.34;min-height:84px}
+.theme-arena .tk-l .ch{display:flex;align-items:center;gap:12px;padding:5px 12px;border-radius:12px;background:var(--bg2);border:2px solid var(--bd);min-width:0}
+.theme-arena .tk-l .ch span{display:flex;flex-direction:column;min-width:0}
+.theme-arena .tk-l .ch b{font:700 21px Inter;color:var(--tx);line-height:1.2}
+.theme-arena .tk-l .ch i{font:600 16px JB;font-style:normal;color:var(--tx2);margin-top:2px}
+.theme-arena .tk-l .tg{align-self:flex-start;margin-top:auto}
+.theme-arena .tk-l.dimmed{opacity:.5}
+
+/* ---------- weights ---------- */
+.theme-arena .wt-bar{position:absolute;left:0;display:flex;height:110px;border-radius:14px;overflow:hidden;border:2px solid var(--bd2)}
+.theme-arena .wt-bar>div{position:relative;height:100%;border-right:2px solid var(--bg0);display:flex;align-items:center;justify-content:center;
+  font:800 28px JB;color:#06101F;transform-origin:left;opacity:0}
+.theme-arena .wt-lb{position:absolute;font:600 20px Inter;color:var(--tx2);line-height:1.25;text-align:center;opacity:0}
+.theme-arena .wt-tot{position:absolute;display:flex;align-items:center;gap:18px}
+.theme-arena .wt-tot .led{font-size:96px;line-height:1}
+.theme-arena .wt-tot span{font:800 30px ID;color:var(--tx2)}
+
+/* ---------- tier list ---------- */
+.theme-arena .tl-row{position:absolute;left:0;display:flex;align-items:stretch;gap:18px;width:max-content}
+.theme-arena .tl-row .lt{flex:none;display:grid;place-items:center;border-radius:14px;font:900 64px ID;color:#06101F;position:relative;overflow:hidden}
+.theme-arena .tl-row .lt span{position:absolute;inset:0;display:grid;place-items:center;text-align:center;line-height:1.05}
+.theme-arena .tl-row .lt span{color:#06101F}
+.theme-arena .tl-row .lt span.f{font-size:27px;font-weight:900;letter-spacing:-.01em;padding:0 12px}
+.theme-arena .tl-row .en{display:flex;gap:16px;align-items:center;flex:1}
+.theme-arena .tl-it{position:relative;display:flex;align-items:center;gap:16px;padding:0 24px 0 14px;height:100%;border-radius:14px;--rail:var(--fw)}
+.theme-arena .tl-it .nm{font:700 25px Inter;color:var(--tx);white-space:nowrap}
+.theme-arena .tl-it .led{font-size:36px;margin-left:8px}
+.theme-arena .tl-gap{position:absolute;opacity:0}
+.theme-arena .tl-gap path{fill:none;stroke:var(--led);stroke-width:4;stroke-linecap:round}
+.theme-arena .tl-gap b{position:absolute;white-space:nowrap;font:700 22px Inter;color:var(--led)}
+
+/* ---------- race chart ---------- */
+.theme-arena .rc svg{position:absolute;left:0;top:0;overflow:visible}
+.theme-arena .rc .ax{stroke:var(--bd2);stroke-width:2}
+.theme-arena .rc .zl{stroke:var(--tx3);stroke-width:2;stroke-dasharray:6 8}
+.theme-arena .rc .ln path{fill:none;stroke:var(--led);stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+.theme-arena .rc .xl{position:absolute;font:700 18px Inter;color:var(--tx3);text-align:center;white-space:nowrap}
+.theme-arena .rc .zn{position:absolute;font:800 20px Inter;letter-spacing:.16em;text-transform:uppercase;white-space:nowrap}
+.theme-arena .rc .pt{position:absolute;width:20px;height:20px;border-radius:50%;background:var(--led);border:4px solid var(--bg0);opacity:0}
+.theme-arena .rc .pv{position:absolute;font:700 22px JB;color:var(--led);white-space:nowrap;opacity:0}
+.theme-arena .rc .an{position:absolute;padding:16px 22px;--rail:var(--fw)}
+.theme-arena .rc .an b{display:block;font:800 22px ID;color:var(--tx)}
+.theme-arena .rc .an span{display:block;font:500 19px Inter;color:var(--tx2);margin-top:4px}
+
+/* ---------- shelf (honourable mentions) ---------- */
+.theme-arena .sh-grid{position:absolute;left:0;top:0;display:grid;grid-template-columns:repeat(3,1fr);gap:26px}
+.theme-arena .sh{position:relative;padding:24px 26px 26px;--rail:var(--acc);min-height:220px}
+.theme-arena .sh .hd{display:flex;align-items:baseline;justify-content:space-between;gap:12px}
+.theme-arena .sh .hd b{font:900 30px ID;color:var(--tx);letter-spacing:-.01em;white-space:nowrap}
+.theme-arena .sh .hd span{font:600 20px Inter;color:var(--tx2);white-space:nowrap}
+.theme-arena .sh .lg{display:flex;flex-wrap:wrap;gap:12px;margin-top:18px}
+.theme-arena .sh .it{display:flex;align-items:center;gap:10px;padding:8px 14px 8px 8px;border-radius:12px;background:var(--bg2);border:2px solid var(--bd)}
+.theme-arena .sh .it b{font:700 24px Inter;color:var(--tx);white-space:nowrap}
+.theme-arena .sh.ghost{border-style:dashed;background:transparent;box-shadow:none}
+.theme-arena .sh.ghost .q{position:absolute;inset:0;display:grid;place-items:center;font:900 90px ID;color:var(--bd2)}
+
+/* ---------- graveyard ---------- */
+.theme-arena .gv{position:absolute;bottom:0;display:flex;flex-direction:column;align-items:center;gap:14px;padding:34px 20px 26px;
+  border-radius:120px 120px 14px 14px;background:linear-gradient(180deg,#1A2338,#0F1626);border:2px solid var(--bd2);text-align:center}
+.theme-arena .gv b{font:900 30px ID;color:var(--tx);letter-spacing:-.01em}
+.theme-arena .gv span{font:600 20px Inter;color:var(--tx2);line-height:1.35}
+.theme-arena .gv .ep{font:700 19px JB;color:var(--tx3)}
+.theme-arena .gv .rip{position:static;width:auto;height:auto;background:none;font:900 22px ID;letter-spacing:.3em;color:var(--tx3);opacity:1;border-radius:0}
+.theme-arena .gv .shade{position:absolute;inset:0;border-radius:inherit;background:rgba(5,9,19,.62);opacity:0;pointer-events:none}
+.theme-arena .gv.alive{border-color:rgba(61,220,132,.65);background:linear-gradient(180deg,#12301F,#0D1A16)}
+.theme-arena .gv-ground{position:absolute;left:0;height:4px;border-radius:2px;background:linear-gradient(90deg,transparent,var(--bd2) 10%,var(--bd2) 90%,transparent)}
+.theme-arena .gv-note{position:absolute;left:0;text-align:center;font:700 26px Inter;color:var(--tx2)}
+.theme-arena .gv-note em{font-style:normal;color:var(--led)}
+
+/* ---------- pick (decision board) ---------- */
+.theme-arena .pk{position:absolute;left:0;display:flex;align-items:center;gap:18px}
+.theme-arena .pk .cd{flex:none;display:flex;align-items:center;padding:0 24px;border-radius:12px;background:var(--bg2);border:2px solid var(--bd);
+  font:600 23px Inter;color:var(--tx2);white-space:nowrap}
+.theme-arena .pk .cd b{font-weight:800;color:var(--tx);margin-right:10px}
+.theme-arena .pk .ar{flex:none;width:44px;height:4px;background:var(--bd2);position:relative}
+.theme-arena .pk .ar::after{content:"";position:absolute;right:-2px;top:-7px;border:9px solid transparent;border-left-color:var(--bd2);border-right:0}
+.theme-arena .pk .an{display:flex;align-items:center;gap:14px;padding:0 22px 0 10px;border-radius:12px;border:2px solid var(--fw);
+  background:color-mix(in srgb,var(--fw) 14%,var(--bg1));font:800 24px ID;color:var(--tx);white-space:nowrap}
+.theme-arena .pk.now .cd{border-color:var(--led);color:var(--tx)}
+.theme-arena .pk-det{position:absolute;padding:34px 36px;--rail:var(--fw)}
+.theme-arena .pk-det .hd{display:flex;align-items:center;gap:18px}
+.theme-arena .pk-det .hd b{font:900 38px ID;color:var(--tx);letter-spacing:-.02em;line-height:1.05}
+.theme-arena .pk-det .ks{display:flex;flex-direction:column;gap:12px;margin-top:24px}
+.theme-arena .pk-det .ks span{font:600 23px Inter;color:var(--tx2);padding-left:28px;position:relative}
+.theme-arena .pk-det .ks span::before{content:"";position:absolute;left:0;top:10px;width:12px;height:12px;border-radius:3px;background:var(--fw)}
+.theme-arena .pk-tie{position:absolute;padding:10px 18px;border-radius:12px;background:#2B2210;border:2px solid rgba(255,194,61,.7);font:800 22px Inter;color:var(--led);white-space:nowrap;opacity:0}
+
+/* ---------- phone (2 AM) ---------- */
+.theme-arena .ph{position:absolute;border-radius:54px;background:#03060D;border:10px solid #1C2640;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.theme-arena .ph .tm{position:absolute;left:0;right:0;text-align:center;font:300 118px Inter;color:#E7ECFF;letter-spacing:-.02em}
+.theme-arena .ph .dt{position:absolute;left:0;right:0;text-align:center;font:600 24px Inter;color:var(--tx2)}
+.theme-arena .ph .nt{position:absolute;padding:18px 20px;border-radius:22px;background:#1A1220;border:2px solid rgba(255,92,122,.6)}
+.theme-arena .ph .nt b{display:block;font:800 22px Inter;color:#FFC2CE}
+.theme-arena .ph .nt span{display:block;margin-top:6px;font:500 19px Inter;color:var(--tx2);line-height:1.35}
+.theme-arena .sr-p{position:absolute;padding:28px 30px;--rail:var(--fw)}
+.theme-arena .sr-p .lb{font:800 18px Inter;letter-spacing:.2em;text-transform:uppercase;color:var(--fw)}
+.theme-arena .sr-p .q{margin-top:12px;padding:12px 16px;border-radius:12px;background:#0A1122;border:2px solid var(--bd);font:500 21px JB;color:var(--tx2);white-space:nowrap;overflow:hidden}
+.theme-arena .sr-p .rs{margin-top:16px;display:flex;flex-direction:column;gap:10px}
+.theme-arena .sr-p .rs i{display:block;height:16px;border-radius:8px;background:var(--bd2)}
+.theme-arena .sr-p .rs i:nth-child(odd){width:86%} .theme-arena .sr-p .rs i:nth-child(even){width:64%}
+.theme-arena .sr-p .zero{margin-top:22px;font:800 30px JB;color:var(--rose)}
+.theme-arena .sr-p .cnt{margin-top:14px;font:700 22px JB;color:var(--green)}
+
+/* ---------- benchmark card ---------- */
+.theme-arena .bm{position:absolute;padding:30px 34px;--rail:var(--acc)}
+.theme-arena .bm .lb{font:800 19px Inter;letter-spacing:.2em;text-transform:uppercase;color:var(--acc)}
+.theme-arena .bm .tt{margin-top:8px;font:800 30px ID;color:var(--tx)}
+.theme-arena .bm .br{display:flex;align-items:center;gap:16px;margin-top:20px}
+.theme-arena .bm .br .nm{flex:none;width:250px;font:700 23px Inter;color:var(--tx)}
+.theme-arena .bm .br .tr{position:relative;flex:1;height:34px;border-radius:9px;background:#0A1122;border:1px solid var(--bd);overflow:hidden}
+.theme-arena .bm .br .tr i{position:absolute;left:0;top:0;bottom:0;transform-origin:left;transform:scaleX(0);background:var(--fw)}
+.theme-arena .bm .br .led{flex:none;width:150px;text-align:right;font-size:36px}
+.theme-arena .bm .rw{display:flex;align-items:center;gap:14px;padding:14px 0;border-top:1px solid var(--bd);font:600 22px Inter;color:var(--tx2)}
+.theme-arena .bm .rw:first-of-type{border-top:0}
+.theme-arena .bm .rw .w{margin-left:auto;font:800 21px JB;white-space:nowrap}
+.theme-arena .bm .rw .w.rn{color:#61DAFB} .theme-arena .bm .rw .w.km{color:#B48CFF}
+
+/* ---------- trophy / heat ---------- */
+.theme-arena .tp-np{position:absolute;display:flex;align-items:center;gap:20px;padding:24px 30px;--rail:var(--fw)}
+.theme-arena .tp-np b{display:block;font:900 34px ID;color:var(--tx);letter-spacing:-.02em;white-space:nowrap}
+.theme-arena .tp-np .led{display:block;font-size:44px;margin-top:4px}
+.theme-arena .tp-cup{position:absolute;overflow:visible}
+.theme-arena .ht-p{position:absolute;display:flex;flex-direction:column;align-items:center;gap:20px;padding:38px 30px;--rail:var(--fw)}
+.theme-arena .ht-p .nm{font:800 30px ID;color:var(--tx);white-space:nowrap}
+.theme-arena .ht-p .led{font-size:150px;line-height:1}
+
+/* ---------- credits ---------- */
+.theme-arena .cr-q{position:absolute;left:0;display:flex;align-items:center;gap:30px;padding:30px 40px;--rail:var(--acc)}
+.theme-arena .cr-q .qt{font:900 46px ID;color:var(--tx);letter-spacing:-.02em;line-height:1.1}
+.theme-arena .cr-q img{width:96px;height:96px}
+.theme-arena .cr-s{position:absolute;left:0;opacity:0}
+.theme-arena .cr-s .hd{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:16px}
+.theme-arena .cr-s .hd b{font-size:30px;letter-spacing:.12em;text-transform:uppercase}
+.theme-arena .cr-s .hd span{font:700 21px Inter;color:var(--tx2)}
+/* the ticker: a broadcast LED board, edges faded so chips slide in and out of view rather than being cut */
+.theme-arena .cr-s .tk{display:flex;flex-direction:column;gap:20px;padding:24px 0;border-radius:14px;background:#060A16;border:2px solid var(--bd);
+  -webkit-mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent);mask-image:linear-gradient(90deg,transparent,#000 7%,#000 93%,transparent)}
+.theme-arena .cr-s .row{overflow:hidden}
+.theme-arena .cr-s .mv{display:flex;width:max-content;will-change:transform}
+.theme-arena .cr-s .set{display:flex;flex:none}
+.theme-arena .cr-s .it{display:inline-flex;align-items:center;gap:16px;padding:0 34px;font:600 30px Inter;color:var(--tx);white-space:nowrap}
+.theme-arena .cr-s .it i{width:9px;height:9px;border-radius:50%;background:var(--led);box-shadow:0 0 10px var(--led)}
+
+/* ---------- restyled core pieces used on this deck ---------- */
+.theme-arena .chip{background:var(--bg2);border-color:var(--bd2);color:var(--tx)}
+.theme-arena .badge{border-radius:12px}
+.theme-arena .hrow .hx b{font-weight:900}
+.theme-arena .cst .bub,.theme-arena .bub{font-family:Inter}
+
+/* ---------- cast (same rules as lanes.css, which this deck does not load): characters on sticker cards ---------- */
+.theme-arena .cst{position:absolute;display:flex;flex-direction:column;align-items:center;gap:10px;z-index:6;transform-origin:50% 100%}
+.theme-arena .cst-card{border-radius:26px;background:#F4F1EA;border:4px solid var(--cc,#F4F1EA);overflow:hidden;
+  box-shadow:0 18px 40px rgba(0,0,0,.55);display:grid;place-items:end center}
+.theme-arena .cst-card img{width:100%;height:100%}
+.theme-arena .cst b{font:700 21px JB;letter-spacing:.06em;color:#0B0D12;background:var(--cc,#F4F1EA);border-radius:5px;padding:5px 10px;
+  white-space:nowrap;margin-top:-26px;position:relative}
+.theme-arena .cst.b{--cc:var(--blue)} .theme-arena .cst.o{--cc:var(--orange)} .theme-arena .cst.v{--cc:var(--violet)} .theme-arena .cst.t{--cc:var(--teal)} .theme-arena .cst.g{--cc:var(--green)}
+.theme-arena .bub{position:absolute;z-index:7;padding:18px 24px;border-radius:20px;background:#FFFFFF;color:#0B0D12;
+  font:700 28px Inter;line-height:1.3;box-shadow:0 16px 36px rgba(0,0,0,.5);opacity:0}
+.theme-arena .bub::after{content:'';position:absolute;width:0;height:0;border:14px solid transparent}
+/* side tails sit on the middle of the bubble (at 60% a one-line bubble put them on its rounded corner, half off the
+   edge) and overlap it by 2px so no seam shows between the two whites */
+.theme-arena .bub.tail-l{transform-origin:0 50%} .theme-arena .bub.tail-l::after{left:-22px;top:calc(50% - 14px);border-right-color:#fff;border-left:10px solid transparent}
+.theme-arena .bub.tail-r{transform-origin:100% 50%} .theme-arena .bub.tail-r::after{right:-22px;top:calc(50% - 14px);border-left-color:#fff;border-right:10px solid transparent}
+.theme-arena .bub.tail-d{transform-origin:30% 100%} .theme-arena .bub.tail-d::after{left:36px;bottom:-26px;border-top-color:#fff}
+.theme-arena .bub.tail-u{transform-origin:30% 0} .theme-arena .bub.tail-u::after{left:36px;top:-26px;border-bottom-color:#fff}
+.theme-arena .bub code{font:700 25px JB;background:#EEF1F6;border-radius:4px;padding:1px 6px}
+.theme-arena .bub em{font-style:normal;color:#0A6FA8}
+.theme-arena .bub.o em{color:#C2410C} .theme-arena .bub.v em{color:#6D28D9} .theme-arena .bub.t em{color:#0F766E}
+.theme-arena .tm-win.sm .tm-l{font-size:20px;line-height:34px}
+.theme-arena .tm-win.sm .tm-body{padding:16px 22px}
+
+
+/* ---------- fx layer (same rules as lanes.css): emoji stickers + confetti burst ---------- */
+.fx-emoji{position:absolute;z-index:50;opacity:0;pointer-events:none;filter:drop-shadow(0 14px 22px rgba(0,0,0,.45))}
+.fx-emoji img{width:100%;height:100%;display:block}
+.fx-burst{position:absolute;z-index:49;width:0;height:0;pointer-events:none}
+.fx-burst i{position:absolute;left:-7px;top:-5px;width:14px;height:10px;border-radius:3px;opacity:0}
+.fx-burst b{position:absolute;left:-90px;top:-90px;width:180px;height:180px;border-radius:50%;border:4px solid rgba(61,220,151,.9);opacity:0}
+
+/* ---------- revision 2 ---------- */
+/* the hero ring is a rounded rectangle; on clipped-corner panels it read as a stray outline */
+.theme-arena .ring{display:none}
+/* lane diagrams (track): what each way of building actually looks like */
+.theme-arena .tk-dg{margin-top:auto;flex:none;position:relative;box-sizing:border-box;height:156px;padding:10px;border-radius:14px;background:rgba(255,255,255,.03);border:1px dashed var(--bd2);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.theme-arena .tk-dg .row{display:flex;align-items:center;justify-content:center;gap:26px}
+.theme-arena .tk-dg .col{display:flex;flex-direction:column;align-items:center;gap:8px}
+.theme-arena .tk-dg .ph{position:relative;flex:none;width:38px;height:62px;border-radius:11px;border:3px solid var(--tx3);background:#0A1122}
+.theme-arena .tk-dg .ph::after{content:"";position:absolute;left:50%;top:5px;width:14px;height:4px;margin-left:-7px;border-radius:2px;background:var(--tx3)}
+.theme-arena .tk-dg .cb{padding:6px 12px;border-radius:8px;font:700 15px JB;color:#06101F;white-space:nowrap;text-align:center}
+.theme-arena .tk-dg .fork{display:block;width:110px;height:18px;fill:none;stroke:var(--lc);stroke-width:3;stroke-linecap:round;stroke-linejoin:round}
+.theme-arena .tk-dg .lb{font:700 14px Inter;letter-spacing:.12em;text-transform:uppercase;color:var(--tx2);white-space:nowrap}
+.theme-arena .tk-dg .web{position:absolute;inset:14px 7px 10px;border-radius:4px;background:linear-gradient(var(--lc) 0 8px,#1C2742 8px)}
+/* round-card standings: movement and points gained this round */
+.theme-arena .rd-st .sr .mv{width:44px;text-align:center;font:800 16px JB}
+.theme-arena .rd-st .sr .mv.up{color:#3DDC84} .theme-arena .rd-st .sr .mv.dn{color:#FF5C7A} .theme-arena .rd-st .sr .mv.eq{color:var(--tx3)}
+.theme-arena .rd-st .sr .gn{width:62px;text-align:right;font:700 17px JB;color:var(--tx2)}
+.theme-arena .rd-sweep{position:absolute;top:-40px;bottom:-40px;width:180px;transform:skewX(-18deg);pointer-events:none;
+  background:linear-gradient(90deg,transparent,rgba(255,224,150,.32),transparent);opacity:0}
+/* points table (the race) */
+.theme-arena .pt-t{position:absolute;left:0;top:0;border-collapse:separate;border-spacing:8px 10px}
+.theme-arena .pt-t th{font:800 17px Inter;letter-spacing:.1em;text-transform:uppercase;color:var(--tx2);text-align:center;padding:0 4px 6px;white-space:nowrap}
+.theme-arena .pt-t th small{display:block;font:700 15px JB;letter-spacing:0;color:var(--tx3);text-transform:none;margin-top:4px}
+.theme-arena .pt-t td{height:72px;min-width:98px;text-align:center;border-radius:12px;background:rgba(255,255,255,.035);font:700 30px JB;color:var(--led)}
+.theme-arena .pt-t td.nm{min-width:250px;text-align:left;padding:0 18px;font:800 25px Inter;color:var(--tx);background:none;white-space:nowrap}
+.theme-arena .pt-t td.nm .mk{display:inline-grid;vertical-align:middle;margin-right:12px}
+.theme-arena .pt-t td.tot{background:#140F04;border:2px solid rgba(255,194,61,.55);font-size:36px}
+.theme-arena .pt-t tr.lead td{height:56px;font-size:24px;color:var(--tx2);background:rgba(255,255,255,.02)}
+.theme-arena .pt-t tr.lead td.nm{font:700 20px Inter;color:var(--tx2);letter-spacing:.06em}
+.theme-arena .pt-t td.sw{box-shadow:inset 0 0 0 3px var(--sw);background:color-mix(in srgb,var(--sw) 16%,transparent)}
+.theme-arena .pt-an{position:absolute;padding:16px 22px;--rail:var(--fw)}
+.theme-arena .pt-an b{display:block;font:800 23px ID;color:var(--tx)}
+.theme-arena .pt-an span{display:block;font:500 20px Inter;color:var(--tx2);margin-top:4px}
+/* tier note */
+.theme-arena .tl-note{position:absolute;left:0;display:flex;justify-content:center;opacity:0}
+/* split: inside a transparent capture (version B's side-by-side windows) the slide shrinks into the right two thirds
+   on its own plate; the left third is the footage. In an opaque capture (version A) none of this applies. */
+#stage.transparent .slide.split{scale:.79;translate:312px 0;transform-origin:50% 50%}
+#stage.transparent .slide.split::before{content:"";position:absolute;left:160px;top:-144px;width:1640px;height:1368px;z-index:0;
+  background:radial-gradient(120% 70% at 60% 0%,#0B1530,#050913 70%);box-shadow:-10px 0 0 rgba(255,194,61,.85),-40px 0 80px rgba(0,0,0,.55)}
+/* ovl: the hook's stat cards over the full-frame face in version B. The heading goes (the face carries the question)
+   and the two cards stack down the left edge, clear of the face at x 0.52. Version A keeps the side-by-side layout. */
+#stage.transparent.canvas-horizontal .slide.ovl .eyebrow,#stage.transparent.canvas-horizontal .slide.ovl .h1{display:none}
+#stage.transparent.canvas-horizontal .slide.ovl .content{left:56px!important;top:118px!important;scale:.74;transform-origin:0 0}
+#stage.transparent.canvas-horizontal .slide.ovl .s2+.s2{left:0!important;top:476px!important}
+#stage.transparent.canvas-horizontal .slide.ovl .ar-src{left:0;right:auto;top:940px!important;font-size:28px;color:#C9D3EA;text-shadow:0 2px 8px rgba(0,0,0,.9)}
+/* ovs: any slide over the full-frame face, stacked in the left column (version B only). The content's children
+   drop out of their absolute layout into one flex column in DOM order; the frame's entrance transforms still apply. */
+#stage.transparent .slide.ovs::before{content:"";position:absolute;left:0;top:0;width:760px;height:1080px;z-index:0;
+  background:linear-gradient(90deg,rgba(5,9,19,.9),rgba(5,9,19,.8) 70%,rgba(5,9,19,0))}
+#stage.transparent .slide.ovs .eyebrow{left:60px!important;top:86px!important;width:640px!important;text-align:left;justify-content:flex-start}
+#stage.transparent .slide.ovs .h1{left:60px!important;top:120px!important;width:640px!important;text-align:left;font-size:50px;line-height:1.08}
+#stage.transparent .slide.ovs .content{left:60px!important;top:270px!important;width:700px!important;scale:.8;transform-origin:0 0}
+#stage.transparent .slide.ovs .rel{display:flex;flex-direction:column;align-items:flex-start;gap:22px;width:700px!important;height:auto!important}
+#stage.transparent .slide.ovs .rel>*:not(svg),#stage.transparent .slide.ovs .rel>.tp-cup{position:relative!important;left:0!important;top:0!important;width:700px!important;max-width:700px;min-height:0!important;box-sizing:border-box}
+#stage.transparent .slide.ovs .rel>.tp-cup{width:190px!important;height:240px!important}
+#stage.transparent .slide.ovs .rel>div{justify-content:flex-start!important}
+#stage.transparent .slide.ovs .rel>.ar-src,#stage.transparent .slide.ovs .vs-sep{display:none}
+#stage.transparent .slide.ovs .rel>.sub{text-align:left!important;font-size:28px}
+#stage.transparent .slide.ovs .sy-chips{justify-content:flex-start}
+#stage.transparent .slide.ovs .sy-q .qt{font-size:44px}
+
+/* 9:16 (the social cut, projects/mobile-frameworks-2026/social): the kit's vertical branches lay out in an 800px column
+   that vfit scales by 1.2, so the small print of the 16:9 board is set up a size to read on a phone */
+.theme-arena.canvas-vertical .bd-co b{font-size:30px}
+.theme-arena.canvas-vertical .bd-co span{font-size:25px}
+.theme-arena.canvas-vertical .rd-st .sr .nm{font-size:24px}
+.theme-arena.canvas-vertical .rd-st .sr .led{font-size:26px}
+.theme-arena.canvas-vertical .s2 .nt{font-size:23px}
+.theme-arena.canvas-vertical .ar-src{font-size:21px}
+
+/* 9:16 hook over the face (the social cut's cuts.json "overFace"): data.over slides captured with alpha and laid over a
+   full-bleed crop of the speaker. Heading high over the wall, the two stat cards side by side under the chin (over the
+   shirt, clear of the caption band at 1600), a fade top and bottom so both read on any frame; the cut's first frames
+   double as the Short's cover. !important beats the inline geometry the vertical stack and vcenter write. */
+#stage.transparent.canvas-vertical .slide.ovl::before{content:"";position:absolute;inset:0;
+  background:linear-gradient(to bottom,rgba(5,8,16,.82) 0,rgba(5,8,16,.35) 16%,transparent 26%,transparent 62%,rgba(5,8,16,.7) 70%,rgba(5,8,16,.9) 86%)}
+#stage.transparent.canvas-vertical .slide.ovl .eyebrow{top:150px!important}
+#stage.transparent.canvas-vertical .slide.ovl .h1{top:196px!important;text-shadow:0 4px 24px rgba(0,0,0,.6)}
+#stage.transparent.canvas-vertical .slide.ovl .content{top:1330px!important;left:40px!important}
+#stage.transparent.canvas-vertical .slide.ovl .rel{transform:none!important}
+#stage.transparent.canvas-vertical .slide.ovl .rel>div{flex-direction:row!important;flex-wrap:wrap;width:1000px!important;gap:16px!important}
+#stage.transparent.canvas-vertical .slide.ovl .s2{width:492px!important;padding:26px 26px 24px;background:rgba(10,15,30,.86)}
+#stage.transparent.canvas-vertical .slide.ovl .s2 .tt,#stage.transparent.canvas-vertical .slide.ovl .s2 .nt{display:none}
+#stage.transparent.canvas-vertical .slide.ovl .s2 .lb{font-size:20px;letter-spacing:.14em}
+#stage.transparent.canvas-vertical .slide.ovl .s2 .br{gap:12px;margin-top:18px}
+#stage.transparent.canvas-vertical .slide.ovl .s2 .br .nm{width:150px;font-size:24px}
+#stage.transparent.canvas-vertical .slide.ovl .s2 .br .led{width:104px;font-size:32px}
+#stage.transparent.canvas-vertical .slide.ovl .ar-src{width:1000px;text-align:right}

@@ -1,0 +1,7 @@
+{
+  "name": "new-video",
+  "version": "1.0.0",
+  "description": "Turn a voiceover script or transcript into animated HTML/CSS slides rendered to GIF and MP4 (vertical or horizontal).",
+  "author": { "name": "Ayomide Odewale" },
+  "skills": ["./skills/new-video"]
+}

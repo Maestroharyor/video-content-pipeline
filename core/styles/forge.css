@@ -1,0 +1,138 @@
+/* "forge" theme (PROJECT.theme = 'forge') — built for projects/shopify-react-native.
+   The video is one migration, so the ground migrates: a React-cyan field in the upper left cooling across a
+   graphite floor into a Swift-orange field in the lower right, with a faint diagonal seam where the two meet.
+   Surfaces are flat forged slate with a 3px accent edge along the TOP (strata puts its spine on the left, aurora
+   builds glass gradients — this reads as a different deck at a glance). Numerals are JetBrains Mono throughout.
+   Deliberately no `filter: blur()` and no `backdrop-filter`: the aurora header records that either one drops 4K
+   capture from ~20 f/s to ~3 f/s. Every "glow" is a radial-gradient, which the compositor draws for free.
+   The three custom slides this deck adds (article · posts · results) are styled at the bottom, the same way
+   aurora.css carries hop / anatomy / tree: they are deck slides, not part of the default set. */
+
+#stage.theme-forge{
+  --bg0:#0B0D12; --bg1:#141821; --bg2:#1B212D; --bd:#262E3C; --bd2:#333D4F;
+  --tx:#F4F7FD; --tx2:#A6B1C4; --tx3:#6B7789;
+  --teal:#2DD4BF; --violet:#A78BFA; --green:#4ADE80; --rose:#FB7185; --amber:#FBBF24; --blue:#61DAFB; --orange:#F97144;
+  --react:#61DAFB; --swift:#F05138; --kotlin:#A97BFF; --shop:#7AB55C;
+  --edge:#333D4F;
+  background:#0B0D12;
+}
+/* Alpha captures must stay transparent. base.css sets `#stage.transparent{background:transparent}`, which has the
+   same specificity as the rule above and loses on source order because this file is linked after it — so without
+   this line the caption-only pass (renderer/browser.js `capsOnly`, used by scripts/dual-render.js) paints an opaque
+   graphite plate, and overlaying it blacks out the A-roll inside every reveal. aurora.css never hit this because it
+   scopes its background to `.theme-aurora` with no `#stage`; strata.css is id-scoped like this one but belongs to a
+   deck that has no reveals, so nothing ever ran an alpha capture through it. */
+#stage.theme-forge.transparent{background:transparent}
+
+/* ---------- ground: a seam between two platforms, not a dot grid ---------- */
+#stage.theme-forge .bgfx .grid{
+  opacity:.42;
+  background-image:repeating-linear-gradient(118deg,rgba(150,170,205,.055) 0 1.5px,transparent 1.5px 86px);
+  background-size:auto;
+}
+#stage.theme-forge .bgfx .glow.a{background:radial-gradient(58% 42% at 18% 14%,rgba(97,218,251,.13),transparent 72%)}
+#stage.theme-forge .bgfx .glow.b{background:radial-gradient(64% 46% at 84% 92%,rgba(240,81,56,.15),transparent 74%)}
+#stage.theme-forge .bgfx .vig{
+  background:
+    radial-gradient(74% 44% at 50% -6%,rgba(97,218,251,.06),transparent 64%),
+    radial-gradient(120% 100% at 50% 48%,transparent 54%,rgba(0,0,0,.58));
+}
+
+/* ---------- surfaces: forged slate, accent edge on top ---------- */
+#stage.theme-forge .panel,#stage.theme-forge .cmp,#stage.theme-forge .code,#stage.theme-forge .node,
+#stage.theme-forge .chk,#stage.theme-forge .bbox,#stage.theme-forge .badge.note,#stage.theme-forge .card,
+#stage.theme-forge .rowbar.big,#stage.theme-forge .mcard{
+  background:linear-gradient(180deg,#171C26,#12161E);
+  border:2px solid var(--bd);
+  border-top:3px solid var(--edge);
+  border-radius:22px;
+  box-shadow:0 26px 60px rgba(0,0,0,.46),inset 0 1px 0 rgba(255,255,255,.055);
+}
+#stage.theme-forge .panel.t,#stage.theme-forge .cmp.t,#stage.theme-forge .card.t{--edge:#2DD4BF}
+#stage.theme-forge .panel.v,#stage.theme-forge .cmp.v,#stage.theme-forge .card.v{--edge:#A78BFA}
+#stage.theme-forge .panel.g,#stage.theme-forge .cmp.g,#stage.theme-forge .card.g{--edge:#4ADE80}
+#stage.theme-forge .panel.r,#stage.theme-forge .cmp.r,#stage.theme-forge .card.r{--edge:#FB7185}
+#stage.theme-forge .panel.a,#stage.theme-forge .cmp.a,#stage.theme-forge .card.a{--edge:#FBBF24}
+#stage.theme-forge .panel.b,#stage.theme-forge .cmp.b,#stage.theme-forge .card.b{--edge:#61DAFB}
+#stage.theme-forge .panel.o,#stage.theme-forge .cmp.o,#stage.theme-forge .card.o{--edge:#F97144}
+
+/* rowbars: squarer than stock, with a mono tail */
+#stage.theme-forge .rowbar{border-radius:12px}
+#stage.theme-forge .rowbar.big{border-radius:16px}
+#stage.theme-forge .rowbar .tail{font-family:JB;letter-spacing:-.02em;opacity:.92}
+
+/* badges: forged plate, sharper corners */
+#stage.theme-forge .badge{border-radius:12px;letter-spacing:-.018em}
+
+/* the eyebrow reads as a stamped label on this deck */
+#stage.theme-forge .eb{letter-spacing:.20em}
+
+/* ============================================================================
+   Deck slides: 03-back-to-native (article) · 04-biggest-backer (posts) · 11-the-results (results)
+   The one thing no core template does is hold a browser screenshot, which is the whole point of these three:
+   the capture is the proof, the card over it is what a phone screen can actually read.
+   ============================================================================ */
+
+/* a captured page, framed like a browser window and held back so type can sit on it */
+#stage.theme-forge .fg-shot{
+  position:absolute;border-radius:18px;overflow:hidden;
+  border:2px solid var(--bd2);
+  box-shadow:0 34px 80px rgba(0,0,0,.6);
+}
+#stage.theme-forge .fg-shot .fg-bar{
+  position:absolute;left:0;top:0;right:0;height:46px;background:#0E1218;border-bottom:1px solid #222A36;
+  display:flex;align-items:center;gap:10px;padding:0 18px;
+}
+#stage.theme-forge .fg-shot .fg-dot{width:12px;height:12px;border-radius:50%;background:#2A3340}
+#stage.theme-forge .fg-shot .fg-url{
+  margin-left:12px;flex:1;height:26px;border-radius:7px;background:#161C25;border:1px solid #232B37;
+  font:400 17px JB;color:#7D8A9C;display:flex;align-items:center;padding:0 12px;letter-spacing:-.01em;
+}
+#stage.theme-forge .fg-shot img{position:absolute;left:0;top:46px;width:100%;display:block}
+/* the wash that keeps the capture readable as texture rather than competing with the card */
+#stage.theme-forge .fg-shot .fg-wash{
+  position:absolute;inset:0;
+  background:linear-gradient(180deg,rgba(11,13,18,.30),rgba(11,13,18,.74) 52%,rgba(11,13,18,.92));
+}
+
+/* the readable card that restates what the capture says */
+#stage.theme-forge .fg-card{
+  position:absolute;border-radius:20px;padding:30px 32px;
+  background:linear-gradient(180deg,#191E29,#12161E);
+  border:2px solid var(--bd2);border-top:3px solid var(--edge,#F97144);
+  box-shadow:0 30px 70px rgba(0,0,0,.62);
+}
+#stage.theme-forge .fg-card .fg-src{
+  display:flex;align-items:center;gap:12px;font:700 22px JB;letter-spacing:.06em;text-transform:uppercase;color:var(--tx3);margin-bottom:16px;
+}
+#stage.theme-forge .fg-card .fg-src img{width:28px;height:28px}
+#stage.theme-forge .fg-card .fg-h{font:800 46px ID;line-height:1.14;letter-spacing:-.022em;color:var(--tx)}
+#stage.theme-forge .fg-card .fg-sub{margin-top:14px;font:400 28px Inter;line-height:1.42;color:var(--tx2)}
+#stage.theme-forge .fg-card .fg-by{margin-top:18px;font:700 22px JB;color:var(--tx3);letter-spacing:-.01em}
+#stage.theme-forge .fg-card .fg-by b{color:var(--tx2);font-weight:700}
+
+/* 04: two headline cards, the 2020 promise and the 2025 reaffirmation */
+#stage.theme-forge .fg-post{
+  position:absolute;border-radius:18px;overflow:hidden;
+  background:linear-gradient(180deg,#171C26,#12161E);
+  border:2px solid var(--bd);border-left:4px solid var(--edge,#61DAFB);
+  box-shadow:0 24px 56px rgba(0,0,0,.5);
+  display:flex;align-items:stretch;
+}
+#stage.theme-forge .fg-post .fg-thumb{width:232px;flex:0 0 232px;position:relative;overflow:hidden;border-right:1px solid #222A36}
+#stage.theme-forge .fg-post .fg-thumb img{position:absolute;left:-30px;top:-14px;width:300px}
+#stage.theme-forge .fg-post .fg-thumb::after{content:'';position:absolute;inset:0;background:linear-gradient(90deg,rgba(11,13,18,.06),rgba(11,13,18,.52))}
+#stage.theme-forge .fg-post .fg-body{flex:1;padding:24px 28px;display:flex;flex-direction:column;justify-content:center}
+#stage.theme-forge .fg-post .fg-date{font:700 22px JB;letter-spacing:.04em;color:var(--edge,#61DAFB);margin-bottom:10px}
+#stage.theme-forge .fg-post .fg-title{font:700 34px ID;line-height:1.16;letter-spacing:-.02em;color:var(--tx)}
+
+/* 11: the measured results, four tiles over the real table */
+#stage.theme-forge .fg-stat{
+  position:absolute;border-radius:18px;padding:22px 24px;
+  background:linear-gradient(180deg,#181D27,#11151D);
+  border:2px solid var(--bd);border-top:3px solid var(--edge,#4ADE80);
+  box-shadow:0 22px 52px rgba(0,0,0,.55);
+}
+#stage.theme-forge .fg-stat .fg-k{font:700 22px JB;letter-spacing:.04em;text-transform:uppercase;color:var(--tx3)}
+#stage.theme-forge .fg-stat .fg-v{margin-top:10px;font:700 58px JB;letter-spacing:-.035em;color:var(--edge,#4ADE80);line-height:1}
+#stage.theme-forge .fg-stat .fg-d{margin-top:10px;font:400 24px Inter;color:var(--tx2);line-height:1.34}

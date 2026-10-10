@@ -1,0 +1,94 @@
+/* AWS Management Console mock, styled after Cloudscape (AWS's open-source design system). 960x720, light mode. */
+.aws{position:absolute;width:960px;height:720px;border-radius:22px;background:var(--aws-page);overflow:hidden;font-family:OS,Inter;
+  border:2px solid #C9D2E2;box-shadow:0 30px 70px rgba(0,0,0,.5);color:var(--aws-ink)}
+.aws-nav{height:64px;background:var(--aws-nav);display:flex;align-items:center;gap:18px;padding:0 20px}
+.aws-nav .logo{height:44px;width:44px}
+.aws-nav .svc{display:flex;align-items:center;gap:8px;font:600 22px OS;color:#D1D5DB;padding-left:6px}
+.aws-nav .svc svg{width:20px;height:20px;fill:none;stroke:#D1D5DB;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.aws-nav .search{flex:1 1 auto;max-width:330px;height:40px;margin-left:8px;border-radius:8px;background:var(--aws-nav2);border:2px solid var(--aws-nav-bd);
+  display:flex;align-items:center;gap:10px;padding:0 12px;font:400 21px OS;color:#8D99A8}
+.aws-nav .search svg{width:20px;height:20px;fill:none;stroke:#8D99A8;stroke-width:2.2;stroke-linecap:round}
+.aws-nav .search kbd{margin-left:auto;font:400 18px OS;color:#8D99A8}
+.aws-nav .right{margin-left:auto;display:flex;align-items:center;gap:22px;font:600 21px OS;color:#D1D5DB;white-space:nowrap}
+.aws-nav .right svg{width:22px;height:22px;fill:none;stroke:#D1D5DB;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.aws-nav .right .dd::after{content:"";display:inline-block;width:8px;height:8px;border-right:2px solid #D1D5DB;border-bottom:2px solid #D1D5DB;transform:rotate(45deg);margin:0 2px 5px 9px}
+.aws-crumb{height:46px;background:#fff;border-bottom:2px solid var(--aws-line);display:flex;align-items:center;gap:12px;padding:0 20px;font:400 21px OS;color:var(--aws-blue)}
+.aws-crumb b{color:var(--aws-ink3);font-weight:400} .aws-crumb i{font-style:normal;color:#8D99A8}
+.aws-wrap{display:flex;height:calc(100% - 110px)}
+.aws-side{width:196px;background:#fff;border-right:2px solid var(--aws-line);padding:16px 0}
+.aws-side .sh{font:700 24px OS;color:var(--aws-ink);padding:0 20px 14px;border-bottom:2px solid var(--aws-line);margin-bottom:10px}
+.aws-side a{display:block;padding:8px 20px;font:400 21px OS;color:var(--aws-ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;border-left:4px solid transparent}
+.aws-side a.on{color:var(--aws-blue);font-weight:700;border-left-color:var(--aws-blue)}
+.aws-side a.grp{font-weight:700;color:var(--aws-ink);margin-top:8px}
+.aws-body{flex:1 1 auto;min-width:0;padding:18px 18px;position:relative;overflow:hidden}
+.aws-cont{background:#fff;border-radius:16px;box-shadow:0 1px 3px rgba(0,7,22,.12),0 1px 1px rgba(0,7,22,.08);overflow:hidden}
+.aws-ch{display:flex;align-items:center;gap:8px;padding:14px 14px;border-bottom:2px solid var(--aws-line)}
+.aws-ch b{font:700 25px OS;color:var(--aws-ink);white-space:nowrap} .aws-ch i{font:400 20px OS;color:var(--aws-blue);font-style:normal;margin-left:2px}
+.aws-ch .btns{margin-left:auto;display:flex;gap:8px}
+.aws-btn{display:inline-flex;align-items:center;gap:6px;height:36px;padding:0 13px;border-radius:18px;border:2px solid var(--aws-blue);
+  font:700 17px OS;color:var(--aws-blue);background:#fff;white-space:nowrap}
+.aws-btn.dd::after{content:"";display:inline-block;width:7px;height:7px;border-right:2px solid currentColor;border-bottom:2px solid currentColor;transform:rotate(45deg);margin:0 1px 4px 6px}
+.aws-btn.pri{background:var(--aws-orange);border-color:var(--aws-orange);color:var(--aws-ink)}
+.aws-btn.pri.blue{background:var(--aws-blue);border-color:var(--aws-blue);color:#fff}
+.aws-btn.dis{border-color:#9BA7B6;color:#9BA7B6}
+.aws-tbl{font:400 21px OS;color:var(--aws-ink)}
+.aws-th,.aws-tr{display:flex;align-items:center;gap:14px;padding:0 20px;height:54px;border-bottom:2px solid var(--aws-line)}
+.aws-th{font:700 20px OS;color:var(--aws-ink2);height:50px}
+.aws-tr.sel{background:var(--aws-sel)}
+.aws-tr.dim{color:#9BA7B6}
+.aws-tr:last-child{border-bottom:none}
+.aws-tbl .c{flex:1 1 0;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.aws-tbl .cb{flex:0 0 22px;width:22px;height:22px;border:2px solid #8D99A8;border-radius:4px;background:#fff;position:relative}
+.aws-tbl .cb.on{background:var(--aws-blue);border-color:var(--aws-blue)}
+.aws-tbl .cb.on::after{content:"";position:absolute;left:5px;top:1px;width:6px;height:11px;border-right:3px solid #fff;border-bottom:3px solid #fff;transform:rotate(45deg)}
+.aws-tbl .link{color:var(--aws-blue)}
+.aws-tbl .mono{font-family:JB;font-size:19px}
+.st{display:inline-flex;align-items:center;gap:8px;white-space:nowrap}
+.st svg{width:22px;height:22px;flex:0 0 auto}
+.st.ok{color:var(--aws-ok)} .st.prog{color:var(--aws-warn)} .st.stop{color:var(--aws-ink3)} .st.neg{color:var(--aws-ink3)} .st.err{color:var(--aws-err)} .st.pend{color:var(--aws-warn)}
+.aws-empty{padding:26px 20px;font:400 21px OS;color:var(--aws-ink3)}
+
+/* dropdown menu */
+.aws-menu{position:absolute;z-index:30;background:#fff;border:2px solid #7D8998;border-radius:10px;box-shadow:0 6px 20px rgba(0,7,22,.22);padding:6px 0;min-width:240px;opacity:0}
+.aws-menu span{display:block;padding:9px 18px;font:400 21px OS;color:var(--aws-ink);white-space:nowrap}
+.aws-menu span.hl{background:#F4F4F4;color:var(--aws-blue);font-weight:700}
+.aws-menu span.dis{color:#9BA7B6}
+.aws-menu hr{border:none;border-top:2px solid var(--aws-line);margin:6px 0}
+
+/* modal */
+.aws-modal{position:absolute;z-index:40;background:#fff;border-radius:16px;box-shadow:0 12px 40px rgba(0,7,22,.35);width:560px;overflow:hidden;opacity:0}
+.aws-modal .mh{padding:18px 22px;font:700 24px OS;border-bottom:2px solid var(--aws-line);display:flex;align-items:center}
+.aws-modal .mh svg{margin-left:auto;width:22px;height:22px;fill:none;stroke:var(--aws-ink2);stroke-width:2.4;stroke-linecap:round}
+.aws-modal .mb{padding:18px 22px;font:400 21px OS;line-height:1.45;color:var(--aws-ink)}
+.aws-modal .mb .warn{display:flex;gap:10px;align-items:flex-start;background:#FFF7E6;border:2px solid #FFB84D;border-radius:10px;padding:12px 14px;margin-top:12px;font-size:20px}
+.aws-modal .mb .warn svg{width:24px;height:24px;flex:0 0 auto;fill:none;stroke:#8D6605;stroke-width:2.2;stroke-linecap:round}
+.aws-modal .mb .field{margin-top:12px;display:flex;align-items:center;gap:10px;height:42px;border:2px solid #7D8998;border-radius:8px;padding:0 12px;font:400 21px OS;color:var(--aws-ink);background:#fff}
+.aws-modal .mf{padding:14px 22px 18px;display:flex;gap:10px;justify-content:flex-end;background:#FAFAFA}
+.aws-scrim{position:absolute;inset:0;z-index:35;background:rgba(0,7,22,.45);opacity:0}
+
+/* flashbar */
+.aws-flash{position:absolute;z-index:32;display:flex;align-items:center;gap:12px;padding:12px 18px;border-radius:12px;background:var(--aws-ok);color:#fff;font:600 21px OS;box-shadow:0 8px 24px rgba(0,7,22,.28);opacity:0;white-space:nowrap}
+.aws-flash svg{width:24px;height:24px;fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.aws-flash.blue{background:var(--aws-blue)}
+
+/* key-value + form (launch instance) */
+.aws-form{padding:16px 20px;display:flex;flex-direction:column;gap:12px}
+.aws-form .fr{display:flex;align-items:center;gap:14px}
+.aws-form .fl{flex:0 0 200px;font:700 20px OS;color:var(--aws-ink)}
+.aws-form .fv{flex:1 1 auto;height:42px;border:2px solid #7D8998;border-radius:8px;display:flex;align-items:center;padding:0 12px;font:400 21px OS;color:var(--aws-ink);background:#fff;gap:10px;white-space:nowrap;overflow:hidden}
+.aws-form .fv img{width:26px;height:26px}
+.aws-form .fv.dd::after{content:"";margin-left:auto;display:inline-block;width:8px;height:8px;border-right:2px solid var(--aws-ink);border-bottom:2px solid var(--aws-ink);transform:rotate(45deg);margin-bottom:4px}
+.aws-form .fh{font:400 19px OS;color:var(--aws-ink3);margin-top:-4px;margin-left:214px}
+.aws-summary{position:absolute;right:18px;bottom:18px;width:300px;background:#fff;border-radius:16px;box-shadow:0 1px 3px rgba(0,7,22,.12);padding:16px 18px;font:400 20px OS}
+.aws-summary b{display:block;font:700 22px OS;margin-bottom:8px}
+.aws-summary .kv{display:flex;justify-content:space-between;padding:4px 0;color:var(--aws-ink2)} .aws-summary .kv i{font-style:normal;color:var(--aws-ink)}
+
+/* billing (cost by service) */
+.aws-bill{padding:14px 20px 18px;font:400 20px OS}
+.aws-bill .br{display:flex;align-items:center;gap:14px;height:44px}
+.aws-bill .bl{flex:0 0 160px;color:var(--aws-ink);font-weight:600;white-space:nowrap}
+.aws-bill .bt{flex:1 1 auto;height:22px;background:#EEF1F4;border-radius:5px;overflow:hidden}
+.aws-bill .bt i{display:block;height:100%;width:100%;background:var(--aws-blue);border-radius:5px;transform-origin:left center;transform:scaleX(0)}
+.aws-bill .bt i.o{background:var(--aws-orange2)} .aws-bill .bt i.g{background:#7AA116} .aws-bill .bt i.p{background:#C925D1} .aws-bill .bt i.v{background:#8C4FFF}
+.aws-bill .bv{flex:0 0 110px;text-align:right;font:700 21px OS;color:var(--aws-ink)}
+.aws-bill .tot{border-top:2px solid var(--aws-line);margin-top:8px;padding-top:10px;display:flex;justify-content:space-between;font:700 22px OS}

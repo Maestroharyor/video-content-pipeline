@@ -1,0 +1,83 @@
+{
+  "version": 1,
+  "id": "ai-in-every-app",
+  "title": "AI shoved into every app",
+  "brand": "personal",
+  "source": {
+    "repo": "vid",
+    "project": "ai-in-every-app",
+    "asset": "renders/final/ai-in-every-app.mp4",
+    "poster": "renders/poster/01-pushing-ai-on-us.png"
+  },
+  "link": {
+    "url": "",
+    "label": "Full video",
+    "bio": "braandly.bio/ayomideodewale"
+  },
+  "alt": [
+    {
+      "asset": "renders/poster/10-sprinkle-vs-shoved.png",
+      "text": "A sprinkle of AI where it helps, against AI shoved into an app that did not need it."
+    }
+  ],
+  "platforms": {
+    "youtube": {
+      "title": "Every App Is Shoving AI at Us. We Did This With Web3",
+      "description": "Sometimes I just need a code editor. Not an agent orchestrator. Not a copilot. A code editor.\n\nI made a video recently about Windsurf becoming an agentic desktop, where the whole point is orchestrating and managing agents. Cursor went the same way. A lot of editors are going the same way. And that’s fine, except it’s now the only direction on offer.\n\nThis is why I have been using Zed. The AI integration is there when I want it, and it isn’t in my face when I don’t.\n\nWhat I actually loved about Cursor was never the agents. It was writing my own code with good autocomplete and tab suggestions. That’s what I was there for. When that stopped being the centre of the product, I stopped using it.\n\nI do understand why it happens. Companies go where the hype is. Nobody wants to look like they’re lagging. But at some point it stops being about what users are asking for and starts being about what impresses investors.\n\nSome AI features genuinely work. A sprinkle here and there, in the right place. The tiring part is the apps that didn’t need it at all getting it anyway.\n\nWe’ve done this before. A few years ago it was Web3, and everyone was going to rebuild their app on the blockchain. Clients came to me with app projects and listed Web3 integration as a main feature. I’d look at it, think this is completely unnecessary, then build it anyway, because I was being paid.\n\nAnd then it settled. Now we do Web3 integrations when they’re genuinely needed, not because everyone is talking about it.\n\nAI isn’t going anywhere, and it’s a real invention. I’m just waiting for the part where it settles and stops being shoved down everyone's throat.\n\nEverything in one place: https://braandly.bio/ayomideodewale",
+      "hashtags": [
+        "AI",
+        "DeveloperTools",
+        "SoftwareEngineering",
+        "Zed",
+        "Cursor"
+      ]
+    },
+    "instagram": {
+      "body": "Sometimes I just need a code editor. Not an agent orchestrator. Just an editor.\n\nWindsurf is becoming an agentic desktop. Cursor went the same way. Most editors are heading there, and that’s now the only direction on offer.\n\nWhat I loved about Cursor was autocomplete and tab suggestions, not agents. When that stopped being the point of the product, I left. I use Zed now: the AI is there when I want it and out of the way when I don’t.\n\nI get it, companies go where the hype is. But at some point it stops being about users and starts being about investors.\n\nWe did this with Web3. Clients told me blockchain integration was a main feature of their app. It wasn’t. I built it anyway because I was being paid. Then it settled.\n\nAI will settle too. I’m just tired.\n\nFull one in the video. Link in bio.",
+      "hashtags": [
+        "AI",
+        "Coding",
+        "DeveloperTools",
+        "Zed",
+        "Cursor"
+      ]
+    },
+    "tiktok": {
+      "body": "Sometimes I just need a code editor. Not an agent orchestrator.\n\nWindsurf is becoming an agentic desktop. Cursor went the same way. Most editors are heading there, and that’s the only direction on offer now.\n\nI loved Cursor for the autocomplete and the tab suggestions, not the agents. So I moved to Zed, where the AI is there when I want it and out of the way when I don’t.\n\nWe did this exact thing with Web3. It settled. This will too.",
+      "hashtags": [
+        "AI",
+        "DeveloperTools",
+        "Coding",
+        "TechTok",
+        "Zed"
+      ]
+    },
+    "x": {
+      "body": "Sometimes I just need a code editor. Not an agent orchestrator.\n\nI loved Cursor for autocomplete and tab suggestions, not agents. The agents took over the product, so I went elsewhere.\n\nWe did this with Web3 too. It settled. This will settle.",
+      "alternates": [
+        "Clients used to tell me Web3 integration was a main feature of their app. It wasn’t. I built it anyway because I was being paid. AI is more useful than that ever was, and companies are still bolting it onto products that didn’t ask for it."
+      ],
+      "hashtags": [
+        "AI",
+        "DeveloperTools"
+      ]
+    },
+    "linkedin": {
+      "body": "Sometimes I just need a code editor. Not an agent orchestrator, not a copilot. An editor.\n\nWindsurf is becoming an agentic desktop, built around orchestrating agents. Cursor went the same way. Most editors are heading there. Each is a reasonable product decision. Collectively it means there’s now one direction on offer.\n\nWhat I liked about Cursor was never the agents. It was the tab suggestions, and writing the code myself with something good sitting next to me. Once that was no longer what the product was for, I moved off it. I use Zed now, where the AI integration is there when I want it and out of the way when I don’t.\n\nI understand the pressure. Companies go where the hype is, and nobody wants to look like they’re lagging. But there’s a point where the roadmap stops answering what users asked for and starts answering what impresses investors, and users can tell the difference.\n\nWe have run this exact cycle before. A few years ago clients came to me with app briefs where Web3 integration was listed as a main feature. Connect to the blockchain, because that’s what everyone was doing. I would look at the product, think this is genuinely unnecessary, and then build it, because I was being paid to build it.\n\nIt settled eventually. Now Web3 integration happens when there’s a real reason for it, and the work is better for it.\n\nAI isn’t Web3. It’s far more useful and it isn’t going anywhere. But the adoption pattern is the same one, and the same correction is coming: the sprinkle in the right place survives, the feature bolted on to look current doesn’t.\n\nIf you’re putting AI in your product this quarter, the useful test is simple. Would you still ship it if no investor ever saw the roadmap?",
+      "hashtags": [
+        "AI",
+        "ProductManagement",
+        "SoftwareEngineering",
+        "DeveloperTools",
+        "BuildInPublic"
+      ]
+    },
+    "whatsapp-status": {
+      "body": "Sometimes I just want a code editor, not an agent orchestrator. Every app is shoving AI in now, the same way everyone shoved in Web3. New video is up."
+    },
+    "whatsapp-telegram": {
+      "body": "New one is up.\n\nThis one is about every app shoving AI at us. Editors are all turning into agent orchestrators, and sometimes I just want to write code with good autocomplete. I moved to Zed for that reason.\n\nThe part I keep coming back to: we did this with Web3. Clients used to list blockchain integration as a main feature of an app that had no use for it, and I would build it anyway. It settled eventually, and now it gets used where it makes sense. AI will get there too.\n\nhttps://braandly.bio/ayomideodewale"
+    }
+  },
+  "notes": "Everything traces to transcript.txt: the agentic desktop direction, Zed, the Cursor autocomplete point, hype versus investors, and the Web3 client story. The closing test in the LinkedIn post ('would you ship it if no investor saw the roadmap') is mine, not in the video. link.url is empty until the video is published."
+}

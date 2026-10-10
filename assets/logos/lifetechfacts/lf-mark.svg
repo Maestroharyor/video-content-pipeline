@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1000 1000">
+<title>LifeTech Facts mark</title>
+<defs><radialGradient id="lf-bevel" cx="495.91" cy="495.91" r="481.04" gradientUnits="userSpaceOnUse"><stop offset=".9" stop-color="#1B2A55" stop-opacity="0"/><stop offset=".975" stop-color="#1B2A55" stop-opacity=".26"/><stop offset="1" stop-color="#1B2A55" stop-opacity=".36"/></radialGradient></defs>
+<circle id="lf-disc" cx="499.91" cy="499.91" r="497.97" fill="#3B5998"/>
+<circle id="lf-bevel-ring" cx="499.91" cy="499.91" r="481.04" fill="url(#lf-bevel)"/>
+<g id="lf-orbit" fill="#fff"><path id="lf-arc1" d="M228.59 773.18 A385.09 385.09 0 0 1 656.23 147.98 L628.94 187.63 A337.89 337.89 0 0 0 261.84 739.69 Z"/><path id="lf-arc2" d="M800.75 259.51 A385.09 385.09 0 0 1 390.86 869.24 L412.74 826.36 A337.89 337.89 0 0 0 763.87 288.97 Z"/><circle id="lf-ball1" cx="246.11" cy="755.53" r="75.97"/><circle id="lf-ball2" cx="782.29" cy="274.24" r="75.91"/></g>
+<g id="lf-mono"><g id="lf-facets" fill="#CDCFE3"><path id="lf-foot" d="M384.36 603.23H480.32V681.44H384.36Z"/><path id="lf-wing" d="M588.35 382.59H753.6C753.6,386.33 742.9,460.76 636.27,460.76H588.35Z"/><path id="lf-bar" d="M588.35 519.29H646.03C646.03,538.45 619.86,568.38 589.35,568.38H588.35Z"/></g><path id="lf-L" d="M307.11 382.59H310.95C386.09,382.59 385.36,449.43 385.36,500.99V602.66C385.36,680.71 454.95,681.44 454.95,681.44H307.11Z" fill="#fff"/><path id="lf-T" d="M382.22,382.59H664.04C588.69,382.59 589.35,462.33 589.35,465.51V592.24C589.35,635.18 578.72,681.44 511.66,681.44H511.2V460.76H444.36C444.36,454.66 439.61,382.59 382.22,382.59Z" fill="#fff"/></g>
+</svg>

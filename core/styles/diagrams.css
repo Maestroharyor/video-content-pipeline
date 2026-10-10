@@ -1,0 +1,64 @@
+/* ---------- cost bar chart (dark) ---------- */
+.cbar{position:absolute;background:var(--bg1);border:2px solid var(--bd);border-radius:26px;padding:28px 34px 22px}
+.cbar .ttl{font:700 26px Inter;font-size:calc(26px * var(--ts,1));color:var(--tx2);letter-spacing:.02em;display:flex;align-items:center;gap:14px}
+.cbar .ttl small{margin-left:auto;font:600 24px JB;font-size:calc(24px * var(--ts,1));color:var(--tx3)}
+.cbar .plot{position:relative;display:flex;align-items:flex-end;gap:22px;margin-top:22px;border-bottom:2px solid var(--bd2)}
+.cbar .gl{position:absolute;left:0;right:0;border-top:2px dashed rgba(46,61,92,.7)}
+.cbar .col{flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;height:100%;position:relative}
+.cbar .col i{display:block;width:100%;border-radius:12px 12px 4px 4px;background:#2E3D5C;transform-origin:bottom center;transform:scaleY(0)}
+.cbar .col i.o{background:linear-gradient(180deg,#FFB547,#FF9900)} .cbar .col i.r{background:linear-gradient(180deg,#FB7185,#E11D48)}
+.cbar .col i.b{background:linear-gradient(180deg,#7DD3FC,#38BDF8)} .cbar .col i.g{background:linear-gradient(180deg,#6EE7B7,#34D399)}
+.cbar .col i.a{background:linear-gradient(180deg,#FCD34D,#F59E0B)} .cbar .col i.t{background:linear-gradient(180deg,#5EEAD4,#2DD4BF)}
+.cbar .col i.v{background:linear-gradient(180deg,#A78BFA,#8B5CF6)} .cbar .col i.d{background:#2E3D5C}
+.cbar .col b{position:absolute;top:100%;margin-top:12px;font:600 23px Inter;font-size:calc(23px * var(--ts,1));color:var(--tx3);white-space:nowrap}
+.cbar .col em{position:absolute;bottom:100%;margin-bottom:10px;font:700 24px JB;font-size:calc(24px * var(--ts,1));font-style:normal;color:var(--tx);white-space:nowrap;opacity:0}
+.cbar .lbls{height:44px}
+
+/* ---------- generic diagram nodes ---------- */
+.node{position:absolute;display:flex;align-items:center;gap:20px;padding:22px 26px;border-radius:22px;background:var(--bg1);border:2px solid var(--bd2)}
+.node img{width:76px;height:76px;border-radius:16px;flex:0 0 auto}
+.node .nt b{display:block;font:700 30px Inter;font-size:calc(30px * var(--ts,1));color:var(--tx)} .node .nt i{display:block;font:500 25px Inter;font-size:calc(25px * var(--ts,1));font-style:normal;color:var(--tx3);margin-top:4px}
+.node.col{flex-direction:column;justify-content:center;text-align:center;gap:14px}
+.node.col .nt{text-align:center}
+.node.g{border-color:rgba(52,211,153,.6);box-shadow:0 0 44px rgba(52,211,153,.18)}
+.node.r{border-color:rgba(251,113,133,.6)} .node.v{border-color:rgba(139,92,246,.6);box-shadow:0 0 44px rgba(139,92,246,.18)}
+.node.a{border-color:rgba(245,158,11,.6);box-shadow:0 0 44px rgba(245,158,11,.16)}
+.node .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;font:700 21px Inter;font-size:calc(21px * var(--ts,1));margin-top:8px}
+.pill.ok{background:#123528;color:#8FE9C4} .pill.stop{background:#2A3142;color:#A8B6D1} .pill.warn{background:#3A2A10;color:#FFD98C}
+
+/* ---------- VPC diagram ---------- */
+.vpc{position:absolute}
+.vpc .box{position:absolute;border-radius:22px;border:3px dashed var(--bd2)}
+.vpc .box.vpcb{border-color:rgba(139,92,246,.7)}
+.vpc .box.pub{border-color:rgba(52,211,153,.6);background:rgba(52,211,153,.05);border-style:solid}
+.vpc .box.priv{border-color:rgba(56,189,248,.55);background:rgba(56,189,248,.05);border-style:solid}
+.vpc .box b{position:absolute;left:22px;top:-18px;padding:2px 14px;border-radius:999px;background:var(--bg0);font:700 22px Inter;font-size:calc(22px * var(--ts,1));letter-spacing:.12em;text-transform:uppercase;color:var(--tx2)}
+.vpc .box.vpcb b{color:#CDB9FF} .vpc .box.pub b{color:#8FE9C4} .vpc .box.priv b{color:#A9DEF9}
+.vpc .n{position:absolute;display:flex;flex-direction:column;align-items:center;gap:10px;width:170px}
+.vpc .n .ic{width:112px;height:112px;border-radius:24px;background:#fff;display:grid;place-items:center;box-shadow:0 12px 34px rgba(0,0,0,.4)}
+.vpc .n .ic img{width:80px;height:80px}
+.vpc .n .ic.sq{padding:0} .vpc .n .ic.sq img{width:112px;height:112px;border-radius:24px}
+.vpc .n .ic.dk{background:var(--bg1);border:2px solid var(--bd2)}
+.vpc .n span{font:600 24px Inter;font-size:calc(24px * var(--ts,1));color:var(--tx2);text-align:center;line-height:1.2;white-space:nowrap}
+.vpc .n.hot .ic{box-shadow:0 0 0 4px rgba(139,92,246,.7),0 0 60px rgba(139,92,246,.45)}
+.vpc .cloud{position:absolute;display:flex;align-items:center;gap:14px;font:700 26px Inter;font-size:calc(26px * var(--ts,1));color:var(--tx2)}
+.vpc .cloud svg{width:72px;height:72px;fill:none;stroke:var(--tx2);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- checklist ---------- */
+.chk{position:absolute;display:flex;align-items:center;gap:22px;height:104px;padding:0 26px;border-radius:22px;background:var(--bg1);border:2px solid var(--bd2);width:var(--cw,960px)}
+.chk .bx{width:54px;height:54px;border-radius:14px;border:3px solid var(--bd2);display:grid;place-items:center;flex:0 0 auto;position:relative}
+.chk .bx svg{width:34px;height:34px;overflow:visible}
+.chk .bx svg path{fill:none;stroke:var(--green);stroke-width:4;stroke-linecap:round;stroke-linejoin:round}
+.chk img{width:62px;height:62px;border-radius:14px}
+.chk .tx{font:700 32px Inter;font-size:calc(32px * var(--ts,1));color:var(--tx)} .chk .tx small{display:block;font:500 24px Inter;font-size:calc(24px * var(--ts,1));color:var(--tx3);margin-top:2px}
+.chk .tail{margin-left:auto;font:600 24px JB;font-size:calc(24px * var(--ts,1));color:var(--tx3)}
+.chk.done{border-color:rgba(52,211,153,.55)} .chk.done .bx{border-color:var(--green);background:#123528}
+
+/* ---------- compare panels ---------- */
+.cmp{position:absolute;border-radius:26px;background:var(--bg1);border:2px solid var(--bd2);padding:34px 36px;display:flex;flex-direction:column;gap:14px}
+.cmp .lb{font:700 24px Inter;font-size:calc(24px * var(--ts,1));letter-spacing:.14em;text-transform:uppercase;color:var(--tx3)}
+.cmp .qt{font:800 46px ID;font-size:calc(46px * var(--ts,1));letter-spacing:-.02em;line-height:1.1;color:var(--tx)}
+.cmp.r{border-color:rgba(251,113,133,.6)} .cmp.r .lb{color:var(--rose)}
+.cmp.g{border-color:rgba(52,211,153,.6)} .cmp.g .lb{color:var(--green)}
+.cmp.o{border-color:rgba(255,153,0,.6)} .cmp.o .lb{color:var(--orange)}
+.strike{position:absolute;overflow:visible} .strike path{fill:none;stroke:var(--rose);stroke-width:8;stroke-linecap:round}

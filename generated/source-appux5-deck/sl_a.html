@@ -1,0 +1,232 @@
+<!-- ============ s01 title ============ -->
+<div class="slide" id="s01">
+  <div class="eyebrow" id="a-eb">App UX &middot; Tip 05</div>
+  <div class="h1" id="a-h1">Cursor-based<br>pagination</div>
+  <div class="content" style="top:470px">
+    <div style="position:relative;width:960px;height:1120px">
+      <div class="rowbar" id="a-r1" style="left:0;top:0;width:700px">Transaction &middot; 4821</div>
+      <div class="rowbar" id="a-r2" style="left:0;top:84px;width:700px">Transaction &middot; 4820</div>
+      <div class="rowbar" id="a-r3" style="left:0;top:168px;width:700px">Transaction &middot; 4819</div>
+      <div class="rowbar" id="a-r4" style="left:0;top:252px;width:700px">Transaction &middot; 4818</div>
+      <svg class="draw" id="a-line" style="left:0;top:346px;width:960px;height:20px" viewBox="0 0 960 20">
+        <path d="M0 10 H930" stroke="#2DD4BF" stroke-width="5" stroke-dasharray="14 12"/>
+      </svg>
+      <div class="badge t" id="a-cur" style="left:0;top:388px">cursor &rarr; id 4818</div>
+      <div class="rowbar" id="a-r5" style="left:0;top:490px;width:700px">Transaction &middot; 4817</div>
+      <div class="rowbar" id="a-r6" style="left:0;top:574px;width:700px">Transaction &middot; 4816</div>
+      <div class="rowbar" id="a-r7" style="left:0;top:658px;width:700px">Transaction &middot; 4815</div>
+      <div class="sub" id="a-nx" style="left:0;top:760px;width:900px">The next request starts exactly here. Nothing before it is read again.</div>
+    </div>
+  </div>
+  <div class="foot" id="a-ft">Ten ways to improve your app's performance and UX.</div>
+</div>
+
+<!-- ============ s02 never load everything ============ -->
+<div class="slide" id="s02">
+  <div class="eyebrow r" id="b-eb">The rule</div>
+  <div class="h1 sm" id="b-h1">Never load the<br>whole list at once</div>
+  <div class="dev side" id="b-dev" style="left:60px;top:470px">
+    <div class="scr">
+      <div class="isl"></div>
+      <div class="sbar"><span>9:41</span><span class="rt"><svg viewBox="0 0 24 24"><use href="#i-wifi"/></svg><svg viewBox="0 0 24 24"><rect x="2" y="8" width="17" height="9" rx="2.6"/><rect x="20" y="10.6" width="2" height="3.8" rx="1"/></svg></span></div>
+      <div class="appbar"><span class="av"><svg viewBox="0 0 24 24"><use href="#i-user"/></svg></span>
+        <span class="ib"><svg viewBox="0 0 24 24"><use href="#i-search"/></svg></span></div>
+      <div class="body">
+        <div class="ah1">Transactions</div>
+        <div class="ah2">All accounts</div>
+        <div class="seclbl">Today</div>
+        <div class="trow" id="b-t1"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-cart"/></svg></span><span class="lb"><span>Whole Foods</span><small>Groceries</small></span><span class="amt dn">-$64.20</span></div>
+        <div class="trow" id="b-t2"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-send"/></svg></span><span class="lb"><span>Sarah Mitchell</span><small>Transfer sent</small></span><span class="amt dn">-$120.00</span></div>
+        <div class="trow" id="b-t3"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-card"/></svg></span><span class="lb"><span>Spotify</span><small>Subscription</small></span><span class="amt dn">-$11.99</span></div>
+        <div class="trow" id="b-t4"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-bolt"/></svg></span><span class="lb"><span>Payroll deposit</span><small>Northwind Ltd</small></span><span class="amt up">+$3,410.00</span></div>
+        <div class="trow" id="b-t5"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-tag"/></svg></span><span class="lb"><span>James Carter</span><small>Split bill</small></span><span class="amt up">+$28.50</span></div>
+      </div>
+      <div class="tabbar">
+        <span class="tb on"><svg viewBox="0 0 24 24"><use href="#i-home"/></svg><b>Home</b></span>
+        <span class="tb"><svg viewBox="0 0 24 24"><use href="#i-list"/></svg><b>Activity</b></span>
+        <span class="tb"><svg viewBox="0 0 24 24"><use href="#i-card"/></svg><b>Cards</b></span>
+        <span class="tb"><svg viewBox="0 0 24 24"><use href="#i-user"/></svg><b>You</b></span>
+      </div>
+      <div class="homeind"></div>
+    </div>
+  </div>
+  <div class="badge r" id="b-b1" style="left:700px;top:530px">12,480 rows</div>
+  <div class="sub" id="b-s1" style="left:700px;top:606px;width:320px">in the table, and growing every minute.</div>
+  <div class="badge a" id="b-b2" style="left:700px;top:800px">You cannot<br>know the size</div>
+  <div class="sub" id="b-s2" style="left:700px;top:948px;width:320px">So you ask for a page, not the list.</div>
+  <div class="badge t" id="b-b3" style="left:700px;top:1160px">limit 20</div>
+  <div class="sub" id="b-s3" style="left:700px;top:1240px;width:320px">Fixed page size, every single time.</div>
+  <div class="foot" id="b-ft">The screen only ever holds what the user can actually see.</div>
+</div>
+
+<!-- ============ s03 what the cursor is ============ -->
+<div class="slide" id="s03">
+  <div class="eyebrow v" id="c-eb">The mechanism</div>
+  <div class="h1 sm" id="c-h1">The backend hands<br>back a cursor</div>
+  <div class="content" style="top:470px">
+    <div style="position:relative;width:960px;height:1180px">
+      <div class="panel" id="c-app" style="position:absolute;left:0;top:0;width:280px;height:158px">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding-top:22px">
+          <div class="chip b" style="border:none;background:transparent;padding:0"><span class="ico" style="width:52px;height:52px"><svg style="width:50px;height:50px" viewBox="0 0 24 24"><use href="#i-grid"/></svg></span></div>
+          <b style="font:700 34px Inter;color:var(--tx)">Your app</b>
+        </div>
+      </div>
+      <div class="panel" id="c-api" style="position:absolute;left:680px;top:0;width:280px;height:158px">
+        <div style="display:flex;flex-direction:column;align-items:center;gap:12px;padding-top:22px">
+          <div class="chip v" style="border:none;background:transparent;padding:0"><span class="ico" style="width:52px;height:52px"><svg style="width:50px;height:50px" viewBox="0 0 24 24"><use href="#i-db"/></svg></span></div>
+          <b style="font:700 34px Inter;color:var(--tx)">Backend</b>
+        </div>
+      </div>
+
+      <svg class="draw" id="c-a1" style="left:275px;top:30px;width:410px;height:40px" viewBox="0 0 410 40">
+        <defs><marker id="mv1" viewBox="0 0 12 12" refX="9" refY="6" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 11 6 1 11z" fill="#38BDF8"/></marker></defs>
+        <path d="M8 20 H392" stroke="#38BDF8" stroke-width="5" marker-end="url(#mv1)"/>
+      </svg>
+      <div class="badge t" id="c-q1" style="left:0;top:190px;width:960px;justify-content:center;font-size:28px">GET /transactions?limit=20</div>
+
+      <svg class="draw" id="c-a2" style="left:275px;top:98px;width:410px;height:40px" viewBox="0 0 410 40">
+        <defs><marker id="mv2" viewBox="0 0 12 12" refX="9" refY="6" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 11 6 1 11z" fill="#8B5CF6"/></marker></defs>
+        <path d="M402 20 H18" stroke="#8B5CF6" stroke-width="5" marker-end="url(#mv2)"/>
+      </svg>
+
+      <div class="code" id="c-code" style="position:absolute;left:0;top:290px;width:960px">
+        <div class="bar"><i></i><i></i><i></i><span>200 OK &middot; response</span></div>
+        <pre><span class="cl" id="c-l1">{</span><span class="cl" id="c-l2">  <span class="f">"items"</span>: [ <span class="c">/* 20 transactions */</span> ],</span><span class="cl" id="c-l3">  <span class="f">"nextCursor"</span>: <span class="s">"eyJpZCI6NDgxOH0"</span>,</span><span class="cl" id="c-l4">  <span class="f">"hasMore"</span>: <span class="k">true</span></span><span class="cl" id="c-l5">}</span></pre>
+      </div>
+
+      <div class="badge v" id="c-note" style="left:0;top:648px;width:960px;display:block;font:600 34px Inter;line-height:1.4;padding:26px 30px">The cursor is a pointer to the last row the user saw. Send it back and the next page starts from there.</div>
+
+      <div class="rowbar t" id="c-p1" style="left:0;top:836px;width:460px">Page 1 &middot; rows 4821&ndash;4802</div>
+      <div class="rowbar v" id="c-p2" style="left:500px;top:836px;width:460px">Page 2 &middot; starts at 4801</div>
+      <svg class="draw" id="c-a3" style="left:455px;top:926px;width:60px;height:60px" viewBox="0 0 60 60">
+        <defs><marker id="mv3" viewBox="0 0 12 12" refX="9" refY="6" markerWidth="7" markerHeight="7" orient="auto"><path d="M1 1 11 6 1 11z" fill="#2DD4BF"/></marker></defs>
+        <path d="M10 30 H46" stroke="#2DD4BF" stroke-width="5" marker-end="url(#mv3)"/>
+      </svg>
+    </div>
+  </div>
+  <div class="foot" id="c-ft">No page numbers. No counting. Just "carry on from here".</div>
+</div>
+
+<!-- ============ s04 cursor over offset ============ -->
+<div class="slide" id="s04">
+  <div class="eyebrow" id="d-eb">The preference</div>
+  <div class="h1 sm" id="d-h1">Cursors beat offsets<br>on big, moving data</div>
+  <div class="content" style="top:470px">
+    <div style="position:relative;width:960px;height:1180px">
+      <div class="panel" id="d-c1" style="position:absolute;left:0;top:0;width:460px;height:500px;border-color:rgba(251,113,133,.42)">
+        <div style="padding:34px 32px">
+          <div class="chip r" style="font-size:28px">Offset</div>
+          <div style="font:400 30px JB;color:#FFB4C0;margin-top:26px">LIMIT 20<br>OFFSET 10000</div>
+          <div style="height:2px;background:var(--bd);margin:26px 0"></div>
+          <div style="font:500 30px Inter;color:var(--tx2);line-height:1.5">Counts past every row it skips, and re-numbers itself the moment a row is inserted.</div>
+        </div>
+      </div>
+      <div class="panel" id="d-c2" style="position:absolute;left:500px;top:0;width:460px;height:500px;border-color:rgba(45,212,191,.42)">
+        <div style="padding:34px 32px">
+          <div class="chip t" style="font-size:28px">Cursor</div>
+          <div style="font:400 30px JB;color:#8FEEDF;margin-top:26px">WHERE id &lt; 4818<br>LIMIT 20</div>
+          <div style="height:2px;background:var(--bd);margin:26px 0"></div>
+          <div style="font:500 30px Inter;color:var(--tx2);line-height:1.5">Seeks straight to a known row. Inserts above it change nothing at all.</div>
+        </div>
+      </div>
+      <div class="sub" id="d-s" style="left:0;top:556px;width:960px">Use a cursor when the dataset is large, or when it changes while people are reading it.</div>
+      <div class="chip" id="d-x1" style="position:absolute;left:0;top:676px">Large tables</div>
+      <div class="chip" id="d-x2" style="position:absolute;left:300px;top:676px">Live inserts</div>
+      <div class="chip" id="d-x3" style="position:absolute;left:590px;top:676px">Deep pages</div>
+      <div class="badge t" id="d-win" style="left:0;top:786px;width:960px;display:block;text-align:center;font:700 38px Inter;padding:30px">Cursor wins all three.</div>
+    </div>
+  </div>
+  <div class="foot" id="d-ft">Offsets are fine for a small, static table. Most product data is neither.</div>
+</div>
+
+<!-- ============ s05 unbounded lists ============ -->
+<div class="slide" id="s05">
+  <div class="eyebrow a" id="e-eb">Where it applies</div>
+  <div class="h1 sm" id="e-h1">Anywhere a list<br>grows unbounded</div>
+  <div class="content" style="top:470px">
+    <div style="position:relative;width:960px;height:1180px">
+      <div class="rowbar a" id="e-g1" style="left:0;top:0;width:960px;height:98px;font:600 34px Inter">
+        <span style="display:flex;align-items:center;gap:22px"><svg style="width:38px;height:38px;fill:none;stroke:#FFDFA6;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><use href="#i-card"/></svg>Transaction history &middot; fintech</span></div>
+      <div class="rowbar a" id="e-g2" style="left:0;top:120px;width:960px;height:98px;font:600 34px Inter">
+        <span style="display:flex;align-items:center;gap:22px"><svg style="width:38px;height:38px;fill:none;stroke:#FFDFA6;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><use href="#i-heart"/></svg>Activity or social feed</span></div>
+      <div class="rowbar a" id="e-g3" style="left:0;top:240px;width:960px;height:98px;font:600 34px Inter">
+        <span style="display:flex;align-items:center;gap:22px"><svg style="width:38px;height:38px;fill:none;stroke:#FFDFA6;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><use href="#i-shield"/></svg>Audit log &middot; SaaS timeline</span></div>
+      <div class="rowbar a" id="e-g4" style="left:0;top:360px;width:960px;height:98px;font:600 34px Inter">
+        <span style="display:flex;align-items:center;gap:22px"><svg style="width:38px;height:38px;fill:none;stroke:#FFDFA6;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><use href="#i-bell"/></svg>Notification history</span></div>
+      <div class="rowbar a" id="e-g5" style="left:0;top:480px;width:960px;height:98px;font:600 34px Inter">
+        <span style="display:flex;align-items:center;gap:22px"><svg style="width:38px;height:38px;fill:none;stroke:#FFDFA6;stroke-width:2;stroke-linecap:round;stroke-linejoin:round" viewBox="0 0 24 24"><use href="#i-bag"/></svg>Product listings &middot; e-commerce</span></div>
+      <div class="badge t" id="e-note" style="left:0;top:640px;width:960px;display:block;font:600 36px Inter;line-height:1.42;padding:30px 32px">If you cannot name the last row in advance, you need a cursor.</div>
+    </div>
+  </div>
+  <div class="foot" id="e-ft">Five lists that never stop getting longer.</div>
+</div>
+
+<!-- ============ s06 fintech ============ -->
+<div class="slide" id="s06">
+  <div class="eyebrow" id="f-eb">Example 01 &middot; fintech</div>
+  <div class="h1 sm" id="f-h1">Transaction history</div>
+  <div class="dev" id="f-dev" style="left:182px;top:420px">
+    <div class="scr">
+      <div class="isl"></div>
+      <div class="sbar"><span>9:41</span><span class="rt"><svg viewBox="0 0 24 24"><use href="#i-wifi"/></svg><svg viewBox="0 0 24 24"><rect x="2" y="8" width="17" height="9" rx="2.6"/><rect x="20" y="10.6" width="2" height="3.8" rx="1"/></svg></span></div>
+      <div class="appbar"><span class="av"><svg viewBox="0 0 24 24"><use href="#i-user"/></svg></span>
+        <span class="ib"><svg viewBox="0 0 24 24"><use href="#i-search"/></svg></span></div>
+      <div class="body">
+        <div class="ah1">Transactions</div>
+        <div class="ah2">Checking &middot;&middot;&middot; 4417</div>
+        <div class="seclbl">This week</div>
+        <div class="trow" id="f-t1"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-bolt"/></svg></span><span class="lb"><span>Payroll deposit</span><small>Northwind Ltd</small></span><span class="amt up">+$3,410.00</span></div>
+        <div class="trow" id="f-t2"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-send"/></svg></span><span class="lb"><span>Sarah Mitchell</span><small>Transfer sent</small></span><span class="amt dn">-$120.00</span></div>
+        <div class="trow" id="f-t3"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-cart"/></svg></span><span class="lb"><span>Whole Foods</span><small>Groceries</small></span><span class="amt dn">-$64.20</span></div>
+        <div class="trow" id="f-t4"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-card"/></svg></span><span class="lb"><span>Spotify</span><small>Subscription</small></span><span class="amt dn">-$11.99</span></div>
+        <div class="trow" id="f-t5"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-tag"/></svg></span><span class="lb"><span>James Carter</span><small>Split bill</small></span><span class="amt up">+$28.50</span></div>
+        <div class="trow" id="f-t6"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-cart"/></svg></span><span class="lb"><span>Blue Bottle</span><small>Coffee</small></span><span class="amt dn">-$6.75</span></div>
+        <div class="loadrow" id="f-load"><span class="spin" style="border-color:#CBD5E6;border-top-color:#1266F1"></span> Loading more</div>
+      </div>
+      <div class="tabbar">
+        <span class="tb on"><svg viewBox="0 0 24 24"><use href="#i-home"/></svg><b>Home</b></span>
+        <span class="tb"><svg viewBox="0 0 24 24"><use href="#i-list"/></svg><b>Activity</b></span>
+        <span class="tb"><svg viewBox="0 0 24 24"><use href="#i-card"/></svg><b>Cards</b></span>
+        <span class="tb"><svg viewBox="0 0 24 24"><use href="#i-user"/></svg><b>You</b></span>
+      </div>
+      <div class="homeind"></div>
+    </div>
+  </div>
+  <div class="badge t" id="f-cur" style="left:60px;top:1700px;font-size:26px">?cursor=eyJpZCI6NDgxOH0</div>
+  <div class="foot" id="f-ft" style="top:1796px">Years of statements. Twenty rows at a time.</div>
+</div>
+
+<!-- ============ s07 social feed ============ -->
+<div class="slide" id="s07">
+  <div class="eyebrow v" id="g-eb">Example 02 &middot; social</div>
+  <div class="h1 sm" id="g-h1">Activity feed</div>
+  <div class="dev" id="g-dev" style="left:182px;top:420px">
+    <div class="scr">
+      <div class="isl"></div>
+      <div class="sbar"><span>9:41</span><span class="rt"><svg viewBox="0 0 24 24"><use href="#i-wifi"/></svg><svg viewBox="0 0 24 24"><rect x="2" y="8" width="17" height="9" rx="2.6"/><rect x="20" y="10.6" width="2" height="3.8" rx="1"/></svg></span></div>
+      <div class="appbar"><span class="av"><svg viewBox="0 0 24 24"><use href="#i-user"/></svg></span>
+        <span class="ib"><svg viewBox="0 0 24 24"><use href="#i-bell"/></svg></span></div>
+      <div class="body">
+        <div class="ah1">Activity</div>
+        <div class="ah2">From people you follow</div>
+        <div class="seclbl">Recent</div>
+        <div class="trow" id="g-t1"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-heart"/></svg></span><span class="lb"><span>Emma Larsen</span><small>liked your photo</small></span><span class="amt" style="font-size:24px;color:#8894AB">2m</span></div>
+        <div class="trow" id="g-t2"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg></span><span class="lb"><span>Daniel Reeves</span><small>replied to your post</small></span><span class="amt" style="font-size:24px;color:#8894AB">14m</span></div>
+        <div class="trow" id="g-t3"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-users"/></svg></span><span class="lb"><span>Priya Anand</span><small>started following you</small></span><span class="amt" style="font-size:24px;color:#8894AB">1h</span></div>
+        <div class="trow" id="g-t4"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-heart"/></svg></span><span class="lb"><span>Marcus Hale</span><small>liked your comment</small></span><span class="amt" style="font-size:24px;color:#8894AB">3h</span></div>
+        <div class="trow" id="g-t5"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-chat"/></svg></span><span class="lb"><span>Olivia Bennett</span><small>mentioned you</small></span><span class="amt" style="font-size:24px;color:#8894AB">5h</span></div>
+        <div class="trow" id="g-t6"><span class="ic"><svg viewBox="0 0 24 24"><use href="#i-users"/></svg></span><span class="lb"><span>Thomas Ainsley</span><small>started following you</small></span><span class="amt" style="font-size:24px;color:#8894AB">8h</span></div>
+        <div class="loadrow" id="g-load"><span class="spin" style="border-color:#CBD5E6;border-top-color:#8B5CF6"></span> Loading more</div>
+      </div>
+      <div class="tabbar">
+        <span class="tb"><svg viewBox="0 0 24 24"><use href="#i-home"/></svg><b>Feed</b></span>
+        <span class="tb"><svg viewBox="0 0 24 24"><use href="#i-search"/></svg><b>Search</b></span>
+        <span class="tb on"><svg viewBox="0 0 24 24"><use href="#i-heart"/></svg><b>Activity</b></span>
+        <span class="tb"><svg viewBox="0 0 24 24"><use href="#i-user"/></svg><b>You</b></span>
+      </div>
+      <div class="homeind"></div>
+    </div>
+  </div>
+  <div class="badge v" id="g-cur" style="left:60px;top:1700px;font-size:26px">?after=eyJ0cyI6MTcyMn0</div>
+  <div class="foot" id="g-ft" style="top:1796px">A feed has no last page. It only has a next one.</div>
+</div>

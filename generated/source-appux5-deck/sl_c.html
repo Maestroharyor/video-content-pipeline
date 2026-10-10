@@ -1,0 +1,137 @@
+<!-- ============ s15 query jumps straight there ============ -->
+<div class="slide" id="s15">
+  <div class="eyebrow" id="o-eb">Why the query is cheaper</div>
+  <div class="h1 sm" id="o-h1">It jumps straight to<br>the next page</div>
+  <div class="content" style="top:470px">
+    <div style="position:relative;width:960px;height:1180px">
+      <div class="chip r" id="o-hl" style="position:absolute;left:0;top:0">Offset</div>
+      <div class="chip t" id="o-hr" style="position:absolute;left:500px;top:0">Cursor</div>
+
+      <div class="panel" id="o-bl" style="position:absolute;left:0;top:86px;width:460px;height:620px;border-color:rgba(251,113,133,.35)">
+        <div id="o-scan" style="position:absolute;left:22px;top:22px;width:416px;height:470px"></div>
+        <div class="badge r" id="o-cl" style="left:22px;top:512px;font-size:27px">counted 10,000 rows</div>
+      </div>
+      <div class="panel" id="o-br" style="position:absolute;left:500px;top:86px;width:460px;height:620px;border-color:rgba(45,212,191,.35)">
+        <div id="o-seek" style="position:absolute;left:22px;top:22px;width:416px;height:470px"></div>
+        <div class="badge t" id="o-cr" style="left:22px;top:512px;font-size:27px">seeked to 1 row</div>
+      </div>
+
+      <div class="badge r" id="o-t1" style="left:0;top:740px;font-size:32px">840ms</div>
+      <div class="badge t" id="o-t2" style="left:500px;top:740px;font-size:32px">6ms</div>
+      <div class="sub" id="o-s" style="left:0;top:850px;width:960px">Offset asks the database to walk everything the user already read. A cursor names the row and starts there.</div>
+    </div>
+  </div>
+  <div class="foot" id="o-ft">The work stops scaling with how far down the list you are.</div>
+</div>
+
+<!-- ============ s16 no skipped or duplicated rows ============ -->
+<div class="slide" id="s16">
+  <div class="eyebrow r" id="p-eb">The offset bug</div>
+  <div class="h1 sm" id="p-h1">New rows arrive and<br>offsets start lying</div>
+  <div class="content" style="top:470px">
+    <div style="position:relative;width:960px;height:1180px">
+      <div class="badge a" id="p-new" style="left:0;top:0;width:960px;display:block;font:600 32px Inter;padding:24px 28px">A new transaction lands at the top while the user is reading.</div>
+
+      <div class="chip r" id="p-hl" style="position:absolute;left:0;top:120px">Offset &middot; page 2</div>
+      <div class="chip t" id="p-hr" style="position:absolute;left:500px;top:120px">Cursor &middot; page 2</div>
+
+      <div class="rowbar r" id="p-l1" style="left:0;top:206px;width:460px">Row 20 &nbsp;<span style="color:#FF8FA0;margin-left:auto">seen again</span></div>
+      <div class="rowbar" id="p-l2" style="left:0;top:290px;width:460px">Row 21</div>
+      <div class="rowbar" id="p-l3" style="left:0;top:374px;width:460px">Row 22</div>
+      <div class="rowbar r" id="p-l4" style="left:0;top:458px;width:460px">Row 24 &nbsp;<span style="color:#FF8FA0;margin-left:auto">23 skipped</span></div>
+
+      <div class="rowbar g" id="p-r1" style="left:500px;top:206px;width:460px">Row 21</div>
+      <div class="rowbar g" id="p-r2" style="left:500px;top:290px;width:460px">Row 22</div>
+      <div class="rowbar g" id="p-r3" style="left:500px;top:374px;width:460px">Row 23</div>
+      <div class="rowbar g" id="p-r4" style="left:500px;top:458px;width:460px">Row 24</div>
+
+      <div class="badge r" id="p-bl" style="left:0;top:566px;font-size:28px">1 duplicate &middot; 1 lost</div>
+      <div class="badge g" id="p-br" style="left:500px;top:566px;font-size:28px">clean, in order</div>
+
+      <div class="sub" id="p-s" style="left:0;top:670px;width:960px">The cursor is anchored to a row id, so an insert above it cannot shift the window.</div>
+    </div>
+  </div>
+  <div class="foot" id="p-ft">Duplicated and vanishing rows are almost always an offset problem.</div>
+</div>
+
+<!-- ============ s17 SQL keyset ============ -->
+<div class="slide" id="s17">
+  <div class="eyebrow v" id="q-eb">How to implement &middot; SQL</div>
+  <div class="h1 sm" id="q-h1">Keyset pagination</div>
+  <div class="content" style="top:440px">
+    <div style="position:relative;width:960px;height:1200px">
+      <div class="stack" id="q-g1" style="left:110px;top:0"><div class="ltile">{{LOGO:postgresql}}</div><div class="nm">PostgreSQL</div></div>
+      <div class="stack" id="q-g2" style="left:390px;top:0"><div class="ltile">{{LOGO:mysql}}</div><div class="nm">MySQL</div></div>
+      <div class="stack" id="q-g3" style="left:670px;top:0"><div class="ltile">{{LOGO:sqlite}}</div><div class="nm">SQLite</div></div>
+
+      <div class="code" id="q-code" style="position:absolute;left:0;top:230px;width:960px">
+        <div class="bar"><i></i><i></i><i></i><span>page.sql</span></div>
+        <pre><span class="cl" id="q-l1"><span class="c">-- first page</span></span><span class="cl" id="q-l2"><span class="k">SELECT</span> * <span class="k">FROM</span> transactions</span><span class="cl" id="q-l3"><span class="k">ORDER BY</span> id <span class="k">DESC</span> <span class="k">LIMIT</span> <span class="n">20</span>;</span><span class="cl" id="q-l4"></span><span class="cl" id="q-l5"><span class="c">-- every page after that</span></span><span class="cl" id="q-l6"><span class="k">SELECT</span> * <span class="k">FROM</span> transactions</span><span class="cl" id="q-l7"><span class="k">WHERE</span> id &lt; <span class="p">:last_seen_id</span></span><span class="cl" id="q-l8"><span class="k">ORDER BY</span> id <span class="k">DESC</span> <span class="k">LIMIT</span> <span class="n">20</span>;</span></pre>
+      </div>
+      <div class="badge t" id="q-note" style="left:0;top:770px;width:960px;display:block;font:600 34px Inter;line-height:1.42;padding:26px 30px">Index the column you sort on, or the seek turns back into a scan.</div>
+    </div>
+  </div>
+  <div class="foot" id="q-ft">Same idea whichever engine you are on.</div>
+</div>
+
+<!-- ============ s18 MongoDB ============ -->
+<div class="slide" id="s18">
+  <div class="eyebrow g" id="r-eb">How to implement &middot; NoSQL</div>
+  <div class="h1 sm" id="r-h1">Id-based cursor<br>in MongoDB</div>
+  <div class="content" style="top:440px">
+    <div style="position:relative;width:960px;height:1200px">
+      <div class="stack" id="r-g1" style="left:250px;top:0"><div class="ltile">{{LOGO:mongodb}}</div><div class="nm">MongoDB</div></div>
+      <div class="stack" id="r-g2" style="left:520px;top:0"><div class="ltile">{{LOGO:nodedotjs}}</div><div class="nm">Node.js</div></div>
+
+      <div class="code" id="r-code" style="position:absolute;left:0;top:230px;width:960px">
+        <div class="bar"><i></i><i></i><i></i><span>transactions.js</span></div>
+        <pre><span class="cl" id="r-l1"><span class="k">const</span> q = cursor</span><span class="cl" id="r-l2">  ? { userId, _id: { <span class="f">$lt</span>: <span class="f">new</span> ObjectId(cursor) } }</span><span class="cl" id="r-l3">  : { userId };</span><span class="cl" id="r-l4"></span><span class="cl" id="r-l5"><span class="k">const</span> items = <span class="k">await</span> Tx.<span class="f">find</span>(q)</span><span class="cl" id="r-l6">  .<span class="f">sort</span>({ _id: <span class="n">-1</span> })</span><span class="cl" id="r-l7">  .<span class="f">limit</span>(<span class="n">20</span>);</span><span class="cl" id="r-l8"></span><span class="cl" id="r-l9"><span class="k">const</span> nextCursor = items.at(<span class="n">-1</span>)?._id ?? <span class="k">null</span>;</span></pre>
+      </div>
+      <div class="badge g" id="r-note" style="left:0;top:830px;width:960px;display:block;font:600 34px Inter;line-height:1.42;padding:26px 30px">ObjectIds already sort by creation time, so the id is the cursor.</div>
+    </div>
+  </div>
+  <div class="foot" id="r-ft">Return the last document's id and the client sends it straight back.</div>
+</div>
+
+<!-- ============ s19 frontend ============ -->
+<div class="slide" id="s19">
+  <div class="eyebrow b" id="t-eb">How to implement &middot; frontend</div>
+  <div class="h1 sm" id="t-h1">Pass the cursor as<br>a URL param</div>
+  <div class="content" style="top:440px">
+    <div style="position:relative;width:960px;height:1200px">
+      <div class="stack" id="t-g1" style="left:250px;top:0"><div class="ltile">{{LOGO:svelte}}</div><div class="nm">SvelteKit</div></div>
+      <div class="stack" id="t-g2" style="left:520px;top:0"><div class="ltile">{{LOGO:react}}</div><div class="nm">React</div></div>
+
+      <div class="code" id="t-code" style="position:absolute;left:0;top:230px;width:960px">
+        <div class="bar"><i></i><i></i><i></i><span>+page.server.js</span></div>
+        <pre><span class="cl" id="t-l1"><span class="k">export async function</span> <span class="f">load</span>({ url, fetch }) {</span><span class="cl" id="t-l2">  <span class="k">const</span> cursor = url.searchParams.<span class="f">get</span>(<span class="s">'cursor'</span>);</span><span class="cl" id="t-l3">  <span class="k">const</span> qs = cursor ? <span class="s">`?cursor=${cursor}`</span> : <span class="s">''</span>;</span><span class="cl" id="t-l4">  <span class="k">const</span> res = <span class="k">await</span> <span class="f">fetch</span>(<span class="s">`/api/items${qs}`</span>);</span><span class="cl" id="t-l5">  <span class="k">return await</span> res.<span class="f">json</span>();  <span class="c">// items + nextCursor</span></span><span class="cl" id="t-l6">}</span></pre>
+      </div>
+      <div class="rowbar t" id="t-s1" style="left:0;top:670px;width:960px;height:82px;font:600 30px Inter">Sentinel hits the viewport &rarr; request the next page</div>
+      <div class="rowbar g" id="t-s2" style="left:0;top:772px;width:960px;height:82px;font:600 30px Inter">Append client-side, store the new cursor, never refetch</div>
+      <div class="badge b" id="t-note" style="left:0;top:900px;width:960px;display:block;font:600 34px Inter;line-height:1.42;padding:26px 30px">Deep-linkable, cacheable, and the back button still works.</div>
+    </div>
+  </div>
+  <div class="foot" id="t-ft">Same contract in React, with the cursor held in query state.</div>
+</div>
+
+<!-- ============ s20 outro ============ -->
+<div class="slide" id="s20">
+  <div class="eyebrow" id="u-eb">That's tip 05</div>
+  <div class="h1" id="u-h1">Follow for more.</div>
+  <div class="hrow" id="u-h-ig" style="left:60px;top:470px"><span class="ht">{{LOGO:instagram}}</span><span class="hx"><b>@maestroharyor</b><i>Instagram</i></span></div>
+  <div class="hrow" id="u-h-x" style="left:60px;top:632px"><span class="ht">{{LOGO:x}}</span><span class="hx"><b>@maestroharyor</b><i>X</i></span></div>
+  <div class="hrow" id="u-h-li" style="left:60px;top:794px"><span class="ht"><span class="ltxt" style="font-size:52px;color:#0A66C2">in</span></span><span class="hx"><b>ayomide-odewale</b><i>LinkedIn</i></span></div>
+  <div class="hrow" id="u-h-tt" style="left:60px;top:956px"><span class="ht">{{LOGO:tiktok}}</span><span class="hx"><b>@maestroharyor</b><i>TikTok</i></span></div>
+  <svg class="draw" id="u-div" style="left:60px;top:1130px;width:960px;height:12px" viewBox="0 0 960 12">
+    <path d="M0 6 H960" stroke="#2E3D5C" stroke-width="4"/>
+  </svg>
+  <div class="bbox" id="u-box" style="left:60px;top:1200px;width:960px">
+    <span class="bl">{{LOGO:braandly}}</span>
+    <span class="bt"><b>Everything in one place</b><i>braandly.bio/ayomideodewale</i></span>
+    <span class="shim" id="u-shim" style="left:-240px"></span>
+  </div>
+  <div class="foot" id="u-ft" style="top:1480px">Ten ways to improve your app's performance and UX. Five down.</div>
+</div>
+</div>
+<script src="scenes.js"></script>
+</body></html>

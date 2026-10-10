@@ -1,0 +1,18 @@
+{
+ "version": 1,
+ "fps": 60,
+ "total": 4,
+ "xf": {
+  "type": "cut",
+  "dur": 0
+ },
+ "motion": 4,
+ "slides": [
+  {
+   "id": "s01",
+   "slug": "01-intro",
+   "start": 0,
+   "end": 4
+  }
+ ]
+}

@@ -1,0 +1,87 @@
+(0:00.18) Imagine you have a startup and you're building the next YouTube but with social networking features.
+(0:05.68) You've got an idea for the platform, a vision for how it should work.
+(0:09.82) But as soon as you start building, some important questions come up.
+(0:13.37) Who makes sure your application has all the servers and infrastructure it needs to run in the cloud?
+(0:19.40) And what makes the process of building, testing, deploying updates so everything can run smoothly?
+(0:25.51) Well, that is where cloud engineers and DevOps engineers come in.
+(0:30.07) Both work with platforms and tools like AWS, Azure, Docker, Terraform, and Kubernetes, among many others.
+(0:38.02) And in many organizations, especially here in my country, their responsibilities are often confused.
+(0:44.77) Sometimes even software developers are expected to handle some parts of both roles.
+(0:50.79) So what exactly does each role do and where do their responsibilities overlap?
+(0:55.90) Let's use our video hosting and social platform as an example and break it all down.
+(1:01.01) First, let's start with the software developer.
+(1:03.68) For our video hosting and social platform, well, the software developer is going to be responsible for building the application itself.
+(1:10.56) They decide how the app is going to function, implement features like user registration, video uploads, video playback, comments, like, follows, subscriptions, and all that jazz.
+(1:21.48) In simple terms, they are focused on making the application work and giving the users the features they need.
+(1:27.16) Of course, developers should understand the basics of deployment and infrastructure, but they are not necessarily responsible for managing servers, configuring cloud networks, or building complex deployment pipelines.
+(1:39.48) Those responsibilities often fall to other specialists.
+(1:42.83) Now let's take a look at the cloud engineer.
+(1:45.27) Our platform needs servers to run the application, storage for uploaded videos, databases for user information and social interactions, and a way to deliver those videos efficiently to users around the world.
+(1:58.71) Also, we want to ensure that our platform is always up, not having any downtime, and very scalable.
+(2:05.36) This is where a cloud engineer comes in.
+(2:07.52) Cloud engineers work with cloud platforms such as AWS, Microsoft Azure, and Google Cloud.
+(2:15.00) There are other providers such as DigitalOcean, Oracle Cloud, and so on.
+(2:20.32) Typically, cloud engineers specialize in one cloud platform, gaining in-depth knowledge of its services and infrastructure.
+(2:27.16) However, they can also learn and work with other platforms as their experience grows.
+(2:31.99) For our platform, let's say we're using AWS.
+(2:34.89) First, we need somewhere to run our back-end application.
+(2:38.53) Our cloud engineer might use Amazon EC2 to provision virtual servers.
+(2:43.20) For video storage, they could use Amazon S3 instead of storing large video files directly on application servers.
+(2:50.82) And to deliver those videos efficiently, they might configure Amazon CloudFront, a content delivery network, or CDN, that delivers those content closest to users.
+(3:00.97) They also need to configure networking, including VPCs, subnets, routing, and security groups.
+(3:07.59) But their responsibilities don't end with setting up these resources.
+(3:11.42) They also need to consider security, availability, backups, monitoring, and importantly, cloud costs, knowing how much is this thing going to cost us in the long run.
+(3:23.01) Because as our platform grows, we are likely to store more videos, serve more users, and consume more bandwidth.
+(3:29.61) All of this can significantly increase our cloud expenses.
+(3:33.35) A cloud engineer needs to analyze all these costs and identify opportunities to optimize them.
+(3:39.39) For example, they might use AWS Cost Explorer to examine our cloud usage, identify expensive resources, and forecast future spending.
+(3:47.61) They could investigate whether we're using oversized EC2 instances or pay for resources we no longer need.
+(3:54.34) They might also move videos that are rarely accessed to cheaper S3 storage classes or optimize our content delivery costs.
+(4:02.72) The goal is to balance costs, performance, and reliability.
+(4:07.15) This is also related to FinOps, which focuses on managing and optimizing cloud spending.
+(4:12.92) Cloud engineers often contribute to these activities.
+(4:16.35) Finally, rather than creating all these resources manually, our cloud engineer could use IAC or infrastructure as code tools, such as Terraform or Pulumi, to provision and manage the infrastructure.
+(4:29.51) Essentially, the cloud engineer is responsible for building and maintaining the cloud environments.
+(4:35.25) Our platform needs to operate securely, reliably, and cost effectively.
+(4:40.05) Now let's take a look at the DevOps engineer.
+(4:42.40) Our developers are constantly writing code and adding new features to the platform.
+(4:47.12) But how do we get those changes into production reliably?
+(4:50.55) How do we ensure to test and maybe set up a staging environment?
+(4:54.48) This is where the DevOps engineer comes in.
+(4:56.69) One of their major responsibilities is automating the software delivery process.
+(5:01.12) For example, they might use tools like GitHub Actions or Jenkins to create CI/CD pipelines that automate building, testing, and deploying our application.
+(5:11.28) They could also use configuration management tools like Ansible to automate tasks such as configuring servers, installing dependencies, and preparing environments for deployment.
+(5:22.72) Whenever a developer pushes code to GitHub, a CI/CD pipeline can automatically install dependencies, run tests, and build the application.
+(5:31.94) Next, the DevOps engineer might use Docker to package the applications and its dependencies into containers.
+(5:38.17) Once the Docker image is ready, the pipeline can push it to a container registry and deploy it to our cloud infrastructure.
+(5:45.16) But what happens if a deployment fails?
+(5:47.41) For example, every new version of our platform introduces a bug and we need a way to roll back to the previous version.
+(5:54.26) The DevOps engineer can automate this process using deployment strategies and rollback mechanisms.
+(6:00.30) They might also configure health checks, monitoring, and alerting to help identify deployment failures and application issues.
+(6:08.56) Another important responsibility is improving the development workflow.
+(6:13.15) Instead of requiring developers to manually build and deploy every update, the DevOps engineer can automate much of that process.
+(6:20.96) This allows developers to focus more on writing code and less on repetitive deployment tasks.
+(6:27.84) Ultimately, the goal is to make software delivery more reliable, repeatable, and efficient.
+(6:34.32) Now, here's where things get interesting.
+(6:36.18) You might have noticed that both engineers work with tools like Terraform, Docker, monitoring systems, and cloud platforms.
+(6:43.49) So where exactly do we draw the line?
+(6:45.82) In reality, there isn't always a strict boundary.
+(6:48.98) For example, a cloud engineer might create EC2 instances and networking resources, while a DevOps engineer configures the CI/CD pipeline that deploys the applications to those instances.
+(7:00.79) However, a DevOps engineer might also use Terraform or Pulumi to provision the infrastructure, and a cloud engineer might configure deployment automation.
+(7:10.71) Both might work with Docker, Kubernetes, logging, monitoring, and security.
+(7:15.52) Even cost management can overlap.
+(7:17.63) A DevOps engineer might optimize CI/CD infrastructure, while a cloud engineer might focus on overall cloud infrastructure bill.
+(7:25.68) In smaller companies, one engineer might handle both roles.
+(7:29.04) In larger organizations, responsibilities are more likely divided among dedicated teams.
+(7:34.47) This is why job descriptions can sometimes make these roles seem almost identical.
+(7:40.51) So which role should you pursue?
+(7:42.47) If you enjoy working with cloud platforms, designing networks, managing servers, configuring security, and optimizing infrastructure costs, cloud engineering might interest you.
+(7:53.74) If you enjoy automation, CI/CD pipelines, Docker deployment workflows, and improving how software gets delivered, DevOps engineering might be more appealing.
+(8:03.49) However, you don't have to choose one and ignore the other.
+(8:06.51) Learning cloud infrastructure, Linux, networking, Terraform, Docker, and CI/CD will give you skills that are useful in both roles.
+(8:14.08) You could also explore related fields like platform engineering, site reliability engineering as you gain experience.
+(8:22.10) To summarize, cloud engineers primarily focus on the infrastructure that applications run on, including provisioning resources, managing security, optimizing performance, and controlling cloud costs.
+(8:35.14) DevOps engineers, on the other hand, primarily focus on automating and improving the processes used to build tests, deploy, and operate applications.
+(8:45.20) Their responsibilities often overlap, but their main areas of focus are different.
+(8:50.16) If you found this video helpful, don't forget to like, share, and subscribe for more.
+(8:54.36) Thanks for watching, and I'll see you in the next one.

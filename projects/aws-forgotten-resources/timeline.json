@@ -1,0 +1,36 @@
+{
+  "version": 1,
+  "fps": 30,
+  "total": 123,
+  "vo": null,
+  "words": null,
+  "xf": {
+    "type": "push",
+    "dur": 0.4
+  },
+  "motion": 5,
+  "slides": [
+    { "id": "s01", "slug": "01-title-aws-bill-climbing", "start": 0, "end": 6 },
+    { "id": "s02", "slug": "02-what-is-running", "start": 6, "end": 9 },
+    { "id": "s03", "slug": "03-three-resources", "start": 9, "end": 14 },
+    { "id": "s04", "slug": "04-ec2-spin-up", "start": 14, "end": 22 },
+    { "id": "s05", "slug": "05-running-means-paying", "start": 22, "end": 26 },
+    { "id": "s06", "slug": "06-idle-fleet", "start": 26, "end": 31 },
+    { "id": "s07", "slug": "07-misconception-stopped", "start": 31, "end": 35 },
+    { "id": "s08", "slug": "08-ebs-still-attached", "start": 35, "end": 41 },
+    { "id": "s09", "slug": "09-terminate-but-setup", "start": 41, "end": 45 },
+    { "id": "s10", "slug": "10-user-data-script", "start": 45, "end": 53 },
+    { "id": "s11", "slug": "11-check-ec2-dashboard", "start": 53, "end": 58 },
+    { "id": "s12", "slug": "12-rds-intro", "start": 58, "end": 62 },
+    { "id": "s13", "slug": "13-ec2-gone-db-running", "start": 62, "end": 67 },
+    { "id": "s14", "slug": "14-rds-keeps-charging", "start": 67, "end": 72 },
+    { "id": "s15", "slug": "15-stop-and-clean-up", "start": 72, "end": 78 },
+    { "id": "s16", "slug": "16-nat-intro", "start": 78, "end": 81 },
+    { "id": "s17", "slug": "17-vpc-diagram", "start": 81, "end": 89 },
+    { "id": "s18", "slug": "18-nat-ongoing-costs", "start": 89, "end": 93 },
+    { "id": "s19", "slug": "19-tiny-traffic-big-charge", "start": 93, "end": 99 },
+    { "id": "s20", "slug": "20-checklist-before-you-leave", "start": 99, "end": 109 },
+    { "id": "s21", "slug": "21-not-using-not-paying", "start": 109, "end": 117 },
+    { "id": "s22", "slug": "22-outro-follow", "start": 117, "end": 123, "motion": 5, "audio": "outro.wav" }
+  ]
+}

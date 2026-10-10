@@ -1,0 +1,7 @@
+{
+  "name": "vid",
+  "owner": { "name": "Ayomide Odewale" },
+  "plugins": [
+    { "name": "new-video", "source": "./", "description": "Script → animated slide deck → GIF/MP4 renders (Puppeteer + FFmpeg).", "version": "1.0.0" }
+  ]
+}

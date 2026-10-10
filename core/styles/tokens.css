@@ -1,0 +1,21 @@
+/* Design tokens shared by every slide. Palette carried over from the previous deck (generated/cue-sheet.md). */
+@font-face{font-family:Inter;src:url(../../assets/fonts/InterVariable.woff2)format('woff2');font-weight:100 900;font-display:block}
+@font-face{font-family:ID;src:url(../../assets/fonts/InterDisplay-Medium.woff2)format('woff2');font-weight:500;font-display:block}
+@font-face{font-family:ID;src:url(../../assets/fonts/InterDisplay-SemiBold.woff2)format('woff2');font-weight:600;font-display:block}
+@font-face{font-family:ID;src:url(../../assets/fonts/InterDisplay-Bold.woff2)format('woff2');font-weight:700;font-display:block}
+@font-face{font-family:ID;src:url(../../assets/fonts/InterDisplay-ExtraBold.woff2)format('woff2');font-weight:800;font-display:block}
+@font-face{font-family:ID;src:url(../../assets/fonts/InterDisplay-Black.woff2)format('woff2');font-weight:900;font-display:block}
+@font-face{font-family:JB;src:url(../../assets/fonts/JetBrainsMono-Regular.woff2)format('woff2');font-weight:400;font-display:block}
+@font-face{font-family:JB;src:url(../../assets/fonts/JetBrainsMono-Bold.woff2)format('woff2');font-weight:700;font-display:block}
+@font-face{font-family:OS;src:url(../../assets/fonts/OpenSans-Variable.ttf)format('truetype');font-weight:300 800;font-display:block}
+
+:root{
+  --bg0:#0A0E18; --bg1:#111A2B; --bg2:#162034; --bd:#23304A; --bd2:#2E3D5C;
+  --tx:#F2F6FF; --tx2:#A8B6D1; --tx3:#6E7F9E;
+  --teal:#2DD4BF; --violet:#8B5CF6; --green:#34D399; --rose:#FB7185; --amber:#F59E0B; --blue:#38BDF8; --orange:#FF9900;
+  --ink:#0F1729; --ink2:#5A6780; --ink3:#8894AB; --card:#FFFFFF; --page:#F4F6FA; --line:#E5E9F0;
+  /* AWS console (Cloudscape) */
+  --aws-nav:#0F1B2A; --aws-nav2:#192534; --aws-nav-bd:#414D5C; --aws-orange:#FF9900; --aws-orange2:#EC7211;
+  --aws-blue:#0972D3; --aws-ink:#000716; --aws-ink2:#414D5C; --aws-ink3:#5F6B7A; --aws-line:#E9EBED; --aws-page:#F2F3F3;
+  --aws-ok:#037F0C; --aws-warn:#8D6605; --aws-err:#D91515; --aws-sel:#F2F8FD;
+}

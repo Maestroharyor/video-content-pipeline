@@ -1,0 +1,45 @@
+{
+  "name": "vid-overlay-pipeline",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Data-driven HTML/CSS slide + overlay animation system rendered with Puppeteer and FFmpeg",
+  "scripts": {
+    "start": "node scripts/video.js",
+    "video": "node scripts/video.js",
+    "new": "node scripts/new-project.js",
+    "transcribe": "node scripts/transcribe.js",
+    "storyboard": "node scripts/script-to-storyboard.js",
+    "timeline": "node scripts/timeline.js",
+    "captions": "node scripts/captions.js",
+    "social": "node scripts/social.js",
+    "assets": "node scripts/fetch-assets.js",
+    "preview": "node scripts/preview.js",
+    "probe": "node scripts/probe.js",
+    "poster": "node renderer/cli.js --slide all --poster",
+    "strip": "node scripts/strip.js",
+    "contact": "node scripts/contact-sheet.js",
+    "review": "node scripts/review.js",
+    "render": "node renderer/cli.js",
+    "render:all": "node renderer/cli.js --slide all --format all",
+    "assemble": "node renderer/assemble.js",
+    "test": "node --test test/timeline.test.js test/dual.test.js test/pipeline.test.js test/projects.test.js test/assemble.test.js test/social.test.js test/socialcut.test.js",
+    "setup": "node scripts/setup.js",
+    "doctor": "node scripts/setup.js --check",
+    "dual": "node scripts/dual-render.js",
+    "timeline:finish": "node scripts/finish-timeline.js",
+    "srt": "node scripts/splice-srt.js",
+    "yt-research": "node scripts/yt-research.js",
+    "photos": "node scripts/fetch-photos.js",
+    "sfx": "node scripts/sfx.js",
+    "kit": "node scripts/fetch-kit.js",
+    "beat-frames": "node scripts/beat-frames.js",
+    "social-cut": "node scripts/social-cut.js"
+  },
+  "devDependencies": {
+    "puppeteer": "^25.11.0",
+    "simple-icons": "^16.31.0"
+  },
+  "engines": {
+    "node": ">=22.12"
+  }
+}

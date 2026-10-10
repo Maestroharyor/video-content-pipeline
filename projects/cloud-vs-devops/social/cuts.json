@@ -1,0 +1,17 @@
+{
+  "source": "../renders/final/cloud-vs-devops.mp4",
+  "words": "words.json",
+  "splice": { "at": 27.55, "head": 4 },
+  "deck": "..",
+  "thumb": "assets/yt-thumb.jpg",
+  "ytTitle": "Cloud Engineer vs DevOps Engineer: What's the Difference?",
+  "ytUrl": "youtube.com/@lifetechfacts",
+  "cuts": [
+    {
+      "name": "best-of",
+      "hook": "Cloud Engineer vs <em>DevOps Engineer</em>",
+      "spans": [[0.13, 25.43], [27.73, 32.50], [41.50, 48.60], [156.80, 159.53], [163.03, 185.70], [208.60, 219.30], [286.0, 288.45], [302.83, 317.20], [352.0, 367.20], [401.30, 415.95], [509.05, 515.30], [522.30, 532.20]]
+    }
+  ],
+  "faces": []
+}

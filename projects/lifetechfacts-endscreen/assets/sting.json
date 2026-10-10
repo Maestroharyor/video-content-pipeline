@@ -1,0 +1,5 @@
+{ "dur": 20, "out": "lf-endscreen-sting.wav", "cues": [
+  {"s":"rise","t":0,"v":0.5,"d":0.5},
+  {"s":"pop","t":0.18,"v":0.5},
+  {"s":"shim","t":0.6,"v":0.6}
+] }

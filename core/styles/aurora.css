@@ -1,0 +1,155 @@
+/* Aurora glass theme — scoped to #stage.theme-aurora (PROJECT.theme = 'aurora').
+   Deep indigo ground, cyan/violet/magenta fields, surfaces built from layered translucent gradients with a
+   gradient hairline border. Deliberately no `filter: blur()` or `backdrop-filter`: at 3840x2160 either one drops
+   capture from ~20 f/s to ~3 f/s. Every "glow" here is a radial-gradient, which the compositor draws for free. */
+
+.theme-aurora{
+  --bg0:#070B16; --bg1:#0E1526; --bg2:#141D33; --bd:#1E2B47; --bd2:#2B3C62;
+  --tx:#F5F8FF; --tx2:#AEBDD9; --tx3:#6E80A6;
+  --teal:#22D3EE; --violet:#A78BFA; --green:#34D399; --rose:#FB7185; --amber:#FBBF24; --blue:#60A5FA; --orange:#FB923C;
+  --au-edge:rgba(255,255,255,.10);
+  --glass:linear-gradient(170deg,rgba(255,255,255,.075),rgba(255,255,255,.022) 46%,rgba(255,255,255,.012));
+  --glassb:linear-gradient(150deg,rgba(34,211,238,.55),rgba(167,139,250,.42) 48%,rgba(255,255,255,.06));
+  background:#070B16;
+}
+
+/* ---------- ground ---------- */
+.theme-aurora .bgfx .grid{
+  opacity:.5;
+  background-image:radial-gradient(rgba(120,160,230,.16) 1.6px,transparent 1.7px);
+  background-size:64px 64px;
+}
+.theme-aurora .bgfx .vig{
+  background:
+    radial-gradient(90% 60% at 50% -10%,rgba(34,211,238,.10),transparent 62%),
+    radial-gradient(70% 50% at 12% 106%,rgba(244,114,182,.09),transparent 66%),
+    radial-gradient(130% 105% at 50% 46%,transparent 50%,rgba(2,4,10,.72));
+}
+
+/* ---------- glass surfaces ---------- */
+.theme-aurora .panel,.theme-aurora .cmp,.theme-aurora .node,.theme-aurora .rowbar.big,
+.theme-aurora .code,.theme-aurora .chk,.theme-aurora .bbox,.theme-aurora .badge.note,.theme-aurora .card{
+  background:var(--glass),linear-gradient(#0C1322,#0C1322);
+  background-origin:border-box;background-clip:padding-box,border-box;
+  border:2px solid transparent;
+  box-shadow:0 30px 70px rgba(0,0,0,.5),inset 0 1.5px 0 rgba(255,255,255,.10),inset 0 -1px 0 rgba(0,0,0,.3);
+  border-radius:28px;
+}
+.theme-aurora .panel::before,.theme-aurora .cmp::before,.theme-aurora .node::before{
+  content:'';position:absolute;inset:0;border-radius:inherit;pointer-events:none;
+  background:linear-gradient(150deg,rgba(34,211,238,.30),transparent 38%);
+  -webkit-mask:linear-gradient(#000,#000) content-box,linear-gradient(#000,#000);
+  -webkit-mask-composite:xor;mask-composite:exclude;padding:2px;
+}
+/* accent-tinted glass: .gl-t cyan · .gl-v violet · .gl-g mint · .gl-a amber · .gl-r rose · .gl-b blue */
+.theme-aurora .gl-t{background:linear-gradient(170deg,rgba(34,211,238,.16),rgba(34,211,238,.04)),linear-gradient(#0A1722,#0A1722)}
+.theme-aurora .gl-v{background:linear-gradient(170deg,rgba(167,139,250,.16),rgba(167,139,250,.04)),linear-gradient(#120F24,#120F24)}
+.theme-aurora .gl-g{background:linear-gradient(170deg,rgba(52,211,153,.16),rgba(52,211,153,.04)),linear-gradient(#081A16,#081A16)}
+.theme-aurora .gl-a{background:linear-gradient(170deg,rgba(251,191,36,.16),rgba(251,191,36,.04)),linear-gradient(#1A1408,#1A1408)}
+.theme-aurora .gl-r{background:linear-gradient(170deg,rgba(251,113,133,.16),rgba(251,113,133,.04)),linear-gradient(#1D0D14,#1D0D14)}
+.theme-aurora .gl-b{background:linear-gradient(170deg,rgba(96,165,250,.16),rgba(96,165,250,.04)),linear-gradient(#0A1222,#0A1222)}
+
+/* ---------- type ---------- */
+.theme-aurora .h1{letter-spacing:-.028em}
+.theme-aurora .h1 em{color:var(--acc,var(--teal));text-shadow:0 0 42px rgba(34,211,238,.35)}
+.theme-aurora .eyebrow{letter-spacing:.24em;color:var(--teal)}
+.theme-aurora .eyebrow.v{color:var(--violet)} .theme-aurora .eyebrow.a{color:var(--amber)}
+.theme-aurora .eyebrow.g{color:var(--green)} .theme-aurora .eyebrow.b{color:var(--blue)} .theme-aurora .eyebrow.r{color:var(--rose)}
+
+/* ---------- chips / badges ---------- */
+.theme-aurora .chip,.theme-aurora .badge{
+  border-radius:16px;
+  box-shadow:0 12px 34px rgba(0,0,0,.42),inset 0 1px 0 rgba(255,255,255,.10);
+}
+.theme-aurora .chip.t,.theme-aurora .badge.t{background:linear-gradient(170deg,rgba(34,211,238,.22),rgba(34,211,238,.07));border-color:rgba(34,211,238,.6);color:#BFF4FD}
+.theme-aurora .chip.v,.theme-aurora .badge.v{background:linear-gradient(170deg,rgba(167,139,250,.22),rgba(167,139,250,.07));border-color:rgba(167,139,250,.6);color:#E0D6FF}
+.theme-aurora .chip.g,.theme-aurora .badge.g{background:linear-gradient(170deg,rgba(52,211,153,.22),rgba(52,211,153,.07));border-color:rgba(52,211,153,.6);color:#BDF3DD}
+.theme-aurora .chip.a,.theme-aurora .badge.a{background:linear-gradient(170deg,rgba(251,191,36,.22),rgba(251,191,36,.07));border-color:rgba(251,191,36,.6);color:#FFE7AE}
+.theme-aurora .chip.r,.theme-aurora .badge.r{background:linear-gradient(170deg,rgba(251,113,133,.22),rgba(251,113,133,.07));border-color:rgba(251,113,133,.6);color:#FFC7D1}
+.theme-aurora .chip.b,.theme-aurora .badge.b{background:linear-gradient(170deg,rgba(96,165,250,.22),rgba(96,165,250,.07));border-color:rgba(96,165,250,.6);color:#CBE0FF}
+.theme-aurora .chip.n,.theme-aurora .badge.n{background:linear-gradient(170deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border-color:var(--bd2);color:var(--tx2)}
+
+/* ---------- route (hop template) ---------- */
+/* the arc layer sits behind the nodes: a query arc and an answer arc bowed to opposite sides of every exchange */
+.theme-aurora .rt-svg{position:absolute;left:0;top:0;pointer-events:none;overflow:visible}
+.theme-aurora .rt-arc{fill:none;stroke:rgba(110,128,166,.55);stroke-width:3;stroke-linecap:round}
+.theme-aurora .rt-arc.back{stroke:rgba(110,128,166,.55)}
+.theme-aurora .rt-arc.live{stroke:var(--teal);stroke-width:5}
+.theme-aurora .rt-arc.back.live{stroke:var(--green)}
+.theme-aurora .rt-arc.seen{stroke:rgba(34,211,238,.45);stroke-width:4}
+.theme-aurora .rt-arc.back.seen{stroke:rgba(52,211,153,.45)}
+.theme-aurora .rt-node{position:absolute;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;
+  border-radius:26px;background:linear-gradient(170deg,rgba(255,255,255,.05),rgba(255,255,255,.015)),linear-gradient(#0B1220,#0B1220);
+  border:2px solid var(--bd);box-shadow:0 18px 46px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.07)}
+.theme-aurora .rt-node .rn{font:800 30px ID;color:var(--tx);letter-spacing:-.01em;white-space:nowrap}
+.theme-aurora .rt-node .rs{font:600 21px JB;color:var(--tx3);white-space:nowrap}
+.theme-aurora .rt-node .ri{width:52px;height:52px;display:grid;place-items:center;color:var(--tx3)}
+.theme-aurora .rt-node .ri svg{width:46px;height:46px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.theme-aurora .rt-node.seen{border-color:rgba(34,211,238,.28)}
+.theme-aurora .rt-node.seen .ri{color:rgba(34,211,238,.55)}
+.theme-aurora .rt-node.hot{border-color:transparent;
+  background:linear-gradient(170deg,rgba(34,211,238,.20),rgba(167,139,250,.08)),linear-gradient(#0A1524,#0A1524);
+  box-shadow:0 0 0 2px rgba(34,211,238,.55),0 26px 70px rgba(0,0,0,.55),0 0 110px rgba(34,211,238,.28),inset 0 1px 0 rgba(255,255,255,.12)}
+.theme-aurora .rt-node.hot .ri{color:var(--teal)}
+.theme-aurora .rt-node.hot .rs{color:#9FE8F6}
+.theme-aurora .rt-pk{position:absolute;transform:translate(-50%,-50%);display:inline-flex;align-items:center;gap:10px;padding:10px 20px;border-radius:14px;
+  font:700 24px JB;color:#D8F6FD;white-space:nowrap;
+  background:linear-gradient(170deg,rgba(34,211,238,.28),rgba(34,211,238,.10));border:2px solid rgba(34,211,238,.7);
+  box-shadow:0 0 34px rgba(34,211,238,.45),0 12px 30px rgba(0,0,0,.45)}
+.theme-aurora .rt-pk.back{color:#C9F7E4;background:linear-gradient(170deg,rgba(52,211,153,.28),rgba(52,211,153,.10));
+  border-color:rgba(52,211,153,.7);box-shadow:0 0 34px rgba(52,211,153,.45),0 12px 30px rgba(0,0,0,.45)}
+.theme-aurora .rt-card{position:absolute;border-radius:26px;padding:26px 30px;
+  background:var(--glass),linear-gradient(#0C1322,#0C1322);background-origin:border-box;background-clip:padding-box,border-box;
+  border:2px solid rgba(34,211,238,.35);box-shadow:0 30px 70px rgba(0,0,0,.55),inset 0 1.5px 0 rgba(255,255,255,.10)}
+.theme-aurora .rt-card .rc-t{font:700 24px Inter;letter-spacing:.16em;text-transform:uppercase;color:var(--teal);margin-bottom:16px}
+.theme-aurora .rt-card .rc-r{display:flex;justify-content:space-between;gap:30px;padding:11px 0;font:600 27px Inter;color:var(--tx2);border-top:1px solid rgba(255,255,255,.07)}
+.theme-aurora .rt-card .rc-r:first-of-type{border-top:0}
+.theme-aurora .rt-card .rc-r b{font:700 27px JB;color:var(--tx)}
+.theme-aurora .rt-card .rc-r.off{color:var(--tx3)}
+.theme-aurora .rt-card .rc-r.off b{color:var(--tx3);text-decoration:line-through}
+
+/* ---------- address (anatomy template) ---------- */
+.theme-aurora .ad-str{position:absolute;white-space:nowrap;font:700 62px JB;letter-spacing:-.02em;color:var(--tx3)}
+.theme-aurora .ad-str .pt{color:var(--tx3);transition:none}
+.theme-aurora .ad-str .pt.lit{color:var(--tx)}
+.theme-aurora .ad-str .pt.acc{color:var(--violet);text-shadow:0 0 38px rgba(167,139,250,.45)}
+.theme-aurora .ad-str .pt.off{color:#3B486A}
+.theme-aurora .ad-hl{position:absolute;border-radius:14px;background:linear-gradient(170deg,rgba(167,139,250,.20),rgba(167,139,250,.06));
+  border:2px solid rgba(167,139,250,.55);box-shadow:0 0 44px rgba(167,139,250,.28)}
+.theme-aurora .ad-lead{position:absolute;width:2px;border-radius:1px;transform-origin:top center;
+  background:linear-gradient(rgba(167,139,250,.75),rgba(167,139,250,.15))}
+.theme-aurora .ad-card{position:absolute;border-radius:24px;padding:24px 28px;
+  background:var(--glass),linear-gradient(#0C1322,#0C1322);background-origin:border-box;background-clip:padding-box,border-box;
+  border:2px solid rgba(167,139,250,.38);box-shadow:0 26px 60px rgba(0,0,0,.5),inset 0 1.5px 0 rgba(255,255,255,.10)}
+.theme-aurora .ad-card .ac-l{font:700 23px Inter;letter-spacing:.16em;text-transform:uppercase;color:var(--violet)}
+.theme-aurora .ad-card .ac-t{font:800 38px ID;color:var(--tx);margin-top:10px;letter-spacing:-.015em}
+.theme-aurora .ad-card .ac-s{font:500 26px Inter;color:var(--tx2);margin-top:8px;line-height:1.36}
+
+/* ---------- tree template ---------- */
+.theme-aurora .tr-node{position:absolute;display:grid;place-items:center;border-radius:22px;
+  background:linear-gradient(170deg,rgba(255,255,255,.055),rgba(255,255,255,.018)),linear-gradient(#0B1220,#0B1220);
+  border:2px solid var(--bd);box-shadow:0 16px 40px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.07);
+  font:700 27px JB;color:var(--tx2);white-space:nowrap;padding:0 22px}
+.theme-aurora .tr-node.hot{border-color:transparent;color:#C9F7E4;
+  background:linear-gradient(170deg,rgba(52,211,153,.22),rgba(52,211,153,.06)),linear-gradient(#081A16,#081A16);
+  box-shadow:0 0 0 2px rgba(52,211,153,.5),0 0 80px rgba(52,211,153,.22),inset 0 1px 0 rgba(255,255,255,.1)}
+.theme-aurora .tr-node.root{border-radius:50%;font-size:40px;color:var(--tx)}
+.theme-aurora .tr-edge{position:absolute;stroke:rgba(110,128,166,.35);stroke-width:2.5;fill:none}
+.theme-aurora .tr-tag{position:absolute;font:700 22px Inter;letter-spacing:.14em;text-transform:uppercase;color:var(--tx3);white-space:nowrap}
+
+/* ---------- small parts ---------- */
+.theme-aurora .au-ring{position:absolute;border-radius:50%;border:3px solid rgba(96,165,250,.28)}
+.theme-aurora .au-ring i{position:absolute;inset:-3px;border-radius:50%;border:3px solid transparent;
+  border-top-color:var(--blue);border-right-color:var(--blue)}
+.theme-aurora .au-num{font:800 120px ID;letter-spacing:-.04em;color:var(--tx);text-shadow:0 0 70px rgba(34,211,238,.3)}
+.theme-aurora .strike path{stroke:var(--rose);stroke-width:7;stroke-linecap:round;fill:none}
+
+/* the compare separator uses .badge.o from base; amber fights the aurora ramp — make it neutral glass */
+.theme-aurora .badge.o{background:linear-gradient(170deg,rgba(255,255,255,.08),rgba(255,255,255,.025));
+  border-color:var(--bd2);color:var(--tx2);box-shadow:0 12px 34px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.10)}
+/* compare/statement panels: fill the taller card so two-line quotes breathe */
+.theme-aurora .cmp{display:flex;flex-direction:column;justify-content:center;gap:14px;padding:30px 34px}
+.theme-aurora .cmp .lb{font:700 23px Inter;letter-spacing:.16em;text-transform:uppercase;color:var(--tx3)}
+.theme-aurora .cmp .qt{font:800 40px ID;color:var(--tx);letter-spacing:-.015em;line-height:1.16}
+/* the root dot is really invisible in an address: show it only on the slide that is about it */
+.theme-aurora .ad-str .pt.ghost{color:#1C2740}
