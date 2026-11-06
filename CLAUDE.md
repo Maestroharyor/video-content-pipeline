@@ -8,6 +8,11 @@ Run the **`/social-copy`** skill (lives in `../image-content-pipeline/skills/soc
 It asks the brand, the networks and the link, then writes one body per network into `projects/<slug>/social/<slug>.md`. Markdown
 only: nothing is posted. Inside `/new-video` this is Step 5 and uses the same script.
 
+## When the user asks for a thumbnail
+Run the **`/new-thumbnail`** skill (`skills/new-thumbnail/SKILL.md`): research (`npm run yt-research` + the topic's shelf + a
+web pass on YouTube's specs), directions approved before building, `npm run thumb-check` on every candidate, then `npm run
+thumb --pick`. Never delete candidates without the user's explicit approval.
+
 ## When the user hands over a recording, pastes a script or a "(0:00)" transcript, or asks for slides/animations for a video
 Run the **`/new-video`** skill (`skills/new-video/SKILL.md`). It asks the aspect ratio and a few settings, transcribes the audio
 (whisper.cpp), writes a storyboard into the project's cue sheet, waits for approval, then builds, reviews, times and assembles.
@@ -70,8 +75,8 @@ assets/      shared fonts, outro marks, audio beds, logos/lifetechfacts (vector 
 renderer/    project.js (discovery, syncIndex) · brand.js (core/brand.js in a sandbox, normalised) · platforms.js (every
              network: caps, targets, per-network shape strings) · config.js · args.js · browser.js (launch/openPage/inject) · pool.js · capture.js · assemble.js ·
              video.js (mp4/webm/mov/assembleMp4) · gif.js · cache.js · timeline.js · transcribe.js · captions.js · storyboard.js · cli.js
-scripts/     social.js (social.json → social.md, counts + gates) · social-cut.js (cuts.json → vertical social cuts: the cut's audio, a deck built for it, the master's face; maths in renderer/socialcut.js) · align.py (forced alignment of a vo.json with torchaudio MMS_FA, in the private venv assets/.cache/align-venv: torch/torchaudio 2.8, ~1.2 GB model in ~/.cache/torch) · dual-render.js (one capture → two masters, chunked, with optional intro/end-screen splicing and a CTA overlay) · splice-srt.js (captions.srt → the spliced master's .srt) · cutout.swift (macOS: person or object cutout PNG for thumbnails, Apple Vision; --mode subject works on hardware, not just people) · yt-research.js (Puppeteer: scrapes YouTube search + channel tabs, scores each video against its own channel's median, downloads a winner set and a matched control set, measures both at 168x94) · fetch-photos.js (CC0/PD/CC-BY object photos from Openverse + Wikimedia into a project's assets/photos, provenance straight into its SOURCES.md) · new-project · transcribe · script-to-storyboard · timeline · captions · fetch-assets · probe · strip · review · contact-sheet · preview · setup
-skills/      new-video/ (symlinked into .claude/skills, .agents/skills, .opencode/skills and ~/.claude/skills by `npm run setup`;
+scripts/     thumb-export.js (npm run thumb: a thumbnail probed for YouTube's crops and overlays, exported as a PNG under 2 MB) · social.js (social.json → social.md, counts + gates) · social-cut.js (cuts.json → vertical social cuts: the cut's audio, a deck built for it, the master's face; maths in renderer/socialcut.js) · align.py (forced alignment of a vo.json with torchaudio MMS_FA, in the private venv assets/.cache/align-venv: torch/torchaudio 2.8, ~1.2 GB model in ~/.cache/torch) · dual-render.js (one capture → two masters, chunked, with optional intro/end-screen splicing and a CTA overlay) · splice-srt.js (captions.srt → the spliced master's .srt) · cutout.swift (macOS: person or object cutout PNG for thumbnails, Apple Vision; --mode subject works on hardware, not just people) · yt-research.js (Puppeteer: scrapes YouTube search + channel tabs, scores each video against its own channel's median, downloads a winner set, a matched control set and the topic's own shelf (topic.txt + topic-480.png), measures at 168x94; --queries required) · thumb-new.js (scaffold a -thumbs project) · thumb-check.js (screen-size + overlay + shelf sheets) · fetch-photos.js (CC0/PD/CC-BY object photos from Openverse + Wikimedia into a project's assets/photos, provenance straight into its SOURCES.md) · new-project · transcribe · script-to-storyboard · timeline · captions · fetch-assets · probe · strip · review · contact-sheet · preview · setup
+skills/      new-video/ + new-thumbnail/ (every skills/* folder symlinked into .claude/skills, .agents/skills, .opencode/skills and ~/.claude/skills by `npm run setup`;
              setup also links social-copy from ../image-content-pipeline when that checkout exists)
 test/        timeline (pure) · pipeline (gallery, both canvases) · projects (every project loads) · assemble (setTime, pool, encode) ·
              social (counts, caps, hashtag placement, the platform table) · socialcut (span snapping, splice mapping, face windows)
@@ -92,15 +97,19 @@ npm run preview -- --project <slug>                                     # scrub/
 npm run timeline -- --project <slug> [--words [--slide 04] | --dry | --check] [--lead 0.10]   # cue sheet (+ word anchors + Beats) → timeline.json
 npm run assemble -- --project <slug> [--jobs 4] [--preview] [--res 4k|1440p|2k|1080p] [--fps 60] [--max-size 2G] [--captions off] [--no-audio] [--var key=value] [--from S --to S]   # → renders/final/<slug>.mp4 (+ .srt); --var reaches slides as window.VARS (intros: theme=light); --from/--to = just that stretch as its own clip (2s intro cuts)
 npm run social -- --project <slug> [--rules | --init [--platforms a,b] | --check]   # per-network post copy: you write social.json, this counts and gates it
-npm run yt-research -- --out <dir> [--top 60] [--min-age 21] [--only scrape|download|measure] [--queries "a,b"] [--channels "@x,@y"]   # what performs in a niche (thumbnails, and titles via --only scrape): winners + a control set, scored against each channel's own median
+npm run yt-research -- --out <dir> --queries "a,b" [--channels "@x,@y"] [--top 60] [--topic 24] [--min-age 21] [--only scrape|download|measure]   # what performs in a niche (thumbnails, and titles via --only scrape): winners + a control set, scored against each channel's own median
 npm run photos -- --project <slug> [--subject "server rack"] [--per 3] [--dry]        # openly-licensed object photos + their provenance
 npm run kit -- --project <slug> [--emoji "rocket, thinking face"] [--character dev --seed x [--options q] [--gestures point,ok]]   # alive kit: Fluent 3D emoji (MIT) + DiceBear Notionists characters (CC0) into assets/, logged in SOURCES.md
 npm run sfx -- --project <slug> [--dry]                                  # sound effects from timeline beats → assets/sfx.wav (mixed by dual via PROJECT.cta.sfx); re-run after every timeline
 npm run beat-frames -- --project <slug> [--match mj,burst,shake] [--off 0.7]   # frames at short-lived beats (stickers, bursts, shakes) → renders/beats/sheet.png
 npm run render -- --project <slug> --slide 07 [--format gif|mp4|all|webm,mov --transparent] [--poster --t 0.5] [--timed]
 npm run render:all -- --project <slug>                                  # every slide as clips (cached; --force to redo)
+npm run thumb-new -- --video <slug> [--title "…"] [--out dir]           # scaffold projects/<slug>-thumbs from core/thumbs-skeleton (window.TK kit, starter slide, render.sh, research/)
+npm run thumb -- --project <x>-thumbs --slide 03 [--var v=2 ...] [--name f] [--pick] [--force]   # one YouTube thumbnail: probe (GRID.thumb crop box, timestamp + hover corners, hook >= 120px, words >= 44px) → 4K poster → always a PNG under 2 MB (lossless 2560→1920, then 256 colours, then smaller lossless) in renders/candidates/; --pick → renders/<x>-thumbnail.png + deliver/
+npm run thumb-check -- --project <x>-thumbs [--file f | --all]          # every screen: 1280/640/360/246/168/120 px with YouTube's badge, hover icons and progress bar drawn on, the edge crop, and a shelf test among the research winners → research/visibility/
 npm run dual -- --project <slug> [--chunk 20] [--only a|b] [--resume] [--limit N] [--reveals <set>]   # two masters (deck-only + composited on footage) from one capture; PROJECT.reveals/splice/cta. PROJECT.revealSets = several named cuts (how much face the video shows); the name keys the work dirs and B's filename. Burned-in captions are re-added over every reveal from their own alpha capture, so they survive the ramp
 npm run srt -- --project <slug>                                         # captions.srt (pre-splice master) → renders/final/*.srt, shifted for PROJECT.splice
+npm run deliver -- --project <slug>                                     # projects/<slug>/deliver/: every finished file for the video, in video/ (masters, thumbnail, vertical cuts + srt + transcript, video copy) and posts/ (image posts + carousel + copy from ../image-content-pipeline), hard links, previews left out; dual, social-cut, social and the image pipeline's review/social refresh it themselves
 npm run social-cut -- --project <slug> [--plan | --faces | --cut <name|all> [--preview]]   # vertical social cuts from cuts.json: the cut's audio, a deck built for it, the master's face, captions, YouTube end card; a cut whose master opens on the face opens on it too (PROJECT.reveals → faces + over slides as 9:16 overlays, cuts.json "reveals": open|all|off)
                                                                         # one-project layout: --project <slug>/social (the nested cuts project, see cloud-vs-devops)
 npm run assemble -- --project <slug> --variant vertical                  # the same deck on project.js's `vertical` block → renders/vertical/final/<slug>-vertical.mp4 (any command taking --project accepts --variant)
@@ -122,7 +131,7 @@ npm test                                                                # node:t
   H.264 crf 16 tagged bt709, bitrate capped so the final stays under `maxSize` (2 GB; `--max-size`). `--preview` = 1× half-size 30fps draft,
   never a deliverable but **always the first render**: every video gets a preview, the user watches it, and only then does the
   full-resolution master start. `npm run dual --preview` splices the intro and end screen like the master does and writes
-  `<slug>-preview.mp4`, so a draft never occupies the deliverable's filename. `cfg.width/height` are the stage; `cfg.outWidth/outHeight` are the encoded pixels. GIFs stay ≤ 30fps.
+  `renders/previews/<slug>[-variant]-preview.mp4` (assemble --preview too): every draft of a video, all looks, in that one folder, never beside the master. Once the full master is written, the run deletes its own draft (dual: the draft's mp4 and its frames/dual…-preview chunk cache; assemble: the -preview mp4 + srt; social-cut: the cut's -preview mp4/srt and its deck/source drafts), and an emptied previews/ folder goes too. `cfg.width/height` are the stage; `cfg.outWidth/outHeight` are the encoded pixels. GIFs stay ≤ 30fps.
 - A slide is `defineSlide({slug, template, dur?, data})`; custom slides give `html(data, ctx)` + `frame(u, ctx)`. Ids auto-derive from the slug number.
 - `frame(u, ctx)` must be a pure function of its arguments (no transitions, timers, `Date`, randomness); `ctx.local/T/hold/out/beats/exit` carry
   the clock; templates time elements with `const B = beats(c)` → `B.p(name, a, b, kind)` (beat when given, fraction fallback otherwise).
@@ -130,9 +139,13 @@ npm test                                                                # node:t
 - Text lives in `data`, never hardcoded in templates. Badges/rowbars in sentence case. Key phrase of a headline in `<em>`.
 - Grid geometry only from `core/grid.js` (CSS vars on `#stage`, `window.GRID` in JS; `GRID.cw`, never 960). Asset URLs are document-relative: `logo()`, `passet()`.
 - Logos: official sources only (AWS Architecture Icons, simple-icons, brand pages); log every download in `SOURCES.md`.
+  A brand simple-icons lacks (e.g. Amazon, removed for its brand terms) is never skipped: fetch it from the internet
+  with Puppeteer or Playwright (the brand's own press/brand page first, then its Wikimedia Commons file page) into the
+  project's `assets/`, and log the page URL in `SOURCES.md`.
 - Keep `renders/{final,gif,mp4,webm,strip}`, `frames/`, `.whisper/` and voiceover recordings out of git; posters, contact sheets,
   `vo.json`, `transcript.txt`, `timeline.json`, `captions.json` and `social/` are committed so a review is reproducible.
 - Before declaring a video done: `npm run review` clean and every poster + strip looked at, `npm test` green, ffprobe on `renders/final/<slug>.mp4`.
+- Hand over `projects/<slug>/deliver/`, the one folder of finished files (video/ + posts/, git-ignored: it is links to renders), never the render folders.
 - Brand defaults (handles, link-in-bio, audio bed) live in `core/brand.js`; override per project in `project.js → brand`.
 - **`PROJECT.reveals` edges go on slide boundaries.** A ramp fades the whole captured frame, plate included, so a ramp
   that brings the deck *back* inside a slide's 0.4s push-exit shows that slide swimming up out of the footage just

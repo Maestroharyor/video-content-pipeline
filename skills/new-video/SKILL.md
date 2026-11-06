@@ -13,7 +13,7 @@ If `npm run doctor` reports something missing, run `npm run setup` (installs ffm
 
 **Read [references/house-rules.md](references/house-rules.md) before the first question.** It holds the user's standing decisions
 (always ask the outro, 5-6 s outros, title position, unique theme, safe zones, face only on lens contact, preview first, LifeTech
-Facts handles and links) and overrides any default in the step references.
+Facts handles and links, never delete a render without explicit approval) and overrides any default in the step references.
 
 ## Invocation dispatch (must happen first)
 
@@ -75,7 +75,7 @@ Parse the whole invocation before doing anything else. Flags pre-answer the ques
    storyboard shows the slide boundaries, not here. Saved as `PROJECT.splice = {at, head, tail}` and delivered by
    `npm run dual` + `npm run srt`, never by `npm run assemble`.
 6. **Outro & audio bed** (never skipped: ask it on every run, also for overlay decks on talking-head footage and when
-   resuming a project; default suggestion is the full-frame outro + music; **the outro is 5-6 s, never longer**) — reuse the saved brand (handles, link-in-bio box from `core/brand.js`), edit it, or none; and
+   resuming a project; default suggestion is the subscribe overlay with NO music (music only when he asks); **the outro is 5-6 s, never longer**) — reuse the saved brand (handles, link-in-bio box from `core/brand.js`), edit it, or none; and
    the outro's sound: the pop + shimmer bed (`outro.wav`, default) or outro music (`brand.audio:
    'outro-music-tropicorp.wav'`, 9s, CC0). **The outro is 5-6 s whatever the bed:** give the row a 5-6 s window (`npm run timeline -- --tail 5.5`
    when it is the last row); `npm run sfx` trims longer music and fades it out on the outro's last beat, and `npm run timeline`
@@ -206,6 +206,13 @@ audio (on the force-aligned words), lays the talking head over it, then the hook
 
 **Gate:** every span opens and closes on its intended word (`--plan`, then a transcript of the preview at every edit),
 the user watched each best-of preview before `--cut all`, and every file is 1080×1920, 30fps, bt709, AAC, ≤ 140s.
+
+## Step 7 — Thumbnail (when asked)
+
+Run the **`/new-thumbnail`** skill (`skills/new-thumbnail/SKILL.md`): research the topic's shelf and YouTube's current
+specs, propose directions for approval, build them in `projects/<slug>-thumbs`, check every candidate on every screen size
+(`npm run thumb-check`), then `npm run thumb --pick` (one PNG under 2 MB into `deliver/`). Copy the
+pick to `projects/<slug>/assets/yt-thumb.jpg` before Step 6, so the social cuts' end card shows it.
 
 ---
 
