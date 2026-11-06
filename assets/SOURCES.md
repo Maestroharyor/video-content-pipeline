@@ -20,7 +20,14 @@
 AWS Architecture Icons are provided by Amazon Web Services under the terms on the icons page (use to depict AWS architecture; do not alter the marks).
 Brand marks from simple-icons are trademarks of their respective owners.
 | assets/fonts/KoHo-Bold.ttf, KoHo-SemiBold.ttf | https://github.com/google/fonts/tree/main/ofl/koho (Cadson Demak) | SIL OFL 1.1. Optional headline font for the LifeTech Facts thumbnails (`--var font=koho`, `lf-thumb.js`). |
+| assets/fonts/Newsreader-Variable.woff2 | https://fonts.google.com/specimen/Newsreader (Production Type; gstatic latin subset, opsz 6-72, wght 500-800, fetched 2026-10-22) | SIL OFL 1.1. Serif headlines for the broadsheet look trial (projects/php2shell). |
 | assets/logos/glyphs/windows.svg, csharp.svg | drawn for this repo | **Not brand marks.** simple-icons no longer ships the Microsoft Windows or C# logos, and a column reading icon-plus-label next to five that do looks broken. These are original generic glyphs, a framed four-pane window and a C beside a sharp sign, deliberately unlike the trademarks they stand in for. Reference them with `{ icon: 'windows', brand: 'glyphs' }`; `logo(name, folder)` takes any folder under assets/logos. |
 | assets/fonts/Anton-Regular.woff2 | https://github.com/googlefonts/AntonFont (via `@fontsource/anton@5.3.0` on npm) | SIL OFL 1.1. The heavy condensed display cut for the stacked-type thumbnails; Inter Display Black is too wide to stack three words tall in a 1280x720 frame. Extracted from the package tarball; not added as a dependency. |
 | assets/fonts/Caveat-Bold.woff2 | https://github.com/googlefonts/caveat (via `@fontsource/caveat@5.3.0` on npm) | SIL OFL 1.1. Marker hand for thumbnail annotations. |
 | assets/fonts/PermanentMarker-Regular.woff2 | https://github.com/google/fonts/tree/main/apache/permanentmarker (via `@fontsource/permanent-marker@5.3.0` on npm) | Apache 2.0. The heavier marker hand; the two are A/B'd against each other on the annotated-object thumbnails. |
+
+## Sound effects: Kenney UI packs (CC0)
+- assets/audio/sfx/ki-*.wav: Kenney "Interface Sounds" 1.0 (100 files), CC0 1.0, https://kenney.nl/assets/interface-sounds,
+  WAV conversion from https://github.com/Calinou/kenney-interface-sounds (lossless), downloaded 2026-10-11.
+- assets/audio/sfx/ku-*.wav: Kenney "UI Audio" (50 files), CC0 1.0, https://kenney.nl/assets/ui-audio,
+  WAV conversion from https://github.com/Calinou/kenney-ui-audio, downloaded 2026-10-11. Credit not required (Kenney.nl).
