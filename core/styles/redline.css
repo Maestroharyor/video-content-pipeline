@@ -1,0 +1,243 @@
+/* "redline" theme (PROJECT.theme = 'redline'), built for projects/flutter-vs-rn-styling.
+   The video compares how two frameworks style one component, so the deck is a design-handoff spec sheet: a graphite
+   ground with an 8px layout grid, components drawn on it like a design file, and pink redlines (the measurements a
+   designer hands over) that dimension padding and gap in px. Dart blue and React cyan are the two leads, the redline
+   pink is reserved for measurements and the hero. Code sits in a dark editor with soft wrap (the lines on screen are
+   the compile-checked files, never re-flowed by hand); the rendered component sits in a light simulator strip under it.
+   Hairline borders, 14px corners, no filter: blur() (capture cost). Cast and sticker styles come from lanes.css, which
+   the project links. The rl* templates (core/templates/redline.js) are styled at the bottom of this file. */
+#stage.theme-redline{
+  --bg0:#111317; --bg1:#171A20; --bg2:#1E222A; --bd:#2A303A; --bd2:#3A4250;
+  --tx:#F1F3F7; --tx2:#AEB6C4; --tx3:#6F7888;
+  --teal:#61DAFB; --violet:#B39BFF; --green:#4ADE9A; --rose:#FF5A6E; --amber:#FFC24B; --blue:#3DB2F5; --orange:#FF8A3D;
+  --red:#FF3D7F; --dart:#3DB2F5; --react:#61DAFB;
+  background:#111317;
+}
+#stage.theme-redline.transparent{background:transparent}   /* alpha captures (dual's caption layer, reveals) must stay clear */
+
+/* ---------- ground: an 8px layout grid with a 64px major line, a cool light from above ---------- */
+#stage.theme-redline .bgfx .grid{opacity:1;inset:-64px;
+  background-image:
+    linear-gradient(rgba(255,255,255,.045) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.045) 1px,transparent 1px),
+    linear-gradient(rgba(255,255,255,.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,.018) 1px,transparent 1px);
+  background-size:64px 64px,64px 64px,16px 16px,16px 16px}
+#stage.theme-redline .bgfx .glow.a{background:radial-gradient(70% 34% at 50% 22%,rgba(61,178,245,.12),transparent 72%)}
+#stage.theme-redline .bgfx .glow.b{background:radial-gradient(80% 36% at 50% 100%,rgba(255,61,127,.08),transparent 70%)}
+#stage.theme-redline .bgfx .vig{background:radial-gradient(120% 90% at 50% 42%,transparent 55%,rgba(0,0,0,.55))}
+
+/* burned-in captions: a spec label, white on graphite with a pink rule; the base box wraps at 540px and strands a word */
+#stage.theme-redline .caps{width:max-content;background:rgba(17,19,23,.92);border:2px solid var(--bd2);border-left:8px solid var(--red);
+  color:var(--tx);border-radius:12px;box-shadow:0 14px 40px rgba(0,0,0,.45)}
+#stage.theme-redline .caps span.now{color:var(--red)}
+
+/* ---------- type ---------- */
+#stage.theme-redline .eyebrow{font:700 32px JB;letter-spacing:.06em;text-transform:none;color:var(--acc,var(--red))}
+#stage.theme-redline .eyebrow::before{content:"// ";color:var(--tx3)}
+#stage.theme-redline .h1{letter-spacing:-.035em;font-weight:900}
+#stage.theme-redline .badge{border-radius:10px;font:700 30px JB;letter-spacing:0}
+
+/* ---------- outro ---------- */
+#stage.theme-redline .hrow .ht{border:2px solid var(--bd2)}
+#stage.theme-redline .bbox{background:var(--bg1);border:2px solid var(--bd2)}
+#stage.theme-redline .fx-emoji{filter:drop-shadow(0 12px 16px rgba(0,0,0,.5))}
+
+/* ---------- the rl* templates ---------- */
+.rl-panel{position:absolute;box-sizing:border-box;background:var(--bg1);border:2px solid var(--bd);border-radius:16px;
+  box-shadow:0 24px 60px rgba(0,0,0,.45),inset 0 1px 0 rgba(255,255,255,.05);opacity:0}
+
+/* editor: VS Code, Dark Modern (the frontend-one-click kit's FE.ed, scaled for the 1080-wide vertical stage). The window
+   spans the stage; its code column keeps to the phone safe zone. Token colours are VS Code's Dark+ defaults. */
+.vsc{--sk:#569cd6;--kc:#c586c0;--ss:#ce9178;--sf:#dcdcaa;--sn:#b5cea8;--sc:#6a9955;--sp:#9cdcfe;--sty:#4ec9b0;
+  background:#1f1f1f;border:1px solid #3c3c3c;border-radius:14px;overflow:hidden;color:#cccccc;display:flex;flex-direction:column}
+.vsc .vt{height:50px;flex:none;background:#181818;border-bottom:1px solid #2b2b2b;display:flex;align-items:center;gap:18px;padding:0 18px;position:relative}
+.vsc .vt .dots{display:flex;gap:9px}.vsc .vt .dots i{width:15px;height:15px;border-radius:50%;background:#ff5f57}
+.vsc .vt .dots i:nth-child(2){background:#febc2e}.vsc .vt .dots i:nth-child(3){background:#28c840}
+.vsc .vt .nv{font:400 20px Inter;color:#7d7d7d;letter-spacing:.3em}
+.vsc .vt .cc{position:absolute;left:50%;top:10px;transform:translateX(-50%);width:44%;height:30px;border-radius:7px;background:#222;border:1px solid #383838;
+  display:flex;align-items:center;justify-content:center;gap:10px;font:400 19px Inter;color:#cccccc;white-space:nowrap}
+.vsc .vt .cc svg{width:16px;height:16px;fill:none;stroke:#9d9d9d;stroke-width:2.4;stroke-linecap:round}
+.vsc .vm{flex:1;min-height:0;display:flex}
+.vsc .ab{width:64px;flex:none;background:#181818;border-right:1px solid #2b2b2b;display:flex;flex-direction:column;align-items:center;gap:8px;padding-top:8px}
+.vsc .ab span{width:64px;height:58px;display:grid;place-items:center;border-left:3px solid transparent;box-sizing:border-box}
+.vsc .ab span.on{border-left-color:#0078d4}
+.vsc .ab svg{width:30px;height:30px;fill:none;stroke:#868686;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.vsc .ab span.on svg{stroke:#d7d7d7}
+.vsc .ea{flex:1;min-width:0;display:flex;flex-direction:column;background:#1f1f1f}
+.vsc .vg{flex:none;display:flex;flex-direction:column;border-bottom:1px solid #2b2b2b}
+.vsc .vg:last-child{border-bottom:0}
+.vsc .bar{height:56px;flex:none;background:#181818;border-bottom:1px solid #2b2b2b;display:flex;align-items:stretch;position:relative}
+.vsc .tab{display:flex;align-items:center;gap:12px;padding:0 18px 0 20px;font:400 24px Inter;color:#9d9d9d;background:#181818;border-right:1px solid #2b2b2b;
+  border-top:2px solid transparent;white-space:nowrap}
+.vsc .tab.on{background:#1f1f1f;color:#ffffff;border-top-color:#0078d4}
+.vsc .tab .x{font-style:normal;font-size:22px;color:#cccccc;margin-left:4px}
+.vsc .fi{font:800 18px/1 JB;font-style:normal;min-width:22px;text-align:center;flex:none}
+.vsc .bar .rl-tag{position:absolute;right:130px;top:9px;font-size:24px;padding:3px 14px}
+.vsc .bc{height:36px;flex:none;display:flex;align-items:center;gap:8px;padding:0 20px;font:400 20px Inter;color:#a9a9a9;white-space:nowrap;overflow:hidden}
+.vsc .bc b{font-weight:400;color:#6e6e6e}
+.vsc .bc .fi{font-size:15px;min-width:18px}
+.vsc img.fi{width:24px;height:24px;min-width:0}.vsc .bc img.fi{width:18px;height:18px}
+.vsc .view{position:relative;overflow:hidden;display:flex}
+.vsc .src{position:relative;flex:1;min-width:0;padding:12px 0 16px}
+.vsc .mm{flex:none;width:124px;padding:12px 10px 0 10px;box-sizing:border-box;border-left:1px solid rgba(255,255,255,.04);display:flex;flex-direction:column;gap:3px}
+.vsc .mm i{display:block;height:3px;border-radius:1px;background:rgba(204,204,204,.28);flex:none}
+.vsc .sbar{height:36px;flex:none;background:#181818;border-top:1px solid #2b2b2b;display:flex;align-items:center;gap:22px;padding:0 140px 0 0;
+  font:400 18px Inter;color:#cccccc;white-space:nowrap}
+.vsc .sbar .rm{width:64px;height:36px;display:grid;place-items:center;background:#0078d4;flex:none}
+.vsc .sbar .rm svg{width:20px;height:20px;fill:none;stroke:#fff;stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.vsc .sbar .sp{flex:1}
+.rl-ln{display:flex;font:400 28px/1.42 JB;color:#cccccc;position:relative}
+.rl-ln .g{flex:none;width:58px;padding-right:16px;text-align:right;color:#6e7681}
+.rl-ln .t{flex:1;min-width:0;white-space:pre-wrap;overflow-wrap:anywhere;padding-right:14px}
+.rl-ln .fd{font-style:normal;color:#6e7681;font-size:28px;line-height:1;padding:0 10px;border-radius:6px;background:rgba(255,255,255,.06)}
+.rl-ln.typing{background:rgba(255,255,255,.04);box-shadow:inset 0 0 0 1px #282828}
+.rl-ln.typing .g{color:#cccccc}
+.rl-ln.typing .t::after{content:"";display:inline-block;width:3px;height:1.1em;background:#aeafad;vertical-align:-.17em;margin-left:1px}
+.rl-ln.typing.blink .t::after{visibility:hidden}
+.rl-ln.hl{background:rgba(255,61,127,.10)}
+.vsc .src.mini .rl-ln{font-size:16px;line-height:1.5}
+.vsc .src.mini .rl-ln .g{width:44px;padding-right:12px}
+.vsc .src.mini .rl-ln .t{white-space:pre;overflow-wrap:normal}
+/* Dark+ tokens: keywords blue, control flow and imports purple, types teal, strings orange, numbers green */
+.rl-ln .k{color:var(--sk)} .rl-ln .s{color:var(--ss)} .rl-ln .n{color:var(--sn)} .rl-ln .c{color:var(--sc)} .rl-ln .ty{color:var(--sty)}
+.rl-ln .tg{color:var(--sk)} .rl-ln .fn{color:var(--sf)} .rl-ln .pu{color:#808080} .rl-ln .at{color:var(--sp)} .rl-ln .pr{color:var(--sp)} .rl-ln .kc{color:var(--kc)} .rl-ln .tc{color:var(--sty)}
+
+/* an iPhone (the frontend-one-click kit's FE.phone): 390 pt screen, Dynamic Island, status bar, side buttons, home bar */
+.rl-iph{position:absolute;box-sizing:border-box;background:#1c1d21;border-radius:50px;padding:11px;opacity:0;
+  box-shadow:0 30px 70px rgba(0,0,0,.55),inset 0 0 0 2px #3a3c42,inset 0 0 0 4px #0c0c0e}
+.rl-iph .sbtn{position:absolute;width:4px;border-radius:2px;background:#2b2d33}
+.rl-iph .sbtn.a{left:-3px;top:110px;height:34px}.rl-iph .sbtn.b{left:-3px;top:160px;height:60px}.rl-iph .sbtn.c{right:-3px;top:140px;height:80px}
+.rl-iph .scr{width:100%;height:100%;border-radius:40px;overflow:hidden;position:relative;background:#FBF8FF}
+.rl-iph .z{width:390px;height:844px;position:relative;transform-origin:0 0}
+.rl-iph .app{position:absolute;inset:0;background-size:390px 844px;background-repeat:no-repeat}
+.rl-iph .ap-sb{position:absolute;left:0;right:0;top:0;height:54px;display:flex;align-items:center;padding:14px 30px 0 46px;box-sizing:border-box;
+  font:600 17px -apple-system,Inter,sans-serif;letter-spacing:-.01em;color:#111;z-index:2}
+.rl-iph .ap-sb .isl{position:absolute;left:50%;top:11px;width:126px;height:37px;border-radius:19px;background:#000;transform:translateX(-50%)}
+.rl-iph .ap-sb .sig{display:flex;align-items:flex-end;gap:2px;margin-left:auto;margin-right:6px}.rl-iph .ap-sb .sig i{width:3px;background:#111;border-radius:1px}
+.rl-iph .ap-sb .sig i:nth-child(1){height:5px}.rl-iph .ap-sb .sig i:nth-child(2){height:7px}.rl-iph .ap-sb .sig i:nth-child(3){height:9px}.rl-iph .ap-sb .sig i:nth-child(4){height:11px}
+.rl-iph .ap-sb .wifi{width:17px;height:12px;margin-right:6px;background:radial-gradient(circle at 50% 110%,#111 0 22%,transparent 23% 44%,#111 45% 62%,transparent 63% 82%,#111 83% 100%);clip-path:polygon(0 0,100% 0,50% 100%)}
+.rl-iph .ap-sb .bat{width:27px;height:13px;border:1.5px solid #111;border-radius:4px;padding:1.5px;box-sizing:border-box}.rl-iph .ap-sb .bat i{display:block;height:100%;width:78%;background:#111;border-radius:1.5px}
+.rl-iph .hbar{position:absolute;left:50%;bottom:8px;width:134px;height:5px;border-radius:3px;background:#111;transform:translateX(-50%);z-index:2}
+
+/* simulator strip: a light device screen cropped to the component */
+.rl-sim{position:absolute;box-sizing:border-box;border-radius:22px;background:#2A2E36;padding:10px;opacity:0;
+  box-shadow:0 24px 60px rgba(0,0,0,.45)}
+.rl-sim .scr{position:relative;overflow:hidden;border-radius:14px;background:#F7F6FB}
+.rl-sim .lbl{position:absolute;right:18px;top:-46px;font:700 28px JB;color:var(--tx3);white-space:nowrap}
+.rl-sim .lbl b{color:var(--green);font-weight:700}
+.rl-sim .img{position:absolute;left:0;top:0;background-repeat:no-repeat}
+.rl-sim .img.b{opacity:0}
+
+/* the RN profile card, drawn from its own classes (flex-row items-center gap-4 p-4 rounded-2xl bg-white …) at 1x, scaled */
+.rn-card{display:flex;flex-direction:row;align-items:center;gap:16px;padding:16px;border-radius:16px;background:#fff;width:358px;box-sizing:border-box;
+  font-family:Inter;box-shadow:0 1px 3px rgba(0,0,0,.08)}
+.rn-card.col{flex-direction:column;align-items:flex-start;gap:4px}
+.rn-card .av{flex:none;width:56px;height:56px;border-radius:50%;background:#E0E7FF;display:grid;place-items:center;font-weight:700;font-size:16px;color:#4338CA}
+.rn-card .nm{flex:1;display:flex;flex-direction:column}
+.rn-card .nm b{font-size:16px;font-weight:600;color:#111}
+.rn-card .nm span,.rn-card > span{font-size:14px;color:#6B7280}
+.rn-card > b{font-size:16px;font-weight:600;color:#111}
+.rn-card .fb{border-radius:999px;background:#4F46E5;padding:8px 16px;color:#fff;font-weight:600;font-size:16px}
+
+/* redlines: a dimension line with end ticks and a px label */
+.rl-dim{position:absolute;background:var(--red);transform-origin:0 0;opacity:0;z-index:6}
+.rl-dim.h{height:3px} .rl-dim.v{width:3px}
+.rl-dim.h::before,.rl-dim.h::after{content:"";position:absolute;top:-9px;width:3px;height:21px;background:var(--red)}
+.rl-dim.h::before{left:0} .rl-dim.h::after{right:0}
+.rl-dim.v::before,.rl-dim.v::after{content:"";position:absolute;left:-9px;height:3px;width:21px;background:var(--red)}
+.rl-dim.v::before{top:0} .rl-dim.v::after{bottom:0}
+.rl-dim i{position:absolute;font:700 28px JB;font-style:normal;color:#fff;background:var(--red);padding:2px 10px;border-radius:8px;white-space:nowrap}
+.rl-dim.h i{left:50%;top:-50px;transform:translateX(-50%)}
+.rl-dim.v i{top:50%;left:16px;transform:translateY(-50%)}
+
+/* chips, tags, marks */
+.rl-chip{position:absolute;display:flex;align-items:center;gap:14px;height:76px;padding:0 26px;box-sizing:border-box;border-radius:14px;
+  background:var(--bg2);border:2px solid var(--bd2);font:800 34px ID;color:var(--tx);white-space:nowrap;opacity:0}
+.rl-chip img{width:42px;height:42px}
+.rl-chip code{font:700 30px JB;color:var(--acc,var(--dart))}
+.rl-chip.hot{border-color:var(--red);box-shadow:0 0 0 4px rgba(255,61,127,.18)}
+.rl-tag{position:absolute;padding:6px 16px;border-radius:10px;font:700 30px JB;white-space:nowrap;opacity:0;
+  background:rgba(255,61,127,.14);border:2px solid var(--red);color:#FFC2D6}
+.rl-tag.ok{background:rgba(74,222,154,.12);border-color:var(--green);color:#BFF5D9}
+.rl-mark{width:56px;height:56px}
+.rl-x{position:absolute;height:10px;border-radius:5px;background:var(--rose);transform-origin:left center;transform:scaleX(0);z-index:7;
+  box-shadow:0 6px 20px rgba(255,90,110,.45)}
+.rl-stamp{position:absolute;padding:8px 26px;border:5px solid var(--red);border-radius:14px;font:900 60px ID;letter-spacing:.04em;
+  color:var(--red);background:rgba(17,19,23,.85);white-space:nowrap;opacity:0;transform-origin:50% 50%;z-index:8}
+
+.rl-half{position:absolute;box-sizing:border-box;padding:28px;border-radius:18px;background:var(--bg1);border:2px solid var(--bd);opacity:0;
+  display:flex;flex-direction:column;gap:18px}
+.rl-half .hd{display:flex;align-items:center;gap:16px;font:900 46px ID;letter-spacing:-.02em;color:var(--tx)}
+.rl-half .hd img{width:60px;height:60px}
+.rl-half small{font:700 28px JB;color:var(--tx3)}
+.rl-half code{font:700 30px JB;color:var(--acc);padding:10px 16px;border-radius:10px;background:#0D0F13;border:2px solid var(--bd);align-self:flex-start}
+.rl-vs{position:absolute;font:900 52px ID;color:var(--red);opacity:0}
+
+/* chain (05): tiles with arrows, then the screenshot */
+.rl-tile{position:absolute;box-sizing:border-box;border-radius:16px;background:var(--bg1);border:2px solid var(--bd);opacity:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:12px;text-align:center}
+.rl-tile img{width:72px;height:72px}
+.rl-tile b{font:800 32px ID;color:var(--tx);white-space:nowrap}
+.rl-tile small{font:700 28px JB;color:var(--tx3)}
+.rl-tile.hot{border-color:var(--red);box-shadow:0 0 0 4px rgba(255,61,127,.16)}
+.rl-tile.hot small{color:var(--red)}
+.rl-arrow{position:absolute;font:900 40px ID;color:var(--tx3);opacity:0}
+.rl-shot{position:absolute;box-sizing:border-box;padding:12px;border-radius:16px;background:#2A2E36;opacity:0;overflow:hidden}
+.rl-shot .ph{position:relative;overflow:hidden;border-radius:8px}
+.rl-shot .ph img{display:block;max-width:none}
+.rl-shot .url{display:flex;align-items:center;gap:10px;height:44px;margin:-2px 0 10px;padding:0 16px;border-radius:10px;background:#15181E;
+  font:700 28px JB;color:var(--tx2);white-space:nowrap}
+.rl-shot .url::before{content:"";width:14px;height:14px;border-radius:50%;background:var(--green)}
+
+/* pane label (06, 13) */
+.rl-plb{position:absolute;display:flex;align-items:center;gap:14px;font:800 32px ID;color:var(--tx);white-space:nowrap;opacity:0}
+.rl-plb img{width:42px;height:42px}
+.rl-plb small{font:700 28px JB;color:var(--tx3)}
+.rl-match{background:rgba(255,61,127,.28);border-radius:6px;box-shadow:0 0 0 2px var(--red)}
+
+/* tree (08) */
+.rl-node{position:absolute;height:72px;padding:0 24px;box-sizing:border-box;display:flex;align-items:center;border-radius:12px;
+  background:var(--bg2);border:2px solid var(--bd2);font:700 30px JB;color:var(--dart);white-space:nowrap;opacity:0}
+.rl-edge{position:absolute;overflow:visible}
+.rl-edge path{fill:none;stroke:var(--bd2);stroke-width:3}
+
+/* cards (16) */
+.rl-card{position:absolute;box-sizing:border-box;border-radius:18px;background:var(--bg1);border:2px solid var(--bd);padding:26px 26px 18px;opacity:0}
+.rl-card .hd{display:flex;align-items:center;gap:14px;padding-bottom:16px;margin-bottom:8px;border-bottom:2px dashed var(--bd2);font:900 40px ID;color:var(--tx)}
+.rl-card .hd img{width:52px;height:52px}
+.rl-row{display:flex;align-items:center;gap:14px;height:72px;font:700 30px Inter;color:var(--tx);opacity:0}
+.rl-row i{flex:none;width:44px;height:44px;border-radius:10px;display:grid;place-items:center;font:900 30px ID;font-style:normal}
+.rl-row.y i{background:rgba(74,222,154,.16);color:var(--green)} .rl-row.n i{background:rgba(255,90,110,.16);color:var(--rose)}
+.rl-row.n{color:var(--tx2)}
+
+/* the big gap-4 chip (14) */
+.rl-big{position:absolute;display:flex;align-items:center;justify-content:center;box-sizing:border-box;border-radius:24px;
+  background:#0D0F13;border:3px solid var(--red);font:700 120px JB;color:#fff;opacity:0;letter-spacing:-.02em}
+.rl-big small{font:700 34px JB;color:var(--tx3);margin-left:28px}
+
+/* over-face / statement callout (01, 03, 07, 15, 17) */
+.rl-callout{position:absolute;box-sizing:border-box;padding:40px 44px;border-radius:22px;background:var(--bg1);border:2px solid var(--bd2);opacity:0}
+.rl-callout .row{display:flex;align-items:center;gap:22px}
+.rl-callout .row img{width:96px;height:96px}
+.rl-callout .ln{margin-top:26px;font:700 30px JB;color:var(--tx2);white-space:pre-wrap;opacity:0}
+.rl-callout .ln b{color:var(--green);font-weight:700}
+.rl-corner{position:absolute;width:30px;height:30px;border:0 solid var(--red)}
+
+/* ---------- version B: cards over the face (projects/flutter-vs-rn-styling/kit.js) ----------
+   Only in a transparent capture (dual's over windows): the slide's own content hides and the .rl-ov card shows, low on
+   the frame between the chin and the caption band (y 960-1320 of the 9:16 stage). */
+.rl-ov{display:none}
+#stage.transparent .slide.ovs > :not(.rl-ov){visibility:hidden}
+#stage.transparent .slide.ovs .rl-ov{display:flex}
+#stage.theme-redline.transparent .slide.ovs::before{display:none}   /* the card is opaque; base's dark scrim would dim the face */
+.rl-ov{position:absolute;left:60px;width:880px;box-sizing:border-box;flex-direction:column;gap:8px;padding:28px 36px 32px;border-radius:22px;opacity:0;
+  background:rgba(17,19,23,.96);border:2px solid var(--bd2);border-left:10px solid var(--red);box-shadow:0 24px 60px rgba(0,0,0,.5)}
+.rl-ov .eb{font:700 32px JB;color:var(--red)}
+.rl-ov b{font:900 64px/1.06 ID;letter-spacing:-.035em;color:var(--tx)}
+.rl-ov b em{font-style:normal;color:var(--red)}
+.rl-ov .row{display:flex;align-items:center;gap:16px;margin-top:10px}
+.rl-ov .row img{height:56px;width:auto}
+.rl-ov .ln{font:700 30px JB;color:var(--tx2);opacity:0;white-space:pre-wrap}
+.rl-ov .ln b{font:700 30px JB;color:var(--green)}
+#stage.theme-redline .cst b{font-size:28px}

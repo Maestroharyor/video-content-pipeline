@@ -1,0 +1,196 @@
+/* "board" theme (PROJECT.theme = 'board'), built for projects/what-makes-computer-faster.
+   The inside of the laptop: one dark green motherboard the whole deck lives on. Solder-mask green, gold (ENIG) traces
+   and pads, silkscreen-white labels. The three parts the video names each own a colour: CPU blue, RAM teal, storage
+   amber; a bottleneck flushes rose. Data is a small glowing pulse that runs the traces and queues at a slow part.
+   Depth is a hard dark offset shadow plus a thin gold rim, never blur (capture cost). Cast and sticker styles come
+   from lanes.css, which the project links. The bd* template (core/templates/board.js) is styled below. */
+
+#stage.theme-board{
+  --bg0:#06140F; --bg1:#0B2219; --bg2:#0E2C20; --bd:#1E4A37; --bd2:#2E6A50;
+  --tx:#F2F7F0; --tx2:#BFD3C6; --tx3:#8FAE9C;
+  --teal:#2DE0C4; --violet:#B69CFF; --green:#5BE38E; --rose:#FF7A8C; --amber:#F7B947; --blue:#5CC0FF; --orange:#FF9F4A;
+  --gold:#D9AE52; --gold2:#F3D27E; --pcb:#0D3626; --pcb2:#114330; --silk:#E9F2EA;
+  background:#06140F;
+}
+#stage.theme-board.transparent{background:transparent}   /* alpha captures (dual's caption layer, reveals) must stay clear */
+
+/* ---------- ground: a dark board edge with faint traces and vias ---------- */
+#stage.theme-board .bgfx .grid{opacity:1;inset:-90px;
+  background-image:
+    radial-gradient(circle at 50% 50%,rgba(217,174,82,.20) 0 3px,transparent 3.5px),
+    linear-gradient(90deg,transparent 0 49%,rgba(217,174,82,.07) 49% 51%,transparent 51%),
+    linear-gradient(0deg,transparent 0 49%,rgba(217,174,82,.05) 49% 51%,transparent 51%);
+  background-size:180px 180px,360px 120px,120px 360px}
+#stage.theme-board .bgfx .glow.a{background:radial-gradient(70% 40% at 50% 30%,rgba(45,224,196,.10),transparent 72%)}
+#stage.theme-board .bgfx .glow.b{background:radial-gradient(80% 36% at 50% 104%,rgba(217,174,82,.12),transparent 70%)}
+#stage.theme-board .bgfx .vig{background:radial-gradient(120% 90% at 50% 42%,transparent 55%,rgba(0,0,0,.55))}
+
+/* burned-in captions: a board-dark card with a gold rim; the base box wraps at 540px and strands a lone word */
+#stage.theme-board .caps{width:max-content;background:rgba(6,20,15,.94);border:3px solid var(--gold);color:var(--tx);
+  box-shadow:0 10px 0 rgba(0,0,0,.6)}
+#stage.theme-board .caps span.now{color:var(--gold2)}
+
+/* ---------- type ---------- */
+#stage.theme-board .eyebrow{font:700 32px JB;letter-spacing:.08em;text-transform:uppercase;color:var(--acc,var(--gold2))}
+#stage.theme-board .eyebrow.b{color:var(--blue)} #stage.theme-board .eyebrow.t{color:var(--teal)} #stage.theme-board .eyebrow.a{color:var(--amber)}
+#stage.theme-board .eyebrow.r{color:var(--rose)} #stage.theme-board .eyebrow.v{color:var(--violet)} #stage.theme-board .eyebrow.g{color:var(--green)}
+#stage.theme-board .h1{letter-spacing:-.035em;font-weight:900;color:var(--tx)}
+
+/* ---------- outro on the board ---------- */
+#stage.theme-board .hrow .ht{border:2px solid var(--gold);box-shadow:0 8px 0 rgba(0,0,0,.55)}
+#stage.theme-board .bbox{background:var(--bg2);border:3px solid var(--gold);box-shadow:0 10px 0 rgba(0,0,0,.55)}
+#stage.theme-board .cst-card{border-color:var(--gold);border-width:3px;box-shadow:0 10px 0 rgba(0,0,0,.55)}
+#stage.theme-board .bub{border:3px solid var(--gold);box-shadow:0 8px 0 rgba(0,0,0,.55)}
+#stage.theme-board .cst b{font-size:28px;padding:8px 16px}
+#stage.theme-board .fx-emoji{filter:drop-shadow(0 10px 12px rgba(0,0,0,.5))}
+
+/* ---------- the bd template ---------- */
+/* the board itself: solder mask with a silkscreen grid and mounting holes */
+.bd-pcb{position:absolute;left:0;top:0;box-sizing:border-box;border-radius:26px;overflow:hidden;opacity:0;
+  background:radial-gradient(120% 90% at 30% 20%,var(--pcb2),var(--pcb) 70%);border:3px solid var(--gold);box-shadow:0 14px 0 rgba(0,0,0,.6)}
+.bd-pcb::before{content:"";position:absolute;inset:0;
+  background-image:radial-gradient(circle at 50% 50%,rgba(233,242,234,.10) 0 2px,transparent 2.5px);background-size:40px 40px}
+.bd-hole{position:absolute;width:30px;height:30px;border-radius:50%;background:var(--bg0);border:5px solid var(--gold);box-sizing:border-box}
+.bd-world{position:absolute;left:0;top:0;transform-origin:0 0}
+.bd-traces{position:absolute;left:0;top:0;overflow:visible}
+.bd-traces path{fill:none;stroke:var(--gold);stroke-width:5;stroke-linecap:round;stroke-linejoin:round;opacity:.75}
+.bd-traces path.thin{stroke-width:3;opacity:.45}
+.bd-traces circle{fill:var(--bg0);stroke:var(--gold);stroke-width:3}
+
+/* a socket: an empty outline with its silkscreen number until its part seats */
+.bd-sock{position:absolute;box-sizing:border-box;border:3px dashed rgba(233,242,234,.35);border-radius:16px}
+.bd-sock .no{position:absolute;left:12px;top:8px;font:800 30px JB;color:var(--silk);opacity:.85}
+.bd-sock.lit{border:3px solid var(--acc);box-shadow:0 0 0 6px rgba(0,0,0,0),inset 0 0 40px rgba(255,255,255,.06)}
+.bd-sock .q{position:absolute;inset:0;display:grid;place-items:center;font:900 96px ID;color:var(--silk);opacity:.0}
+
+/* parts */
+.bd-cpu{position:absolute;box-sizing:border-box;border-radius:18px;opacity:0;
+  background:linear-gradient(145deg,#C9CFD6,#8C949E);border:4px solid #5D6670;box-shadow:0 10px 0 rgba(0,0,0,.5)}
+.bd-cpu .die{position:absolute;inset:22%;border-radius:10px;background:linear-gradient(145deg,#1B2B44,#0C1626);border:3px solid var(--blue);
+  display:grid;place-items:center;font:900 46px ID;letter-spacing:.02em;color:var(--blue)}
+.bd-cpu .pin{position:absolute;background:var(--gold2);border-radius:2px}
+.bd-dimm{position:absolute;box-sizing:border-box;border-radius:8px;background:#15241E;border:3px solid var(--teal);box-shadow:0 8px 0 rgba(0,0,0,.5)}
+.bd-dimm i{position:absolute;left:8px;right:8px;border-radius:4px;background:linear-gradient(180deg,#26313A,#11181E);border:2px solid #3B4A55}
+.bd-dimm b{position:absolute;left:0;right:0;bottom:-2px;height:16px;background:repeating-linear-gradient(90deg,var(--gold2) 0 4px,transparent 4px 8px);opacity:.9}
+.bd-ssd{position:absolute;box-sizing:border-box;border-radius:10px;opacity:0;background:#0E1A2A;border:3px solid var(--amber);box-shadow:0 8px 0 rgba(0,0,0,.5);
+  display:flex;align-items:center;gap:14px;padding:0 18px}
+.bd-ssd i{flex:none;width:58px;height:58px;border-radius:6px;background:linear-gradient(145deg,#2A2F38,#14171C);border:2px solid #4A505A}
+.bd-ssd b{font:800 34px JB;color:var(--amber);margin-left:auto}
+.bd-plat{position:absolute;border-radius:50%;opacity:0;box-sizing:border-box;
+  background:radial-gradient(circle at 50% 50%,#2A2F38 0 14%,#AEB6BF 15% 17%,#7D8590 18% 60%,#AEB6BF 61% 62%,#6B737D 63%);border:4px solid #4A505A}
+.bd-plat .arm{position:absolute;left:50%;top:50%;width:46%;height:10px;border-radius:5px;background:var(--amber);transform-origin:0 50%}
+.bd-lbl{position:absolute;font:800 28px JB;letter-spacing:.06em;color:var(--silk);white-space:nowrap;opacity:0}
+.bd-lbl.b{color:var(--blue)} .bd-lbl.t{color:var(--teal)} .bd-lbl.a{color:var(--amber)} .bd-lbl.r{color:var(--rose)}
+
+/* extras on the board edge: a GPU slot, a fan, a firmware/software chip */
+.bd-x{position:absolute;box-sizing:border-box;opacity:0;display:flex;align-items:center;gap:12px;border-radius:14px;padding:0 18px;
+  background:#0E1A2A;border:3px solid var(--violet);font:800 30px ID;color:var(--tx);white-space:nowrap;box-shadow:0 8px 0 rgba(0,0,0,.5)}
+.bd-x svg{width:40px;height:40px;flex:none}
+.bd-fan{position:absolute;border-radius:50%;opacity:0;box-sizing:border-box;background:#0E1A2A;border:3px solid var(--violet)}
+.bd-fan svg{position:absolute;inset:8%;width:84%;height:84%}
+
+/* data pulses */
+.bd-pulse{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;opacity:0;z-index:5;
+  background:radial-gradient(circle,#fff 0 25%,var(--pc,var(--gold2)) 30% 55%,transparent 60%)}
+.bd-pulse::after{content:"";position:absolute;inset:-14px;border-radius:50%;background:radial-gradient(circle,var(--pc,var(--gold2)),transparent 65%);opacity:.45}
+
+/* app tiles flying from storage into RAM */
+.bd-app{position:absolute;width:76px;height:76px;margin:-38px 0 0 -38px;border-radius:18px;background:#fff;display:grid;place-items:center;opacity:0;z-index:6;
+  box-shadow:0 8px 0 rgba(0,0,0,.5);border:3px solid var(--teal)}
+.bd-app img{width:48px;height:48px}
+
+/* the info panel under the board */
+.bd-chip{position:absolute;box-sizing:border-box;display:flex;align-items:center;gap:16px;height:112px;padding:0 26px;border-radius:18px;opacity:0;
+  background:var(--bg2);border:3px solid var(--acc,var(--gold));box-shadow:0 10px 0 rgba(0,0,0,.55);font:800 38px ID;letter-spacing:-.015em;color:var(--tx);white-space:nowrap}
+.bd-chip span{line-height:1.12;flex:none}
+.bd-chip small{font:700 28px JB;color:var(--tx3);letter-spacing:.02em}
+.bd-chip svg.ic{width:46px;height:46px;flex:none;fill:none;stroke:var(--acc,var(--gold2));stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.bd-chip .tag{margin-left:auto;font:800 28px JB;padding:6px 14px;border-radius:999px;background:var(--bg0);border:2px solid var(--acc,var(--gold));color:var(--acc,var(--gold2))}
+.bd-chip.bad{border-color:var(--rose)} .bd-chip.bad .tag{border-color:var(--rose);color:var(--rose)}
+
+/* bottleneck: a part flushes red and a queue of pulses waits at it */
+.bd-hot{position:absolute;box-sizing:border-box;border-radius:18px;border:5px solid var(--rose);opacity:0;z-index:4;
+  box-shadow:0 0 0 4px rgba(255,122,140,.25),inset 0 0 50px rgba(255,122,140,.35)}
+.bd-hot b{position:absolute;left:50%;top:-28px;transform:translateX(-50%);padding:8px 18px;border-radius:999px;background:var(--rose);color:#2A0710;
+  font:800 28px JB;white-space:nowrap}
+
+/* laptops (the quiz) */
+.bd-lap{position:absolute;opacity:0}
+.bd-lap .scr{position:absolute;left:24px;right:24px;top:0;bottom:46px;border-radius:16px 16px 6px 6px;background:#0E1A2A;border:5px solid #9AA3AD;box-sizing:border-box;
+  display:grid;place-items:center}
+.bd-lap .scr b{font:900 92px ID;color:var(--tx3)}
+.bd-lap .base{position:absolute;left:0;right:0;bottom:16px;height:34px;border-radius:6px 6px 18px 18px;background:linear-gradient(180deg,#B9C1CA,#7D8590)}
+.bd-lap .nm{position:absolute;left:0;right:0;top:calc(100% + 6px);text-align:center;font:800 32px JB;color:var(--tx2)}
+.bd-tag{position:absolute;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:12px;height:88px;border-radius:14px;opacity:0;
+  background:var(--bg2);border:3px solid var(--teal);font:900 40px ID;color:var(--tx);box-shadow:0 8px 0 rgba(0,0,0,.55)}
+.bd-tag small{font:800 30px JB;color:var(--teal)}
+.bd-eq{position:absolute;font:900 120px/1 ID;color:var(--gold2);opacity:0;text-align:center}
+.bd-eq .x{position:absolute;left:50%;top:50%;width:14px;height:150px;margin:-75px 0 0 -7px;border-radius:7px;background:var(--rose);transform-origin:50% 50%;opacity:0}
+.bd-qm{position:absolute;display:grid;place-items:center;width:88px;height:88px;border-radius:50%;background:var(--gold2);color:#1B1405;font:900 60px ID;opacity:0;
+  box-shadow:0 8px 0 rgba(0,0,0,.5)}
+.bd-part2{position:absolute;padding:10px 26px;border-radius:999px;background:var(--gold2);color:#1B1405;font:900 40px ID;white-space:nowrap;opacity:0;z-index:6;
+  box-shadow:0 8px 0 rgba(0,0,0,.5)}
+
+/* ---------- part 2 (projects/what-makes-laptop-faster-2): bottle, ddr, dual modes ---------- */
+/* bottle: glass outline, teal water (what RAM holds), the neck ringed blue (the CPU), a gold bowl */
+.bt-svg{overflow:visible;opacity:0}
+.bt-glass{fill:rgba(233,242,234,.06)}
+.bt-line{fill:none;stroke:var(--silk);stroke-width:5;stroke-linejoin:round}
+.bt-water{fill:rgba(45,224,196,.62)}
+.bt-cap{fill:none;stroke:var(--blue);stroke-width:5;opacity:0}
+.bt-bowl{fill:rgba(217,174,82,.10);stroke:var(--gold);stroke-width:6;stroke-linecap:round}
+.bt-rim{stroke:var(--gold2);stroke-width:8;stroke-linecap:round}
+.bt-stream{position:absolute;opacity:0;border-radius:8px;
+  background:repeating-linear-gradient(180deg,rgba(45,224,196,.95) 0 34px,rgba(160,250,236,.95) 34px 46px)}
+.bt-tag{position:absolute;box-sizing:border-box;height:62px;display:grid;place-items:center;border-radius:999px;opacity:0;
+  background:var(--bg2);border:3px solid var(--teal);font:900 38px ID;color:var(--tx);box-shadow:0 8px 0 rgba(0,0,0,.55)}
+.bt-meter{position:absolute;box-sizing:border-box;height:70px;display:grid;place-items:center;border-radius:16px;opacity:0;
+  background:var(--bg2);border:3px solid var(--gold);font:800 34px ID;color:var(--tx);box-shadow:0 8px 0 rgba(0,0,0,.55)}
+.bt-meter.g{border-color:var(--green);color:var(--green)}
+.bt-eq{position:absolute;left:390px;width:100px;text-align:center;font:900 72px/70px ID;color:var(--gold2);opacity:0}
+.bt-lbl{position:absolute;left:330px;width:220px;height:66px;display:flex;align-items:center;justify-content:center;opacity:0;z-index:3}
+.bt-lbl b{padding:6px 20px;border-radius:999px;background:var(--acc);color:#04131A;font:900 36px ID;letter-spacing:.02em}
+.bt-lbl i{flex:1;height:4px;background:var(--acc);opacity:.8}
+
+/* ddr: a DIMM per row and its bandwidth bar */
+.dd-row{position:absolute;left:0;width:880px;box-sizing:border-box;opacity:0;border-radius:20px;background:var(--bg2);border:3px solid var(--acc);
+  box-shadow:0 10px 0 rgba(0,0,0,.55)}
+.dd-dimm{position:absolute;left:22px;top:30px;height:104px;border-radius:8px;background:#15241E;border:3px solid var(--acc);box-sizing:border-box}
+.dd-dimm i{position:absolute;top:14px;width:36px;height:52px;border-radius:4px;background:linear-gradient(180deg,#26313A,#11181E);border:2px solid #3B4A55}
+.dd-dimm .pins{position:absolute;left:0;right:0;bottom:-2px;height:16px;background:repeating-linear-gradient(90deg,var(--gold2) 0 4px,transparent 4px 8px)}
+.dd-side{position:absolute;left:316px;right:26px;top:22px;bottom:22px}
+.dd-side .nm{position:absolute;left:0;top:0;font:900 44px/1 ID;color:var(--tx);letter-spacing:-.02em;white-space:nowrap}
+.dd-side .nm small{display:block;margin-top:6px;font:700 30px JB;color:var(--tx3);letter-spacing:.02em}
+.dd-side .vl{position:absolute;right:0;top:0;font:900 44px/1 JB;color:var(--acc)}
+.dd-track{position:absolute;left:0;right:0;bottom:0;height:30px;border-radius:15px;background:var(--bg0);border:2px solid var(--bd2);overflow:hidden}
+.dd-fill{position:absolute;left:0;top:0;bottom:0;border-radius:15px;background:var(--acc);transform-origin:0 50%;transform:scaleX(0)}
+.dd-note{position:absolute;left:60px;width:760px;text-align:center;font:700 30px JB;color:var(--tx3);opacity:0}
+
+/* dual: a panel per configuration; sticks on the left, lanes of pulses into the CPU on the right */
+.du-pan{position:absolute;left:0;width:880px;box-sizing:border-box;opacity:0;border-radius:20px;background:var(--bg2);border:3px solid var(--acc);
+  box-shadow:0 10px 0 rgba(0,0,0,.55);overflow:hidden}
+.du-pan .ttl{position:absolute;left:28px;top:16px;font:800 32px ID;color:var(--tx);white-space:nowrap}
+.du-stick{position:absolute;top:70px;width:56px;height:160px;border-radius:8px;background:#15241E;border:3px solid var(--teal);box-sizing:border-box}
+.du-stick::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:14px;background:repeating-linear-gradient(90deg,var(--gold2) 0 4px,transparent 4px 8px)}
+.du-stick b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-90deg);font:800 26px JB;color:var(--teal);white-space:nowrap}
+.du-lane{position:absolute;left:230px;width:450px;height:10px;margin-top:-5px;border-radius:5px;background:var(--bd2)}
+.du-lane.lit{background:var(--gold)}
+.du-pl{--pc:var(--teal)}
+.du-cpu{position:absolute;right:28px;top:70px;width:150px;height:150px;border-radius:14px;box-sizing:border-box;display:grid;place-items:center;
+  background:linear-gradient(145deg,#1B2B44,#0C1626);border:4px solid var(--blue);font:900 40px ID;color:var(--blue)}
+.du-tag{position:absolute;left:50%;transform-origin:50% 50%;margin-left:-260px;width:520px;height:88px;box-sizing:border-box;display:grid;place-items:center;
+  border-radius:999px;background:var(--violet);color:#160B33;font:900 42px ID;opacity:0;box-shadow:0 8px 0 rgba(0,0,0,.5)}
+
+/* ---------- version B: one card over the face (projects/what-makes-computer-faster/kit.js) ----------
+   Only in a transparent capture (dual's over windows): the slide's own content hides and the .bd-ov card shows, low on
+   the frame between the chin and the caption band (y ~1000-1320 of the 9:16 stage). Solid, never see-through. */
+.bd-ov{display:none}
+#stage.transparent .slide.ovs > :not(.bd-ov){visibility:hidden}
+#stage.transparent .slide.ovs .bd-ov{display:flex}
+#stage.theme-board.transparent .slide.ovs::before{display:none}   /* the card is opaque; base's dark scrim would dim the face */
+.bd-ov{position:absolute;left:60px;width:880px;box-sizing:border-box;flex-direction:column;gap:8px;padding:26px 34px 30px;border-radius:22px;opacity:0;
+  background:#0B2A1E;border:3px solid var(--gold);box-shadow:0 12px 0 rgba(0,0,0,.6)}
+.bd-ov .eb{font:700 30px JB;letter-spacing:.08em;text-transform:uppercase;color:var(--gold2)}
+.bd-ov b{font:900 64px/1.06 ID;letter-spacing:-.035em;color:var(--tx);text-wrap:balance}
+.bd-ov b em{font-style:normal;color:var(--gold2)}
+#stage.theme-board .bub{font-size:32px;line-height:1.2;padding:16px 22px}

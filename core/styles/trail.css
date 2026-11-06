@@ -1,0 +1,162 @@
+/* "trail" theme (PROJECT.theme = 'trail'), built for projects/free-apps-make-money.
+   The video asks who pays for a free app, so the deck follows the money: a banknote. Deep green engraved ground with
+   guilloche rosettes (kit.js turns one slowly from bgFrame), cream paper cards with an engraved double border, serif
+   numerals (Newsreader), gold coins that run along drawn paths from whoever pays into the app. Every way is a note
+   "Nº 0N"; a row of ten coin slots by the eyebrow counts them. Cast and sticker styles come from lanes.css, which the
+   project links. The trail template (core/templates/trail.js) is styled below. */
+@font-face{font-family:NR;src:url(../../assets/fonts/Newsreader-Variable.woff2)format('woff2');font-weight:500 800;font-display:block}
+
+.theme-trail{
+  --bg0:#04120D; --bg1:#0A1F17; --bg2:#10291F; --bd:#21483A; --bd2:#2F6450;
+  --tx:#F4EEDC; --tx2:#BFCDBE; --tx3:#7F9A8A;
+  --teal:#3FD6B8; --violet:#B79BFF; --green:#7BE08F; --rose:#FF7F86; --amber:#F2C14E; --blue:#7CC4FF; --orange:#FF9F43;
+  --gold:#E9C46A; --gold2:#B8892B; --paper:#F2EAD3; --ink:#173A2C;
+}
+#stage.theme-trail{background:#04120D}
+#stage.theme-trail.transparent{background:transparent}   /* alpha captures (dual's caption layer, over windows) must stay clear */
+
+/* ---------- ground: engraved green, fine guilloche lines, a rosette ---------- */
+#stage.theme-trail .bgfx .grid{opacity:1;inset:-90px;
+  background-image:
+    repeating-radial-gradient(circle at 18% 22%,rgba(123,224,143,.06) 0 1px,transparent 1px 13px),
+    repeating-radial-gradient(circle at 86% 78%,rgba(233,196,106,.05) 0 1px,transparent 1px 15px),
+    repeating-linear-gradient(115deg,rgba(123,224,143,.035) 0 1px,transparent 1px 9px)}
+#stage.theme-trail .bgfx .glow.a{background:radial-gradient(70% 42% at 50% 36%,rgba(40,120,80,.32),transparent 72%)}
+#stage.theme-trail .bgfx .glow.b{background:radial-gradient(80% 36% at 50% 100%,rgba(184,137,43,.16),transparent 70%)}
+#stage.theme-trail .bgfx .vig{background:radial-gradient(120% 92% at 50% 42%,transparent 50%,rgba(0,0,0,.66))}
+#stage.theme-trail .bgfx .rosette{position:absolute;left:540px;top:900px;width:1500px;height:1500px;margin:-750px 0 0 -750px;opacity:.13;pointer-events:none}
+#stage.theme-trail .bgfx .rosette path{fill:none;stroke:#7BE08F;stroke-width:1.2}
+
+#stage.theme-trail .caps{width:max-content}
+
+/* ---------- type ---------- */
+#stage.theme-trail .eyebrow{font:700 34px NR;letter-spacing:.12em;color:var(--gold)}
+#stage.theme-trail .eyebrow.a{color:var(--amber)} #stage.theme-trail .eyebrow.v{color:var(--violet)} #stage.theme-trail .eyebrow.b{color:var(--blue)}
+#stage.theme-trail .eyebrow.o{color:var(--orange)} #stage.theme-trail .eyebrow.t{color:var(--teal)} #stage.theme-trail .eyebrow.r{color:var(--rose)}
+#stage.theme-trail .h1{font-family:NR;font-weight:800;letter-spacing:-.015em;line-height:1.04}
+
+/* stock templates (outro) */
+#stage.theme-trail .hrow,#stage.theme-trail .bbox{border-radius:14px}
+
+/* ---------- the trail template ---------- */
+.tr-ctr{position:absolute;right:140px;display:flex;align-items:center;gap:7px;opacity:0}
+.tr-ctr i{width:24px;height:24px;border-radius:50%;box-sizing:border-box;border:2px solid rgba(233,196,106,.38)}
+.tr-ctr i.on{border:none;background:radial-gradient(circle at 35% 30%,#FFF1B8,#E9C46A 45%,#9C6F1C);box-shadow:0 0 10px rgba(233,196,106,.5)}
+.tr-ctr b{margin-left:8px;font:700 30px NR;color:var(--gold);letter-spacing:.04em}
+
+.tr-flash{position:absolute;left:60px;width:880px;text-align:center;font-family:NR;font-weight:800;line-height:1;letter-spacing:-.02em;
+  color:var(--tx);opacity:0;z-index:4;transform-origin:50% 50%;text-shadow:0 10px 40px rgba(0,0,0,.6)}
+.tr-flash small{display:block;margin-bottom:14px;font:700 40px NR;letter-spacing:.14em;color:var(--gold)}
+
+.tr-path{position:absolute;left:0;top:0;overflow:visible;pointer-events:none}
+.tr-path path{fill:none;stroke:rgba(233,196,106,.55);stroke-width:4;stroke-dasharray:2 12;stroke-linecap:round}
+.tr-path path.solid{stroke-dasharray:none}
+.tr-elab{position:absolute;padding:4px 14px;border-radius:8px;font:700 28px JB;color:var(--gold);background:#0A1F17;border:1.5px solid rgba(233,196,106,.5);white-space:nowrap;opacity:0;z-index:2}
+
+.coin{position:absolute;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;display:grid;place-items:center;
+  font:800 26px NR;color:#5A3D07;background:radial-gradient(circle at 35% 30%,#FFF1B8,#E9C46A 45%,#9C6F1C);
+  box-shadow:0 4px 12px rgba(0,0,0,.45),inset 0 0 0 3px rgba(255,241,184,.45);opacity:0;z-index:3}
+
+/* paper card: cream with an engraved double rule */
+.tr-tile{position:absolute;box-sizing:border-box;border-radius:16px;padding:18px 22px;background:var(--paper);color:var(--ink);opacity:0;
+  box-shadow:0 22px 50px rgba(0,0,0,.5),inset 0 0 0 3px var(--paper),inset 0 0 0 5px rgba(23,58,44,.55);display:flex;flex-direction:column;justify-content:center;gap:8px}
+.tr-tile .tt{display:flex;align-items:center;gap:14px;font:800 38px NR;line-height:1.05;letter-spacing:-.01em}
+.tr-tile .tt svg{flex:none;width:42px;height:42px;fill:none;stroke:var(--ink);stroke-width:2;stroke-linecap:round;stroke-linejoin:round}
+.tr-tile .tt img{flex:none;height:46px;width:auto;max-width:150px;object-fit:contain}
+.tr-tile .sb{font:700 28px JB;color:#3F6253;letter-spacing:.02em}
+.tr-tile .lg{display:flex;flex-wrap:wrap;align-items:center;gap:14px}
+.tr-tile .lg img{height:56px;width:auto;max-width:170px;object-fit:contain}
+.tr-tile.dark{background:#0A1F17;color:var(--tx);box-shadow:0 22px 50px rgba(0,0,0,.5),inset 0 0 0 2px var(--bd2)}
+.tr-tile.dark .tt svg{stroke:var(--gold)} .tr-tile.dark .sb{color:var(--tx2)}
+.tr-tile.gold{box-shadow:0 22px 50px rgba(0,0,0,.5),0 0 0 4px var(--gold),inset 0 0 0 3px var(--paper),inset 0 0 0 5px rgba(23,58,44,.55)}
+.tr-tile.big .tt{font-size:52px}
+
+.tr-chip{position:absolute;display:flex;align-items:center;gap:12px;height:76px;padding:0 22px;box-sizing:border-box;border-radius:38px;
+  font:700 32px Inter;color:var(--tx);background:#10291F;border:2px solid var(--bd2);white-space:nowrap;opacity:0}
+.tr-chip svg{width:34px;height:34px;fill:none;stroke:var(--gold);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.tr-chip img{height:40px;width:auto;max-width:120px;object-fit:contain}
+.tr-chip.gold{border-color:var(--gold);background:#2A2610}
+.tr-chip.light{background:var(--paper);color:var(--ink);border-color:var(--paper)}
+.tr-chip.lg{height:96px;font-size:40px;border-radius:48px;padding:0 30px}
+
+.tr-logo{position:absolute;width:132px;height:132px;border-radius:26px;background:var(--paper);display:grid;place-items:center;opacity:0;
+  box-shadow:0 16px 40px rgba(0,0,0,.45),inset 0 0 0 3px var(--paper),inset 0 0 0 5px rgba(23,58,44,.4)}
+.tr-logo img{width:84px;height:84px;object-fit:contain}
+.tr-logo.wide{width:250px} .tr-logo.wide img{width:206px}
+.tr-logo span{position:absolute;bottom:-44px;left:50%;transform:translateX(-50%);font:700 28px JB;color:var(--tx2);white-space:nowrap}
+
+.tr-note{position:absolute;box-sizing:border-box;border-radius:18px;opacity:0;color:var(--ink);
+  background:radial-gradient(60% 80% at 82% 50%,rgba(23,58,44,.12),transparent 70%),var(--paper);
+  box-shadow:0 26px 60px rgba(0,0,0,.55),inset 0 0 0 4px var(--paper),inset 0 0 0 7px rgba(23,58,44,.6),inset 0 0 0 11px var(--paper),inset 0 0 0 12px rgba(23,58,44,.35)}
+.tr-note .nn{position:absolute;left:34px;top:26px;font:700 30px NR;letter-spacing:.14em;color:#3F6253}
+.tr-note .nv{position:absolute;left:34px;bottom:30px;right:34px;font:800 64px/1.04 NR;letter-spacing:-.015em}
+.tr-note .nv em{font-style:normal;color:#8A5A0B}
+.tr-note .ns{position:absolute;right:34px;top:24px;font:800 64px NR;color:#8A5A0B}
+.tr-note .rose{position:absolute;right:28px;bottom:22px;width:150px;height:150px;opacity:.35}
+.tr-note .rose path{fill:none;stroke:var(--ink);stroke-width:1.4}
+
+.tr-dots{position:absolute;display:grid;gap:14px;opacity:1}
+.tr-dots i{width:44px;height:44px;border-radius:50%;background:#2F4F42;opacity:0}
+.tr-dots i.g{background:radial-gradient(circle at 35% 30%,#FFF1B8,#E9C46A 45%,#9C6F1C)}
+.tr-dlab{position:absolute;font:700 28px JB;color:var(--tx2);letter-spacing:.06em;text-transform:uppercase;white-space:nowrap;opacity:0}
+
+.tr-months{position:absolute;display:flex;gap:10px;opacity:1}
+.tr-months div{width:126px;height:150px;border-radius:14px;box-sizing:border-box;background:#10291F;border:2px solid var(--bd2);opacity:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:space-between;padding:14px 0}
+.tr-months b{font:700 28px JB;color:var(--tx2);letter-spacing:.08em}
+.tr-months span{font:700 28px JB;color:var(--tx3)}
+.tr-months .paid{border-color:var(--gold)} .tr-months .paid span{color:var(--gold)}
+
+.tr-row{position:absolute;left:0;height:62px;display:flex;align-items:center;gap:18px;box-sizing:border-box;padding:0 20px;border-radius:12px;
+  font:700 32px Inter;color:var(--tx);background:#0A1F17;border:1.5px solid var(--bd);opacity:0}
+.tr-row .no{flex:none;font:800 30px NR;color:var(--gold);width:64px}
+.tr-row .tail{margin-left:auto;font:700 28px JB;color:var(--tx3)}
+.tr-row.lit{border-color:var(--gold);background:#1D2A12}
+.tr-row.lit .tail{color:var(--gold)}
+
+.tr-stamp{position:absolute;padding:10px 28px;border:6px solid #C8343C;border-radius:12px;font:900 64px NR;letter-spacing:.08em;
+  text-transform:uppercase;color:#C8343C;white-space:nowrap;opacity:0;transform-origin:50% 50%;background:rgba(242,234,211,.0)}
+.tr-strike{position:absolute;height:8px;border-radius:4px;background:#C8343C;transform-origin:left center;transform:scaleX(0)}
+.tr-wallet{position:absolute;width:190px;height:150px;border-radius:20px;background:#10291F;border:2px solid var(--bd2);opacity:0;
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;font:700 28px JB;color:var(--tx2)}
+.tr-wallet svg{width:60px;height:60px;fill:none;stroke:var(--gold);stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+.tr-box{position:absolute;width:64px;height:64px;border-radius:10px;background:#C99A5B;box-shadow:inset 0 -8px 0 rgba(0,0,0,.18),0 8px 18px rgba(0,0,0,.4);opacity:0}
+.tr-box::after{content:"";position:absolute;left:50%;top:0;bottom:0;width:10px;margin-left:-5px;background:rgba(255,255,255,.35)}
+.tr-sig{position:absolute;width:20px;height:20px;border-radius:50%;background:var(--violet);box-shadow:0 0 14px var(--violet);opacity:0}
+
+/* ---------- version B: one solid card under the chin (only in a transparent capture) ---------- */
+.tr-ov{display:none}
+#stage.transparent .slide.ovs > :not(.tr-ov):not(.ovk):not(.fx-layer){visibility:hidden}
+#stage.transparent .slide.ovs .tr-ov{display:flex}
+.tr-ov{position:absolute;left:60px;width:880px;top:236px;box-sizing:border-box;border-radius:20px;opacity:0;flex-direction:column;gap:10px;padding:26px 34px 30px;
+  background:var(--paper);color:var(--ink);
+  box-shadow:0 26px 60px rgba(0,0,0,.55),inset 0 0 0 4px var(--paper),inset 0 0 0 7px rgba(23,58,44,.6)}
+.tr-ov .eb{font:700 30px NR;letter-spacing:.14em;text-transform:uppercase;color:#3F6253}
+.tr-ov b{font:800 64px/1.04 NR;letter-spacing:-.015em}
+.tr-ov b em{font-style:normal;color:#8A5A0B}
+.tr-ov .sb{font:700 30px JB;color:#3F6253}
+.tr-ov .tr-ovstamp{position:absolute;right:30px;top:-34px;padding:6px 20px;border:5px solid #C8343C;border-radius:10px;font:900 44px NR;letter-spacing:.08em;
+  text-transform:uppercase;color:#C8343C;background:var(--paper);opacity:0;white-space:nowrap}
+.tr-ov .tr-ovx{position:absolute;height:7px;border-radius:4px;background:#C8343C;transform-origin:left center;transform:scaleX(0)}
+.tr-ov .coins{display:flex;gap:10px;margin-top:6px}
+.tr-ov .coins i{width:40px;height:40px;border-radius:50%;background:radial-gradient(circle at 35% 30%,#FFF1B8,#E9C46A 45%,#9C6F1C);opacity:0}
+
+/* fixes from the first review */
+.coin{font-size:28px}
+#stage.theme-trail .cst b{font-size:28px}
+.tr-tile.top{justify-content:flex-start}
+.tr-tile.sm .tt{font-size:31px}
+.tr-logo.wide img{width:220px;height:112px}
+.tr-stamp.sm{font-size:50px}
+#stage.theme-trail .h1{padding-bottom:.3em;overflow:hidden}   /* the late headline wipe (after the term flies up) translates .li below the box mid-motion */
+
+/* review 1 (2026-10-23): the face fills the frame from the middle down, so the card sits at the top, over the wall */
+#stage.transparent .slide.ovs .ovk{display:flex}
+.ovk{display:none;position:absolute;left:60px;width:880px;top:0;gap:14px;flex-wrap:wrap;justify-content:center}
+.tr-ov .ctr{position:absolute;right:30px;top:28px;display:flex;gap:6px}
+.tr-ov .ctr i{width:20px;height:20px;border-radius:50%;box-sizing:border-box;border:2px solid rgba(23,58,44,.35)}
+.tr-ov .ctr i.on{border:none;background:radial-gradient(circle at 35% 30%,#FFF1B8,#E9C46A 45%,#9C6F1C)}
+.tr-tap{position:absolute;width:72px;height:72px;margin:-8px 0 0 -26px;z-index:9;opacity:0;transform-origin:30% 10%}
+.tr-tap svg{width:72px;height:72px;fill:#F4EEDC;stroke:#173A2C;stroke-width:1.4;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 6px 12px rgba(0,0,0,.55))}
+.tr-rip{position:absolute;border-radius:50%;background:rgba(233,196,106,.6);pointer-events:none;z-index:8;opacity:0}
+.tr-chip.gold.tapped{border-color:var(--gold)}

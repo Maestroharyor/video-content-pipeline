@@ -1,0 +1,200 @@
+/* "warehouse" theme (PROJECT.theme = 'warehouse'), built for projects/mongoose-vs-prisma.
+   The script's own analogy: MongoDB is the warehouse, Mongoose the floor manager who knows every aisle, Prisma a
+   standardised inventory system. So the deck is a distribution floor: sealed concrete with slab joints and a little
+   wear, yellow/black floor tape on section edges, steel pallet racking (blue uprights, orange beams), kraft crates with
+   stencilled labels and barcodes, shipping labels for every point, clipboards for vendor screenshots, rubber stamps for
+   verdicts, and a three-bay loading dock for the decision. Mongoose = green, Prisma = indigo. Light ground, so every
+   shadow is a soft charcoal. No filter: blur() (capture cost). Cast and sticker blocks are copied from lanes.css, which
+   the project links too. The wh* templates (core/templates/warehouse.js) are styled at the bottom; the VS Code editor
+   comes from redline.css (.vsc), which the project links. */
+@font-face{font-family:CV;src:url(../../assets/fonts/Caveat-Bold.woff2)format('woff2');font-weight:700;font-display:block}
+
+#stage.theme-warehouse{
+  --bg0:#D8D4CB; --bg1:#F4F1EA; --bg2:#C9C4B9; --bd:#B3AC9F; --bd2:#8E8779;
+  --tx:#1C1D20; --tx2:#383A40; --tx3:#4E5158;
+  --teal:#0E6F6A; --violet:#4B3FC4; --green:#1D7440; --rose:#B4243F; --amber:#9A5408; --blue:#1F5FAE; --orange:#B5480F;
+  --hz:#F2C230; --kraft:#C99A5B; --kraft2:#B3843F; --steel:#2C5D9C; --beam:#E3701E; --paper:#FFFDF8; --mongo:#00684A;
+  background:#D8D4CB;
+}
+#stage.theme-warehouse.transparent{background:transparent}   /* alpha captures (dual's caption layer, reveals) must stay clear */
+
+/* ---------- ground: sealed concrete, slab joints, scuffs, overhead lights ---------- */
+#stage.theme-warehouse .bgfx .grid{opacity:1;inset:-90px;
+  background-image:
+    linear-gradient(90deg,rgba(70,62,50,.20) 0 2px,transparent 2px),
+    linear-gradient(0deg,rgba(70,62,50,.20) 0 2px,transparent 2px),
+    radial-gradient(ellipse 60px 18px at 30% 40%,rgba(60,52,40,.07),transparent 70%),
+    radial-gradient(circle at 70% 70%,rgba(60,52,40,.06) 0 1.5px,transparent 2px),
+    radial-gradient(circle at 20% 15%,rgba(255,255,255,.18) 0 1.5px,transparent 2px);
+  background-size:360px 360px,360px 360px,420px 300px,90px 90px,130px 130px}
+#stage.theme-warehouse .bgfx .glow.a{background:radial-gradient(60% 30% at 50% 18%,rgba(255,250,232,.85),transparent 72%)}
+#stage.theme-warehouse .bgfx .glow.b{background:radial-gradient(80% 30% at 50% 104%,rgba(242,194,48,.16),transparent 70%)}
+#stage.theme-warehouse .bgfx .vig{background:radial-gradient(120% 90% at 50% 42%,transparent 55%,rgba(40,34,26,.26))}
+/* floor tape: a hazard band along the top edge of the frame, under the heading */
+#stage.theme-warehouse .bgfx::after{content:"";position:absolute;left:0;right:0;top:178px;height:22px;opacity:.9;
+  background:repeating-linear-gradient(-45deg,var(--hz) 0 26px,#1C1D20 26px 52px)}
+
+/* burned-in captions: a shipping label on the floor; the base box wraps at 540px and strands a lone word */
+#stage.theme-warehouse .caps{width:max-content;background:var(--paper);border:3px solid var(--tx);color:var(--tx);
+  box-shadow:0 10px 0 rgba(28,29,32,.9)}
+#stage.theme-warehouse .caps span.now{color:var(--green)}
+
+/* ---------- type ---------- */
+#stage.theme-warehouse .eyebrow{font:800 32px JB;letter-spacing:.14em;text-transform:uppercase;color:var(--acc,var(--green))}
+#stage.theme-warehouse .eyebrow::before{content:"";display:inline-block;width:30px;height:22px;margin-right:14px;vertical-align:-1px;
+  background:repeating-linear-gradient(-45deg,var(--hz) 0 6px,#1C1D20 6px 12px);border-radius:3px}
+#stage.theme-warehouse .eyebrow.v{color:var(--violet)} #stage.theme-warehouse .eyebrow.b{color:var(--blue)} #stage.theme-warehouse .eyebrow.g{color:var(--green)}
+#stage.theme-warehouse .eyebrow.o{color:var(--orange)} #stage.theme-warehouse .eyebrow.t{color:var(--teal)} #stage.theme-warehouse .eyebrow.a{color:var(--amber)}
+#stage.theme-warehouse .h1{letter-spacing:-.035em;font-weight:900;color:var(--tx)}
+#stage.theme-warehouse .badge{border-radius:8px;font:800 30px JB;letter-spacing:.02em;box-shadow:0 6px 0 rgba(28,29,32,.25)}
+
+/* ---------- outro on concrete ---------- */
+#stage.theme-warehouse .hrow .ht{border:3px solid var(--tx);box-shadow:0 8px 0 rgba(28,29,32,.85)}
+#stage.theme-warehouse .bbox{background:var(--paper);border:3px solid var(--tx);box-shadow:0 10px 0 rgba(28,29,32,.85)}
+#stage.theme-warehouse .bbox .bl{border:2px solid var(--bd)}
+#stage.theme-warehouse .bbox b{color:var(--tx)}
+#stage.theme-warehouse .cst-card{box-shadow:0 12px 0 rgba(28,29,32,.85);border-color:var(--tx);border-width:3px}
+#stage.theme-warehouse .bub{border:3px solid var(--tx);box-shadow:0 8px 0 rgba(28,29,32,.85)}
+#stage.theme-warehouse .cst b{font-size:28px;padding:6px 14px}
+#stage.theme-warehouse .fx-emoji{filter:drop-shadow(0 10px 12px rgba(30,25,18,.35))}
+
+/* ---------- the wh* templates ---------- */
+/* shared: a hard ink outline with a solid offset shadow, the deck's one depth device */
+.wh-ink{border:3px solid var(--tx);box-shadow:0 12px 0 rgba(28,29,32,.88)}
+.wh-star{position:absolute;font:600 28px/1.3 Inter;color:var(--tx);background:#FFF6D6;border:2px dashed var(--amber);border-radius:12px;
+  padding:12px 18px;opacity:0;box-sizing:border-box}
+.wh-star b{font-weight:800;color:var(--amber)}
+.wh-bar{display:block;height:28px;background:repeating-linear-gradient(90deg,#1C1D20 0 3px,transparent 3px 5px,#1C1D20 5px 6px,transparent 6px 10px,#1C1D20 10px 14px,transparent 14px 16px)}
+
+/* shipping label: white paper, a colour band on the left, a barcode strip, stencil text */
+.wh-tag{position:absolute;display:flex;align-items:center;gap:16px;height:84px;padding:0 24px 0 34px;box-sizing:border-box;border-radius:8px;
+  background:var(--paper);font:800 34px ID;letter-spacing:-.01em;color:var(--tx);white-space:nowrap;opacity:0}
+.wh-tag::before{content:"";position:absolute;left:0;top:0;bottom:0;width:14px;border-radius:5px 0 0 5px;background:var(--acc,var(--green))}
+.wh-tag img{width:44px;height:44px}
+.wh-tag .ic{width:40px;height:40px;fill:none;stroke:var(--acc,var(--green));stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.wh-tag .bc{width:46px;height:44px;margin-left:6px;background:repeating-linear-gradient(90deg,#1C1D20 0 2px,transparent 2px 4px,#1C1D20 4px 7px,transparent 7px 9px)}
+.wh-tag.warn{background:#FFF6D6}
+.wh-tag.wrap{white-space:normal;height:auto;min-height:84px;padding-top:14px;padding-bottom:14px;line-height:1.1}
+.wh-tag.wrap .bc{display:none}
+.wh-tag.warn::before{background:repeating-linear-gradient(-45deg,var(--hz) 0 8px,#1C1D20 8px 16px)}
+.wh-stamp{position:absolute;padding:8px 26px;border:7px double var(--acc,var(--green));border-radius:12px;font:900 58px ID;letter-spacing:.06em;
+  text-transform:uppercase;color:var(--acc,var(--green));background:rgba(255,253,248,.82);white-space:nowrap;opacity:0;transform-origin:50% 50%}
+
+/* the floor: racking with crates, a sign over the roller door */
+.wh-floor{position:absolute;left:0;top:0;opacity:0}
+.wh-sign{position:absolute;display:flex;align-items:center;gap:18px;height:104px;padding:0 34px;box-sizing:border-box;border-radius:10px;
+  background:#1C1D20;color:#F4F1EA;font:900 52px ID;letter-spacing:.02em;opacity:0}
+.wh-sign img{height:62px}
+.wh-sign small{font:700 28px JB;letter-spacing:.14em;color:var(--hz);text-transform:uppercase}
+.wh-rack{position:absolute;box-sizing:border-box}
+.wh-rack .up{position:absolute;top:0;bottom:0;width:20px;background:repeating-linear-gradient(180deg,var(--steel) 0 22px,#234C80 22px 26px);border:2px solid #17304F}
+.wh-rack .bm{position:absolute;height:20px;background:var(--beam);border:2px solid #7A3A0B}
+.wh-crate{position:absolute;box-sizing:border-box;border-radius:6px;border:3px solid #5E4220;
+  background:linear-gradient(180deg,rgba(255,255,255,.18),transparent 30%),repeating-linear-gradient(0deg,var(--kraft) 0 34px,var(--kraft2) 34px 37px);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px}
+.wh-crate code{white-space:nowrap;font:800 22px JB;color:#2A1D0C;background:rgba(255,253,248,.85);padding:2px 10px;border-radius:5px}
+.wh-crate .wh-bar{width:70%;height:16px;opacity:.75}
+.wh-laser{position:absolute;left:8px;right:8px;top:0;height:6px;border-radius:3px;background:#FF3B3B;opacity:0;z-index:3;
+  box-shadow:0 0 0 3px rgba(255,59,59,.25),0 0 22px 4px rgba(255,59,59,.55)}
+.wh-crate.hit{box-shadow:0 0 0 4px rgba(255,59,59,.55)}
+.wh-door{position:absolute;box-sizing:border-box;border:4px solid #1C1D20;border-bottom:0;
+  background:repeating-linear-gradient(180deg,#9AA0A8 0 24px,#7E858E 24px 27px)}
+
+/* the scanner: a handheld inventory terminal (Prisma), its screen a mini editor */
+.wh-scan{position:absolute;box-sizing:border-box;border-radius:34px;background:#26272C;border:4px solid #0E0F12;box-shadow:0 14px 0 rgba(28,29,32,.85);opacity:0}
+.wh-scan .hd{display:flex;align-items:center;gap:14px;height:76px;padding:0 26px;font:800 30px ID;color:#F4F1EA}
+.wh-scan .hd img{height:40px;width:40px;padding:5px;border-radius:9px;background:#F4F1EA}
+.wh-scan .hd .led{margin-left:auto;width:16px;height:16px;border-radius:50%;background:#32D07A;box-shadow:0 0 0 4px rgba(50,208,122,.25)}
+.wh-scan .scr{position:relative;margin:0 22px;height:calc(100% - 150px);border-radius:14px;background:#1F1F1F;border:2px solid #3B3B3B;overflow:hidden}
+.wh-scan .ln{position:absolute;left:24px;top:22px;font:600 34px JB;color:#d4d4d4;white-space:pre}
+.wh-scan .ln .v{color:#9cdcfe} .wh-scan .ln .f{color:#dcdcaa}
+.wh-scan .ln .car{display:inline-block;width:3px;height:38px;margin-left:2px;vertical-align:-7px;background:#aeafad}
+.wh-ac{position:absolute;left:24px;top:84px;width:calc(100% - 48px);box-sizing:border-box;background:#202020;border:2px solid #454545;border-radius:8px;
+  box-shadow:0 10px 24px rgba(0,0,0,.45);opacity:0;transform-origin:0 0}
+.wh-ac .it{display:flex;align-items:center;gap:14px;height:52px;padding:0 14px;font:500 28px JB;color:#cccccc;white-space:nowrap}
+.wh-ac .it.on{background:#04395E;outline:2px solid #2488DB;outline-offset:-2px}
+.wh-ac .it i{font-style:normal;width:30px;height:30px;border-radius:5px;display:grid;place-items:center;font:800 20px Inter;color:#fff;background:#B180D7}
+.wh-ac .it b{font-weight:600;color:#fff}
+.wh-ac .it b u{text-decoration:none;color:#2AAAFF}
+.wh-ac .it span{margin-left:auto;color:#9d9d9d;font-size:24px}
+.wh-scan .grip{position:absolute;left:50%;bottom:20px;width:140px;height:40px;margin-left:-70px;border-radius:20px;background:#3A3B41;border:3px solid #0E0F12}
+
+/* code: chips that pin to the end of a block's last row, a terminal strip, a hover tooltip */
+.wh-lbl{position:absolute;display:flex;align-items:center;gap:10px;height:52px;padding:0 20px 0 22px;box-sizing:border-box;border-radius:6px;
+  background:var(--hz);color:#1C1D20;font:800 28px JB;white-space:nowrap;opacity:0;z-index:5;box-shadow:0 5px 0 rgba(0,0,0,.45)}
+.wh-lbl::before{content:"←";font-weight:900}
+.wh-term{position:absolute;box-sizing:border-box;border-radius:12px;background:#181818;border:2px solid #3B3B3B;padding:16px 24px;opacity:0;
+  font:600 28px/1.45 JB;color:#cccccc;box-shadow:0 12px 0 rgba(28,29,32,.85);z-index:4}
+.wh-term .tb{display:flex;gap:26px;font:600 20px Inter;color:#9d9d9d;letter-spacing:.06em;text-transform:uppercase;margin-bottom:8px}
+.wh-term .tb b{color:#e7e7e7;font-weight:600;border-bottom:2px solid #0078d4;padding-bottom:4px}
+.wh-term .pr{color:#32D07A} .wh-term .ok{color:#32D07A} .wh-term .row{display:block;width:max-content;white-space:pre}
+.wh-term .car{display:inline-block;width:14px;height:30px;margin-left:2px;vertical-align:-6px;background:#cccccc}
+.wh-hov{position:absolute;box-sizing:border-box;background:#202020;border:2px solid #454545;border-radius:6px;padding:12px 22px;
+  font:500 28px/1.4 JB;color:#d4d4d4;white-space:pre;opacity:0;z-index:6;box-shadow:0 10px 24px rgba(0,0,0,.45)}
+.wh-hov .k{color:#569cd6} .wh-hov .v{color:#9cdcfe} .wh-hov .t{color:#4ec9b0}
+
+/* clipboard: a vendor screenshot clipped to a board */
+.wh-clip{position:absolute;box-sizing:border-box;padding:56px 18px 64px;border-radius:18px;background:#7B5A33;opacity:0;transform-origin:50% 0;
+  background-image:repeating-linear-gradient(95deg,rgba(255,255,255,.05) 0 3px,transparent 3px 11px)}
+.wh-clip .clamp{position:absolute;left:50%;top:-18px;width:220px;height:64px;margin-left:-110px;border-radius:12px 12px 18px 18px;
+  background:linear-gradient(180deg,#E9ECEF,#9EA5AD);border:3px solid #1C1D20}
+.wh-clip .clamp::after{content:"";position:absolute;left:50%;top:10px;width:70px;height:18px;margin-left:-35px;border-radius:9px;background:#1C1D20}
+.wh-clip .ph{position:relative;overflow:hidden;border-radius:4px;background:#111}
+.wh-clip .ph img{display:block}
+.wh-clip .cap{position:absolute;left:24px;right:24px;bottom:12px;font:700 28px JB;color:#F4E6CF;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wh-clip .cap b{color:var(--hz);font-weight:800}
+.wh-hl{position:absolute;border:5px solid var(--hz);border-radius:10px;opacity:0;pointer-events:none;box-shadow:0 0 0 3px rgba(28,29,32,.6)}
+
+/* the loading dock: three bays, one manifest */
+.wh-bay{position:absolute;box-sizing:border-box;border:4px solid #1C1D20;border-radius:10px 10px 0 0;background:#2B2D33;overflow:hidden;opacity:0}
+.wh-bay .in{position:absolute;inset:0;background:radial-gradient(80% 60% at 50% 30%,rgba(255,236,190,.55),transparent 75%),#4A4D55}
+.wh-bay .dr{position:absolute;left:0;right:0;top:0;bottom:0;background:repeating-linear-gradient(180deg,#A9AFB7 0 26px,#8A919A 26px 30px);border-bottom:6px solid #1C1D20}
+.wh-bay .lb{position:absolute;left:0;right:0;bottom:0;height:72px;display:flex;align-items:center;justify-content:center;gap:12px;
+  background:var(--paper);border-top:4px solid #1C1D20;font:900 34px ID;color:var(--tx);letter-spacing:-.01em;z-index:3;white-space:nowrap}
+.wh-bay .lb img{height:42px;width:42px}
+.wh-bay .no{position:absolute;left:12px;top:10px;z-index:4;font:800 28px JB;color:#1C1D20;background:var(--hz);border-radius:6px;padding:6px 12px}
+.wh-bay .ok{position:absolute;right:10px;top:10px;z-index:4;font:900 28px JB;letter-spacing:.02em;color:#fff;background:var(--acc,var(--green));border-radius:6px;padding:6px 12px;opacity:0}
+.wh-bay .cst{position:absolute}
+.wh-mf{position:absolute;box-sizing:border-box;border-radius:10px;background:var(--paper);padding:20px 30px 24px;opacity:0}
+.wh-mf .hd{display:flex;align-items:center;gap:16px;padding-bottom:14px;border-bottom:3px dashed var(--bd2);font:800 28px JB;letter-spacing:.12em;
+  text-transform:uppercase;color:var(--tx3)}
+.wh-mf .hd b{font:900 36px ID;letter-spacing:-.01em;text-transform:none;color:var(--tx)}
+.wh-mf .hd .wh-bar{margin-left:auto;width:120px;height:34px}
+.wh-row{display:flex;align-items:center;gap:20px;height:76px;border-bottom:2px dotted var(--bd);opacity:0}
+.wh-row:last-child{border-bottom:0}
+.wh-row .bx{flex:none;width:50px;height:50px;border-radius:8px;border:3px solid var(--tx);display:grid;place-items:center;background:#fff}
+.wh-row .bx svg{width:34px;height:34px;fill:none;stroke:var(--acc,var(--green));stroke-width:3.6;stroke-linecap:round;stroke-linejoin:round;stroke-dasharray:30;stroke-dashoffset:30}
+.wh-row .lg{flex:none;display:flex;gap:10px}
+.wh-row .lg img{width:46px;height:46px}
+.wh-row .lg svg{width:42px;height:42px;fill:none;stroke:var(--acc,var(--green));stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.wh-row .tx{font:800 38px ID;color:var(--tx);letter-spacing:-.02em;white-space:nowrap}
+.wh-crates{display:flex;gap:22px;padding:16px 0 10px}
+.wh-crates .wh-crate{position:relative;width:250px;height:120px;flex-direction:row;gap:14px;opacity:0;font:900 30px ID;color:#2A1D0C}
+.wh-crates .wh-crate img{width:56px;height:56px;padding:6px;border-radius:10px;background:var(--paper)}
+.wh-crates .wh-crate.wide{width:420px}
+.wh-crates .wh-crate.big{width:100%;height:260px;font-size:44px;gap:22px}
+.wh-crates .wh-crate.big img{width:110px;height:110px;padding:10px;border-radius:16px}
+.wh-clbl{font:800 28px JB;letter-spacing:.12em;text-transform:uppercase;color:var(--tx2)}
+.wh-crates .wh-crate span{background:rgba(255,253,248,.88);padding:8px 14px;border-radius:6px}
+
+/* ---------- version B: cards over the face (projects/mongoose-vs-prisma/kit.js) ----------
+   Only in a transparent capture (dual's over windows): the slide's own content hides and the .wh-ov card shows, low on
+   the frame between the chin and the caption band (y 1000-1320 of the 9:16 stage). Solid, opaque, one headline. */
+.wh-ov{display:none}
+#stage.transparent .slide.ovs > :not(.wh-ov){visibility:hidden}
+#stage.transparent .slide.ovs .wh-ov{display:flex}
+/* redline.css (linked for the VS Code editor) hides every .ovs child but its own .rl-ov card; this card must stay visible */
+#stage.transparent .slide.ovs > .wh-ov{visibility:visible}
+#stage.theme-warehouse.transparent .slide.ovs::before{display:none}   /* the card is opaque; base's dark scrim would dim the face */
+.wh-ov{position:absolute;left:60px;width:880px;box-sizing:border-box;flex-direction:column;gap:8px;padding:30px 36px 32px 50px;border-radius:12px;opacity:0;
+  background:var(--paper);border:3px solid var(--tx);box-shadow:0 12px 0 rgba(28,29,32,.9);overflow:hidden}
+.wh-ov::before{content:"";position:absolute;left:0;top:0;bottom:0;width:16px;background:repeating-linear-gradient(-45deg,var(--hz) 0 12px,#1C1D20 12px 24px)}
+.wh-ov .eb{font:800 28px JB;letter-spacing:.14em;text-transform:uppercase;color:var(--acc,var(--green))}
+.wh-ov b{font:900 64px/1.06 ID;letter-spacing:-.035em;color:var(--tx)}
+.wh-ov b em{font-style:normal;color:var(--acc,var(--green))}
+.wh-ov .row{display:flex;align-items:center;gap:18px;margin-top:10px}
+.wh-ov .row img{height:58px;width:auto}
+.wh-ov .ln{display:flex;align-items:center;gap:16px;font:800 44px/1.15 ID;color:var(--tx);letter-spacing:-.02em;opacity:0}
+.wh-ov .ln img{height:50px;width:50px}
+.wh-ov .ln em{font-style:normal}
+.wh-ov .ln em.g{color:var(--green)} .wh-ov .ln em.v{color:var(--violet)}
