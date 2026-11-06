@@ -8,6 +8,7 @@
     "video": "node scripts/video.js",
     "new": "node scripts/new-project.js",
     "transcribe": "node scripts/transcribe.js",
+    "denoise": "node scripts/denoise.js",
     "storyboard": "node scripts/script-to-storyboard.js",
     "timeline": "node scripts/timeline.js",
     "captions": "node scripts/captions.js",
@@ -20,9 +21,12 @@
     "contact": "node scripts/contact-sheet.js",
     "review": "node scripts/review.js",
     "render": "node renderer/cli.js",
+    "thumb": "node scripts/thumb-export.js",
+    "thumb-new": "node scripts/thumb-new.js",
+    "thumb-check": "node scripts/thumb-check.js",
     "render:all": "node renderer/cli.js --slide all --format all",
     "assemble": "node renderer/assemble.js",
-    "test": "node --test test/timeline.test.js test/dual.test.js test/pipeline.test.js test/projects.test.js test/assemble.test.js test/social.test.js test/socialcut.test.js",
+    "test": "node --test test/timeline.test.js test/dual.test.js test/pipeline.test.js test/projects.test.js test/assemble.test.js test/social.test.js test/socialcut.test.js test/deliver.test.js test/thumb.test.js",
     "setup": "node scripts/setup.js",
     "doctor": "node scripts/setup.js --check",
     "dual": "node scripts/dual-render.js",
@@ -33,7 +37,9 @@
     "sfx": "node scripts/sfx.js",
     "kit": "node scripts/fetch-kit.js",
     "beat-frames": "node scripts/beat-frames.js",
-    "social-cut": "node scripts/social-cut.js"
+    "social-cut": "node scripts/social-cut.js",
+    "deliver": "node scripts/deliver.js",
+    "pauses": "node scripts/pauses.js"
   },
   "devDependencies": {
     "puppeteer": "^25.11.0",

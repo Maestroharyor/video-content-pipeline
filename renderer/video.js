@@ -72,7 +72,7 @@ function assembleMp4(dir, cfg, o) {
   const rg = o.range && (o.range.from || o.range.to != null) ? { from: o.range.from || 0, to: o.range.to != null ? Math.min(o.range.to, o.total) : o.total } : null;
   if (rg && o.over) throw new Error('--from/--to cannot be combined with --over');
   const total = rg ? +(rg.to - rg.from).toFixed(4) : o.total;
-  const args = [...(o.over ? ['-reinit_filter', '0'] : []), '-framerate', String(cfg.fps), ...(rg ? ['-start_number', String(Math.round(rg.from * cfg.fps))] : []), '-i', path.join(dir, o.pattern || '%05d.png')];
+  const args = [...(o.over ? ['-reinit_filter', '0'] : []), '-framerate', String(cfg.fps), ...(rg ? ['-start_number', String(Math.ceil(rg.from * cfg.fps - 1e-6))] : []), '-i', path.join(dir, o.pattern || '%05d.png')];
   if (o.over) args.push('-i', o.over);
   const nv = o.over ? 2 : 1;   // video inputs before the audio ones
   const audio = [];

@@ -4,7 +4,8 @@
    Opaque: the cut's footage stops under it. The channel's end-screen sting (assets/end-sting.wav) is the slide's
    audio bed, so assemble mixes it in at the card's first frame. The shortlink sits last, where the eye ends up, for
    the networks that do not make a caption link clickable.
-   Data from TIMELINE.social, written per cut by scripts/social-cut.js: { ytTitle, ytUrl }. Pure in ctx.local (seconds). */
+   Data from TIMELINE.social, written per cut by scripts/social-cut.js: { ytTitle, ytUrl, next? }. next (a parts series,
+   cuts.json cut.next): a "Next: Part 3 · …" chip at the top, so a viewer knows there is more. Pure in ctx.local (seconds). */
 (function () {
   const S = (window.TIMELINE && window.TIMELINE.social) || { ytTitle: 'The full video', ytUrl: 'youtube.com/@lifetechfacts' };
 
@@ -37,6 +38,9 @@
   .ec-url span{display:inline-flex;align-items:center;gap:18px;padding:22px 38px;border-radius:999px;background:var(--bg1);
     border:2px solid color-mix(in srgb,#FF0033 70%,transparent);font:700 44px JB,monospace;color:var(--tx);letter-spacing:-.01em}
   .ec-url i{width:0;height:0;border-left:22px solid #FF0033;border-top:13px solid transparent;border-bottom:13px solid transparent}
+  .ec-nx{position:absolute;left:0;width:${W}px;top:236px;display:flex;justify-content:center}
+  .ec-nx span{padding:12px 26px;border-radius:999px;background:color-mix(in srgb,var(--teal) 16%,var(--bg1));border:2px solid var(--teal);font:700 32px ID;color:var(--tx);white-space:nowrap}
+  .ec-nx b{color:var(--teal)}
 </style>
 <div class="ec-plate"></div>
 <div class="ec-eb" id="${p}eb">Watch the full video</div>
@@ -44,7 +48,7 @@
 <div class="ec-th" id="${p}th"><img src="${passet('yt-thumb.jpg')}" alt=""><div class="ec-bar" id="${p}bar"></div><div class="ec-play" id="${p}pl"></div></div>
 <div class="ec-t" id="${p}t">${d.ytTitle}</div>
 <div class="ec-ch" id="${p}ch">LifeTech Facts · @lifetechfacts</div>
-<div class="ec-url" id="${p}url"><span><i></i>${d.ytUrl}</span></div>`;
+<div class="ec-url" id="${p}url"><span><i></i>${d.ytUrl}</span></div>${d.next ? `<div class="ec-nx" id="${p}nx"><span><b>Next:</b> ${d.next}</span></div>` : ''}`;
     },
     frame: (u, c) => {
       const p = c.p, T = c.local, e = id => document.getElementById(p + id);
@@ -57,6 +61,7 @@
       e('pl').style.cssText += `;opacity:${seg(T, .55, .7).toFixed(3)};transform:scale(${(pop * br).toFixed(4)})`;
       e('bar').style.width = (100 * seg(T, .6, 4)).toFixed(2) + '%';
       rise('t', .5, .85, 20); rise('ch', .62, .95, 16); rise('url', .78, 1.15, 18);
+      if (e('nx')) rise('nx', .95, 1.3, -16);
     },
   });
 })();

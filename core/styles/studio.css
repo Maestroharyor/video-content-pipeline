@@ -296,3 +296,4 @@
 #stage.canvas-vertical .st-node{font-size:28px}
 #stage.canvas-vertical .st-pane.vwrap .t{white-space:pre-wrap;overflow-wrap:anywhere}   /* data.v.wrap: long code lines wrap in the phone column */
 #stage.canvas-vertical .st-vsc .ln .t,#stage.canvas-vertical .st-pane .ln .t{white-space:pre-wrap;overflow-wrap:anywhere}   /* 9:16: every editor is the column wide, long lines wrap */
+#stage.canvas-vertical .vfitw,#stage.canvas-vertical .vfitw *{white-space:normal!important;flex-wrap:wrap}   /* 9:16: a piece lifted to 28 px wraps inside the column */

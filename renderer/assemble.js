@@ -23,7 +23,10 @@ const TL = require('../core/timeline');
 /* o.transparent = capture on alpha; o.capsOnly = alpha capture of the caption band alone (dual-render's reveal layer) */
 async function captureTimeline(cfg, L, o) {
   const N = Math.round(TL.total(L) * cfg.fps);
-  const from = Math.max(0, Math.round((o.from || 0) * cfg.fps)), to = o.to != null ? Math.min(N, Math.round(o.to * cfg.fps)) : N;
+  // first frame at or after each edge, the rule scripts/dual-render.js uses for its chunks: rounding here while dual
+  // used ceil left a chunk one PNG short, and that frame showed bare footage (projects/php2shell, preview 4)
+  const fr = t => Math.ceil(t * cfg.fps - 1e-6);
+  const from = Math.max(0, fr(o.from || 0)), to = o.to != null ? Math.min(N, fr(o.to)) : N;
   fs.mkdirSync(o.dir, { recursive: true });
   const manifest = path.join(o.dir, '.manifest.json');
   // frames are only reusable at the same sampling: a manifest from another resolution or fps is discarded, never mixed in
@@ -95,12 +98,19 @@ async function main() {
   if (vo && !fs.existsSync(vo)) console.warn('  ! voiceover not found:', vo);
   const beds = L.filter(e => e.audio).map(e => ({ file: resolveAudio(cfg.projectDir, e.audio), at: e.start, id: e.id }));
   beds.filter(b => !b.file).forEach(b => console.warn('  ! audio bed not found for', b.id));
-  const out = path.join(cfg.outputDir, 'final', cfg.outName + (args.preview ? '-preview' : '') + '.mp4');
+  const out = args.preview ? path.join(cfg.previewDir, cfg.outName + '-preview.mp4') : path.join(cfg.outputDir, 'final', cfg.outName + '.mp4');
   assembleMp4(dir, cfg, { out, total, vo: vo && fs.existsSync(vo) ? vo : null, beds: beds.filter(b => b.file), preview: args.preview, over, overEnd, range: { from: args.from, to: args.to } });
-  if (inject.CAPTIONS) fs.writeFileSync(path.join(cfg.outputDir, 'final', cfg.outName + '.srt'), srt(inject.CAPTIONS.groups));
+  // the .srt goes beside the file it captions: a preview's into renders/previews/, never over the master's
+  if (inject.CAPTIONS) fs.writeFileSync(out.replace(/\.mp4$/, '.srt'), srt(inject.CAPTIONS.groups));
   if (!args.keepFrames) fs.rmSync(dir, { recursive: true, force: true });
   const bytes = fs.statSync(out).size;
   if (bytes > cfg.maxSize) console.warn(`  ! ${(bytes / 1e9).toFixed(2)} GB is over the ${(cfg.maxSize / 1e9).toFixed(2)} GB budget (raise --max-size or --crf)`);
+  /* the user (2026-11-04): "once you're done with the main render, delete the preview". A full master (not a
+     --from/--to stretch) replaces its draft and the draft's .srt */
+  if (!args.preview && args.from == null && args.to == null) for (const ext of ['.mp4', '.srt']) {
+    const p = path.join(cfg.previewDir, cfg.outName + '-preview' + ext);
+    if (fs.existsSync(p)) { fs.rmSync(p); console.log(`  removed preview ${path.relative(cfg.root, p)}`); }
+  }
   console.log(`done → ${path.relative(cfg.root, out)}  ${(bytes / 1e6).toFixed(0)} MB  (capture ${capT.toFixed(0)}s, total ${((Date.now() - t0) / 1000).toFixed(0)}s${vo && fs.existsSync(vo) ? ', voiceover ' + path.basename(vo) : ', no voiceover'}${beds.length ? ', ' + beds.length + ' bed(s)' : ''})`);
 }
 if (require.main === module) main().catch(e => { console.error(e.message || e); process.exit(1); });

@@ -43,7 +43,8 @@ async function openPage(browser, cfg, opts = {}) {
   await page.evaluate(async () => {
     await document.fonts.ready;
     // every image must be decoded before the first capture
-    await Promise.all([...document.images].map(img => img.complete && img.naturalWidth > 0 ? null :
+    // an image that already failed is complete with no pixels and never fires onerror again: fail now, not at the protocol timeout
+    await Promise.all([...document.images].map(img => img.complete && img.naturalWidth > 0 ? null : img.complete ? Promise.reject(new Error('image failed ' + img.src)) :
       new Promise((res, rej) => { img.onload = res; img.onerror = () => rej(new Error('image failed ' + img.src)); })));
   });
   try { await page.waitForFunction('window.DECK_READY === true', { timeout: 15000 }); }

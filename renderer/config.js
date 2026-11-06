@@ -38,6 +38,10 @@ function resolve(o = {}) {
     // a variant renders beside the base deck, never over it: renders/<variant>/, frames/<variant>/, <slug>-<variant>.mp4
     variant: o.variant || null, outName: project.slug + (o.variant ? '-' + o.variant : ''),
     outputDir: o.outputDir || path.join(dir, 'renders', ...(o.variant ? [o.variant] : [])),
+    // every review draft of a video, base deck and variants alike, in one flat folder: renders/previews/<outName>…-preview.mp4
+    previewDir: path.join(dir, 'renders', 'previews'),
+    // the finished masters (dual + its .srt) of every look land in one renders/final/, named by slug like the base deck's
+    finalDir: path.join(dir, 'renders', 'final'),
     frameDir: o.frameDir || path.join(dir, 'frames', ...(o.variant ? [o.variant] : [])),
     root: ROOT,
   });

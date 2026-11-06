@@ -12,6 +12,7 @@
 const fs = require('fs'), path = require('path');
 const { ROOT, loadProject } = require('../renderer/project');
 const { loadBrand } = require('../renderer/brand');
+const { run: deliver } = require('../renderer/deliver');
 
 const a = process.argv.slice(2);
 const val = k => { const i = a.indexOf(k); return i >= 0 ? a[i + 1] : undefined; };
@@ -94,6 +95,7 @@ fs.mkdirSync(outDir, { recursive: true });
 const mdFile = path.join(outDir, slug + '.md');
 fs.writeFileSync(mdFile, result.md);
 console.log('\n→ ' + rel(mdFile) + '  (' + result.blocks + ' blocks' + (result.warns ? ', ' + result.warns + ' warning(s) above' : '') + ')');
+if (!opt.in) deliver(path.dirname(outDir));
 
 /* ---------------------------------------------------------------- */
 

@@ -454,7 +454,7 @@ async function render(dir, cutName, o) {
     // 2. the talking head and the voice over it
     src = path.join(work, `source${tag}.mp4`);
     const facePush = spec.facePush != null ? spec.facePush : 0.06;
-    const stamp = JSON.stringify({ vo: r.vo, laid: r.laid, faceWins, screenWins, dryWins, muteWins, source, audio, overs, deck: fs.statSync(deckFile).mtimeMs, fps, srcCrf, facePush });
+    const stamp = JSON.stringify({ faceSrc: spec.faceSource || null, vo: r.vo, laid: r.laid, faceWins, screenWins, dryWins, muteWins, source, audio, overs, deck: fs.statSync(deckFile).mtimeMs, fps, srcCrf, facePush });
     const stampFile = path.join(work, `.source${tag}.json`);
     if (o.force || !fs.existsSync(src) || !fs.existsSync(stampFile) || fs.readFileSync(stampFile, 'utf8') !== stamp) {
       console.log(`source ${cut.name}: ${r.vo.length} span(s), ${faceWins.length} face window(s), ${screenWins.length} screen window(s), ${fmt(r.length)}`);
