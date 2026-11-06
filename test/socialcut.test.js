@@ -14,6 +14,9 @@ test('snapSpan opens just before the first word and closes shortly after the las
   assert.deepStrictEqual(SC.snapSpan(words, 4.0, 10.0), { from: 3.92, to: 4.85 });
   assert.strictEqual(SC.snapSpan(words, 10.0, 10.5).to, 10.5);                        // `to` is a ceiling (end screen after it)
   assert.throws(() => SC.snapSpan(words, 5, 9), /no words/);
+  // a spoken version number outlasts the 0.9s cap: each digit group extends it, where the cap alone ended it at 1.25
+  const ver = [{ w: 'or', s: 0.0, e: 0.1 }, { w: '8.2.35.', s: 0.1, e: 1.9 }];
+  assert.strictEqual(SC.snapSpan(ver, 0, 5).to, 2.15);
   // a short gap: the start sits mid-gap, not on the previous word's end
   assert.strictEqual(SC.snapSpan([{ w: 'So', s: 1, e: 1.2 }, { w: 'that', s: 1.3, e: 1.5 }], 1.3, 2).from, 1.25);
 });
@@ -149,4 +152,36 @@ test('overSlides picks the slides an over window covers; clampOvers keeps an ove
   const slides = [{ id: 's01', start: 0, end: 4 }, { id: 's02', start: 4, end: 9 }, { id: 's03', start: 9, end: 14 }];
   assert.deepStrictEqual(SC.overSlides([{ at: 0, to: 8.7, over: true }, { at: 9, to: 14, over: true, split: {} }], slides), ['s01', 's02']);
   assert.deepStrictEqual(SC.clampOvers(4, 9, [[0, 8.7, 0.5], [20, 30]]), [[4, 8.7]]);
+});
+
+test('widenDeckGaps ends the face shot early so a short deck stretch lasts the minimum, never extends a face shot', () => {
+  const wins = [[0, 10, 0.5], [10.6, 20, 0.5], [21, 22, 0.5], [22.5, 30, 0.5], [40, 50, 0.5]];
+  assert.deepStrictEqual(SC.widenDeckGaps(wins), [[0, 8.1, 0.5], [10.6, 18.5, 0.5], [21, 22, 0.5], [22.5, 30, 0.5], [40, 50, 0.5]]);
+  assert.deepStrictEqual(SC.widenDeckGaps(wins, 0), wins);
+  assert.deepStrictEqual(wins[0], [0, 10, 0.5]);   // pure: the input is untouched
+});
+
+test('followCrop frames the motion, jumps at a join, glides at a slide boundary and ignores small drift', () => {
+  const fps = 4, C = 8;   // window = 6 of 8 columns, travel 2
+  const col = c => { const a = new Array(C).fill(0); a[c] = 100; return a; };
+  // 0-4s motion on the far left, 4-8s on the far right (a slide boundary at 4), a join at 8, then the left again
+  const E = Array.from({ length: 48 }, (_, k) => (k === 0 || k === 32 ? null : col(k < 16 ? 0 : k < 32 ? 7 : 0)));
+  const keys = SC.followCrop(E, fps, 12, [[4, 'glide'], [8, 'cut']]);
+  const at = t => { let f = keys[0][1]; for (const [k, v] of keys) if (k <= t) f = v; return f; };
+  assert.strictEqual(at(1), 0);
+  assert.strictEqual(at(4.7), 1);                                       // glided over 0.6s
+  assert.ok(keys.some(([t, f]) => t === 4 && f === 0));                 // the glide starts from where it was
+  assert.ok(keys.some(([t, f]) => t === 7.999 && f === 1) && at(8) === 0);   // a jump at the join
+  // no motion at all: the window holds the centre
+  assert.deepStrictEqual(SC.followCrop([null, new Array(C).fill(0)], fps, 2, []), [[0, 0.5]]);
+});
+
+test('cropExpr holds before the first key and after the last, and eases between keys', () => {
+  assert.strictEqual(SC.cropExpr([[0, 0.5]], 960), '480');
+  const e = SC.cropExpr([[0, 0], [1, 0], [1.6, 1]], 960);
+  // evaluated with a small if() shim
+  const run = t => Function('t', 'pow', 'lt', 'iff', `return ${e.replace(/if\(/g, 'iff(')}`)(t, Math.pow, (a, b) => a < b, (c, x, y) => (c ? x : y));
+  assert.strictEqual(run(0.5), 0);
+  assert.strictEqual(Math.round(run(1.3)), 480);
+  assert.strictEqual(run(2), 960);
 });

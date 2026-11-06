@@ -13,8 +13,10 @@ function snapSpan(words, from, to) {
   if (!inside.length) throw new Error(`no words between ${from} and ${to}`);
   const first = inside[0], last = inside[inside.length - 1];
   const prev = words[words.indexOf(first) - 1], next = words[words.indexOf(last) + 1];
-  // whisper stretches a sentence-final word's end over the following silence, so cap it at 0.9s
-  const lastEnd = Math.min(last.e, last.s + 0.9);
+  // whisper stretches a sentence-final word's end over the following silence, so cap it at 0.9s. A number is the
+  // exception: "8.2.35" is said as "eight point two point thirty-five" (1.8s in php2shell), and the cap clipped it, so
+  // each digit group adds 0.3s
+  const lastEnd = Math.min(last.e, last.s + 0.9 + 0.3 * ((last.w || '').match(/\d+/g) || []).length);
   // no earlier than the middle of the gap before it: an aligned word's end can be a frame or two early, and a start
   // right on it keeps the tail of the word before ("So" in front of "that is the whole path")
   const a = Math.max(first.s - 0.08, prev ? (prev.e + first.s) / 2 : 0);
@@ -56,6 +58,18 @@ function toCutOrNext(t, laid) {
 
 /* Master-time windows [[a, b, ...extra]] → the pieces of them that survive the cut, in cut time. Extra values (a face
    window's crop centre) ride along untouched. */
+/* Face windows in cut time → every deck stretch between two of them at least `min` seconds long (default 2.5): a slide
+   that shows for a moment between two face shots only flickers (ai-can-clone-apps, preview 1: "some frames only show
+   for a split second"). The face shot before a short stretch ends earlier, when it keeps at least `keep` (1.5) s; it
+   never runs longer, because outside its windows a reveal master is not on the face (a split, or the deck). Pure. */
+function widenDeckGaps(wins, min, keep) {
+  const m = min == null ? 2.5 : min, k = keep == null ? 1.5 : keep, out = wins.map(w => w.slice());
+  for (let i = 0; i + 1 < out.length; i++) {
+    const gap = out[i + 1][0] - out[i][1], end = out[i + 1][0] - m;
+    if (gap > 0 && gap < m && end - out[i][0] >= k) out[i][1] = Math.round(end * 1000) / 1000;
+  }
+  return out;
+}
 function mapWindows(windows, laid) {
   const out = [];
   for (const s of laid) for (const [a0, b0, ...extra] of windows) {
@@ -213,5 +227,63 @@ function facesFromLuma(means, fps, thr = 70, minLen = 0.6, maxGap = 0.25) {
   return out.reduce((m, w) => { const l = m[m.length - 1]; if (l && w[0] - l[1] < maxGap) l[1] = w[1]; else m.push(w); return m; }, []);
 }
 
+/* A stacked cut (cuts.json "stack") shows the 16:9 deck through a narrower window (4:3) that follows the action. `E` is
+   a motion track of the deck in cut time: E[k] = changed pixels per column between analysis frame k and k-1 (null at
+   the first frame of a span, where the picture jumps), `fps` its rate. The window is `win` of the frame's width.
+   `bounds` = [[t, kind]] where the framing is decided again: 'cut' (a span join: jump) or 'glide' (a slide boundary:
+   ease over `glide` s). Inside a stretch the window holds still and moves only when the action leaves it by more than
+   `dead` of its travel, so typing does not drag it around. Returns keys [[t, f]], f = the window's left edge as a
+   fraction of its travel (0 left, 1 right), for a piecewise-eased crop (cropExpr). Pure. */
+function followCrop(E, fps, total, bounds, o = {}) {
+  const win = o.win == null ? 0.75 : o.win, glide = o.glide || 0.6, dead = o.dead == null ? 0.3 : o.dead,
+    look = o.look || 1.5, minE = o.minE == null ? 40 : o.minE, step = o.step || 0.5;
+  const C = (E.find(Boolean) || []).length;
+  if (!C) return [[0, 0.5]];
+  const w = Math.round(C * win), travel = C - w;
+  // the window placement [0..1] that holds the most motion in frames [t0, t1), the one nearest `pref` among ties
+  const best = (t0, t1, pref) => {
+    const S = new Float64Array(C);
+    for (let k = Math.max(0, Math.floor(t0 * fps)); k < Math.min(E.length, Math.ceil(t1 * fps)); k++) if (E[k]) for (let c = 0; c < C; c++) S[c] += E[k][c];
+    let tot = 0; for (let c = 0; c < C; c++) tot += S[c];
+    if (tot < minE) return null;
+    let run = 0; for (let c = 0; c < w; c++) run += S[c];
+    const sums = [run];
+    for (let s = 1; s <= travel; s++) { run += S[s + w - 1] - S[s - 1]; sums.push(run); }
+    const top = Math.max(...sums);
+    let pick = null;
+    sums.forEach((v, s) => { if (v >= top * 0.97) { const f = travel ? s / travel : 0.5; if (pick == null || Math.abs(f - pref) < Math.abs(pick - pref)) pick = f; } });
+    return pick;
+  };
+  const B = [...bounds].filter(([t]) => t > 0 && t < total).sort((p, q) => p[0] - q[0]);
+  const segs = [[0, 'cut'], ...B].map(([t, kind], i, a) => ({ a: t, b: i + 1 < a.length ? a[i + 1][0] : total, kind }));
+  const keys = []; let cur = 0.5;
+  const push = (t, f) => { const r = Math.round(f * 1000) / 1000; if (keys.length && t <= keys[keys.length - 1][0]) keys[keys.length - 1][1] = r; else keys.push([r3(t), r]); };
+  segs.forEach(({ a, b, kind }, i) => {
+    const first = best(a, Math.min(b, a + 3), cur), next = first != null ? first : best(a, b, cur);
+    const f = next != null ? next : cur;
+    if (i === 0 || kind === 'cut') { if (keys.length) push(a - 0.001, cur); push(a, f); }
+    else { push(a, cur); push(Math.min(b, a + glide), f); }
+    cur = f;
+    for (let t = a + glide + step; t < b - glide; t += step) {
+      const g = best(Math.max(a, t - look), Math.min(b, t + look), cur);
+      if (g != null && Math.abs(g - cur) > dead) { push(t, cur); push(t + glide, g); cur = g; t += glide; }
+    }
+  });
+  return keys;
+}
 
-module.exports = { revealFaces, mergeFaces, overSlides, clampOvers, snapSpan, cutTimeline, toMaster, masterSpans, layout, cutLength, toCut, toCutOrNext, mapWindows, faceCropPx, paneFit, stackPanes, cutWords, facesFromLuma };
+/* keys [[t, f]] → an ffmpeg expression in t for the crop's x (px): each step between two keys eased (smoothstep), held
+   flat before the first and after the last. `travel` = source width minus the crop width. */
+function cropExpr(keys, travel) {
+  const px = f => Math.round(f * travel);
+  if (keys.length === 1) return String(px(keys[0][1]));
+  let e = String(px(keys[keys.length - 1][1]));
+  for (let i = keys.length - 2; i >= 0; i--) {
+    const [t0, f0] = keys[i], [t1, f1] = keys[i + 1], x0 = px(f0), x1 = px(f1);
+    const seg = x0 === x1 ? String(x0) : `${x0}+${x1 - x0}*(3*pow((t-${t0})/${r3(t1 - t0)},2)-2*pow((t-${t0})/${r3(t1 - t0)},3))`;
+    e = `if(lt(t,${t1}),${seg},${e})`;
+  }
+  return `if(lt(t,${keys[0][0]}),${px(keys[0][1])},${e})`;
+}
+
+module.exports = { followCrop, cropExpr, widenDeckGaps, revealFaces, mergeFaces, overSlides, clampOvers, snapSpan, cutTimeline, toMaster, masterSpans, layout, cutLength, toCut, toCutOrNext, mapWindows, faceCropPx, paneFit, stackPanes, cutWords, facesFromLuma };
