@@ -121,7 +121,7 @@ function bdBoard(p, d) {
   const part2 = d.part2 ? `<span class="bd-part2" id="${p}part2" style="left:${BD_PART.ram.x - 40}px;top:${BD_PART.ram.y + 120}px">${d.part2.text}</span>` : '';
   const holes = [[18, 18], [BD.W - 48, 18], [18, BD.H - 48], [BD.W - 48, BD.H - 48]].map(h => `<i class="bd-hole" style="left:${h[0]}px;top:${h[1]}px"></i>`).join('');
   return `<div class="bd-pcb" id="${p}board" style="width:${BD.W}px;height:${BD.H}px">${holes}
-    <div class="bd-world" id="${p}world" style="width:${BD.W}px;height:${BD.H}px">${bdTraces()}${socks}${parts}${lbls}${extras}${hots}${pulses}${apps}${qm}${part2}</div></div>`;
+    <div class="bd-world" id="${p}world" style="width:${BD.W}px;height:${BD.H}px">${bdTraces()}${socks}${parts}${lbls}${extras}${hots}${pulses}${apps}${qm}${part2}${bdP3Html(p, d)}</div></div>`;
 }
 function bdChips(p, d, y0) {
   const ch = d.chips || [], n = ch.length, row = n === 3 || d.chipRow;
@@ -143,7 +143,7 @@ function bdLaptops(p, d) {
   const laps = L.map((l, i) => `<div class="bd-lap" id="${p}lap${i + 1}" style="left:${xs[i]}px;top:0;width:${w}px;height:${h}px">
       <div class="scr"><b>${l.name}</b></div><div class="base"></div></div>
     <div class="bd-tag" id="${p}tg${i + 1}" style="left:${xs[i] + 20}px;top:${h + 24}px;width:${w - 40}px"><span>${l.tag}</span><small>${l.small || ''}</small></div>`).join('');
-  const eq = d.eq ? `<div class="bd-eq" id="${p}eq" style="left:${w}px;top:70px;width:${BD.W - 2 * w}px">=<i class="x" id="${p}x1"></i></div>` : '';
+  const eq = d.eq ? `<div class="bd-eq${d.eqText ? ' txt' : ''}" id="${p}eq" style="left:${w}px;top:70px;width:${BD.W - 2 * w}px">${d.eqText || '='}<i class="x" id="${p}x1"></i></div>` : '';
   return laps + eq;
 }
 /* ---------- part 2 (projects/what-makes-laptop-faster-2): three more modes on the same board family ----------
@@ -271,19 +271,247 @@ function duFrame(B, c, p, d) {
   });
   if (d.tag) pp(p + 'k1', B.p('k1', .7, .8, 'pop'), .6);
 }
+/* ---------- part 3 (projects/what-makes-laptop-faster-3): the CPU, five more modes on the same board family ----------
+   clock: the CPU package with a square-wave clock running out of it into a scope. data.scope (label, beat k1, the wave
+     on beat `wave`), data.count {to, unit} rolls on beat `n`. data.heat {label, from, to} swaps the counter for a
+     temperature bar (beat `heat`) and slows the wave on x1 (thermal throttling), the readout swapping from → to.
+   ipc: two lanes of work per tick. data.lanes [{name, small, per, period, c}] (lane 1 at once, lane 2 on r1), a "?" on q,
+     work-done bars racing from `bar`, chips k1 k2 stacked under them.
+   cores: a die of core tiles, each a worker. data.cores (8), lit on w (1), two (2), eight (all); data.tasks chips k1..k3.
+     data.fewer: x1 dims every core but the first, k1 brings a panel of four bigger cores (data.big {title, tag}).
+   arch: one row per chip family: logo tile, name, a die drawing; rows on k1..k3, "≠" badges between them on x1.
+     data.chips [{logo, name, small, die: 'hybrid'|'tiles'|'soc'}]
+   recap: two struck chips (x1 x2) then a checklist whose terms flash big as they are said (t1..tn) and land in their row.
+   board mode, part 3 options: cache {text} (beat cache; quick pulses CPU ↔ cache from `pulse`; x1 greys the long RAM trip),
+     fan (a fan beside the CPU on k1), camOn (the camera move waits for that beat). laptops: eqText replaces "=". */
+const BCK = { W: 880, H: 600, cpu: 220, scopeX: 270, scopeY: 30, scopeW: 610, scopeH: 230, per: 64 };
+function ckWave(w, h, per) {
+  let d = `M0 ${h * .75}`;
+  for (let x = 0; x < w; x += per) d += ` H${x + per / 2} V${h * .25} H${x + per} V${h * .75}`;
+  return d;
+}
+function ckHtml(p, d) {
+  const cpu = `<div class="ck-cpu" id="${p}cpuc" style="left:0;top:${BCK.scopeY + 5}px;width:${BCK.cpu}px;height:${BCK.cpu}px"><div class="die">CPU</div><i class="led" id="${p}led"></i></div>`;
+  const W = BCK.scopeW + BCK.per * 6;
+  const scope = `<div class="ck-scope" id="${p}wave" style="left:${BCK.scopeX - 20}px;top:${BCK.scopeY}px;width:${BCK.scopeW}px;height:${BCK.scopeH}px">
+      <svg width="${W}" height="${BCK.scopeH}" viewBox="0 0 ${W} ${BCK.scopeH}" id="${p}wsvg" style="position:absolute;left:0;top:0;overflow:visible">
+        <path d="${ckWave(W, BCK.scopeH, BCK.per)}" id="${p}wp"/></svg><span class="ck-rd" id="${p}ghz">${d.readout || '4.2 GHz'}</span></div>`;
+  const lbl = d.scope ? `<div class="bd-chip" id="${p}k1" style="left:${BCK.scopeX - 20}px;top:${BCK.scopeY + BCK.scopeH + 26}px;width:${BCK.scopeW}px;height:96px;justify-content:center;${bdAcc(d.accent)}">${bdUse('clock')}<span>${d.scope}</span></div>` : '';
+  let low = '';
+  if (d.count) low = `<div class="ck-count" id="${p}n" style="top:${BCK.scopeY + BCK.scopeH + 150}px"><b id="${p}nv">0</b><small>${d.count.unit}</small></div>`;
+  if (d.heat) low = `<div class="ck-heat" id="${p}heat" style="top:${BCK.scopeY + BCK.scopeH + 150}px"><span class="nm">Temperature</span>
+      <div class="ck-track"><i class="ck-fill" id="${p}hf"></i></div></div>
+    <div class="ck-thr" id="${p}x1" style="top:${BCK.scopeY + BCK.scopeH + 330}px">${d.heat.label}</div>`;
+  return cpu + scope + lbl + low;
+}
+function ckFrame(B, c, p, d) {
+  const t = c.local;
+  up(p + 'cpuc', B.p('cpu', .02, .12, 'enter', { focal: false }), 24);
+  const wv = B.at('wave', .1, .25, 'enter', { focal: false });
+  up(p + 'wave', wv.p, 20);
+  if (d.scope) up(p + 'k1', B.p('k1', .3, .42, 'enter'), 16);
+  // the wave scrolls one period per tick; throttled, the period stretches (fewer ticks a second)
+  const x1 = d.heat ? B.at('x1', .6, .7, 'pop') : null, slow = x1 ? eio(seg(t, x1.s, x1.s + 1.2)) : 0;
+  const per = BCK.per * (1 + 1.4 * slow), speed = 300;
+  const run = Math.max(0, t - wv.s), phase = d.heat ? (run * speed * (1 - .5 * slow)) : run * speed;
+  const sx = 1 + 1.4 * slow;
+  st(p + 'wsvg', { transform: `translateX(${(-(phase % per)).toFixed(1)}px) scaleX(${sx.toFixed(4)})`, transformOrigin: '0 0' });
+  const blink = run > 0 ? ((phase / per) % 1 < .5 ? 1 : .25) : .25;
+  st(p + 'led', { opacity: String(blink) });
+  if (d.count) {
+    const n = B.at('n', .5, .65, 'pop', { len: .4 });
+    pp(p + 'n', n.p, .7);
+    const f = eo(seg(t, n.s, n.s + 1.3)), v = Math.round(d.count.to * f / 1e6) * 1e6;
+    txt(p + 'nv', v.toLocaleString('en-US'));
+  }
+  if (d.heat) {
+    const h = B.at('heat', .1, .3, 'enter', { focal: false });
+    up(p + 'heat', Math.min(h.p, seg(t, wv.e, wv.e + .4)), 20);
+    const f = eo(seg(t, h.s + .3, (x1 ? x1.s : h.s + 3) + .2));
+    st(p + 'hf', { transform: 'scaleX(' + (.25 + .72 * f).toFixed(4) + ')', background: f > .7 ? 'var(--rose)' : f > .4 ? 'var(--amber)' : 'var(--green)' });
+    pp(p + 'x1', x1.p, .6);
+    txt(p + 'ghz', slow > .5 ? d.heat.to : d.heat.from);
+    cls(p + 'wave', 'hot', slow > .5);
+  }
+}
+const BIP = { W: 880, laneH: 220, step: 244, trackL: 290, trackR: 852, col: 70 };
+function ipHtml(p, d) {
+  const lanes = (d.lanes || []).map((ln, i) => {
+    const cols = Array.from({ length: 9 }, (_, j) => `<div class="ip-col" id="${p}c${i}_${j}">${Array.from({ length: ln.per }, () => '<i></i>').join('')}</div>`).join('');
+    return `<div class="ip-lane" id="${p}${i ? 'r1' : 'r0'}" style="top:${i * BIP.step}px;height:${BIP.laneH}px;--acc:var(${ln.c || '--blue'})">
+      <div class="nm">${ln.name}<small>${ln.small}</small></div><div class="ip-track">${cols}</div>
+      <div class="ip-bar"><i id="${p}bf${i}"></i></div><span class="ip-wd" id="${p}wd${i}">Work done</span></div>`;
+  }).join('');
+  const y0 = (d.lanes || []).length * BIP.step + 10;
+  const qm = `<span class="bd-qm" id="${p}q" style="left:${BIP.trackR - 140}px;top:20px;z-index:4">?</span>`;
+  const chips = (d.chips || []).map((ch, i) => `<div class="bd-chip" id="${p}k${i + 1}" style="left:0;top:${y0 + i * BD.chipStep}px;width:${BIP.W}px;${bdAcc(ch.acc || d.accent)}">
+      ${ch.icon ? bdUse(ch.icon) : ''}<span>${ch.text}${ch.small ? `<br><small>${ch.small}</small>` : ''}</span></div>`).join('');
+  return lanes + qm + chips;
+}
+function ipFrame(B, c, p, d) {
+  const t = c.local, L = d.lanes || [];
+  const r0 = B.at('r0', .02, .15, 'enter', { focal: false }), r1 = B.at('r1', .4, .55, 'enter');
+  up(p + 'r0', r0.p, 30); up(p + 'r1', r1.p, 30);
+  const bar = B.at('bar', .65, .8, 'bar');
+  // the faster lane fills its bar in 3 s; the other at its own rate (work per tick / seconds per tick)
+  const rates = L.map(ln => ln.per / ln.period), top = Math.max(...rates);
+  L.forEach((ln, i) => {
+    const s0 = i ? r1.s : r0.s;
+    for (let j = 0; j < 9; j++) {
+      const ph = ((Math.max(0, t - s0) / ln.period + j) % 9) / 9, x = BIP.trackR - BIP.trackL - 40 - ph * (BIP.trackR - BIP.trackL - 40);
+      const vis = t < s0 ? 0 : Math.min(1, seg(ph, 0, .08) * 1) * (1 - seg(ph, .88, 1)) * cl((t - s0) / .3, 0, 1);
+      st(p + 'c' + i + '_' + j, { opacity: vis.toFixed(3), transform: `translateX(${x.toFixed(1)}px)` });
+    }
+    const f = t < bar.s ? 0 : Math.min(rates[i] / top, (t - bar.s) / 3);   // each lane fills at its own rate and stops at its share
+    st(p + 'bf' + i, { transform: 'scaleX(' + eo(f).toFixed(4) + ')' });
+    st(p + 'wd' + i, { opacity: String(cl((t - bar.s) * 3, 0, 1)) });
+  });
+  pp(p + 'q', B.p('q', .2, .3, 'pop') * (1 - B.p('r1', .4, .55)), .4);
+  (d.chips || []).forEach((_, i) => up(p + 'k' + (i + 1), B.p('k' + (i + 1), .3 + i * .5, .42 + i * .5, 'enter'), 20));
+}
+const BCO = { W: 880, dieH: 500, tw: 190, th: 188, gx: 18, gy: 20, x0: 26, y0: 70 };   // 70 + 2 × 188 + 20 = 466: the tiles end inside the die
+const CO_WORKER = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="7" r="4"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1"/></svg>';
+function coHtml(p, d) {
+  const n = d.cores || 8;
+  const tiles = Array.from({ length: n }, (_, i) => {
+    const x = BCO.x0 + (i % 4) * (BCO.tw + BCO.gx), y = BCO.y0 + Math.floor(i / 4) * (BCO.th + BCO.gy);
+    return `<div class="co-tile" id="${p}co${i}" style="left:${x}px;top:${y}px;width:${BCO.tw}px;height:${BCO.th}px">
+      <span class="wk" id="${p}wk${i}">${CO_WORKER}</span><b>Core ${i + 1}</b><i class="job"><i id="${p}jb${i}"></i></i></div>`;
+  }).join('');
+  const die = `<div class="co-die" id="${p}die" style="height:${BCO.dieH}px"><span class="ttl">CPU</span><span class="cnt" id="${p}cnt"></span>${tiles}</div>`;
+  const y0 = BCO.dieH + BD.gap;
+  let low = '';
+  if (d.tasks) low = bdChips(p, Object.assign({}, d, { chips: d.tasks.map(t => Object.assign({ cls: d.tasksStack ? 'stk' : '' }, t)) }), y0);
+  if (d.big) {
+    const bt = Array.from({ length: 4 }, (_, i) => `<div class="co-big" style="left:${26 + i * 212}px"><span class="wk">${CO_WORKER}</span><i class="job"><i id="${p}bj${i}"></i></i></div>`).join('');
+    low = `<div class="co-die big" id="${p}k1" style="top:${y0}px;height:250px"><span class="ttl">${d.big.title}</span><span class="cnt on">${d.big.tag}</span>${bt}</div>`;
+  }
+  return die + low;
+}
+function coFrame(B, c, p, d) {
+  const t = c.local, n = d.cores || 8;
+  up(p + 'die', B.p('die', .02, .15, 'enter', { focal: false }), 30);
+  const w = B.at('w', .2, .3, 'pop'), two = B.at('two', .35, .45, 'pop'), eight = B.at('eight', .5, .6, 'pop');
+  const x1 = d.fewer ? B.at('x1', .3, .4, 'pop') : null;
+  let label = '';
+  for (let i = 0; i < n; i++) {
+    const on = d.fewer ? 1 : i === 0 ? w.p : i === 1 ? two.p : seg(t, eight.s + (i - 2) * .07, eight.s + (i - 2) * .07 + BEAT.pop);
+    const off = x1 && i > 0 ? eo(x1.p) : 0;
+    cls(p + 'co' + i, 'lit', on > .5 && off < .5);
+    st(p + 'co' + i, { opacity: String((1 - .6 * off).toFixed(3)) });
+    pp(p + 'wk' + i, on, .3);
+    // a job bar loops while the core works; an idle core's bar stops
+    const q = ((t * (.55 + .07 * (i % 3)) + i * .37) % 1);
+    st(p + 'jb' + i, { transform: 'scaleX(' + (on > .5 && off < .5 ? q : 0).toFixed(3) + ')' });
+  }
+  if (!d.fewer) label = t >= eight.s ? `${n} workers` : t >= two.s ? '2 workers' : t >= w.s ? '1 core = 1 worker' : '';
+  else label = x1 && t >= x1.s ? 'Only 1 busy' : `${n} cores`;
+  txt(p + 'cnt', label); cls(p + 'cnt', 'on', !!label);
+  if (d.tasks) d.tasks.forEach((_, i) => up(p + 'k' + (i + 1), B.p('k' + (i + 1), .6 + i * .1, .7 + i * .1, 'enter'), 20));
+  if (d.big) {
+    up(p + 'k1', B.p('k1', .6, .75, 'enter'), 30);
+    for (let i = 0; i < 4; i++) st(p + 'bj' + i, { transform: 'scaleX(' + ((t * 1.3 + i * .29) % 1).toFixed(3) + ')' });
+  }
+}
+const BAR_ = { W: 880, rowH: 196, step: 236 };
+function arDie(kind) {
+  if (kind === 'hybrid') return '<i class="P" style="left:8px;top:8px;width:56px;height:56px"></i><i class="P" style="left:70px;top:8px;width:56px;height:56px"></i>' +
+    '<i class="P" style="left:8px;top:70px;width:56px;height:56px"></i><i class="P" style="left:70px;top:70px;width:56px;height:56px"></i>' +
+    Array.from({ length: 8 }, (_, i) => `<i class="E" style="left:${134 + (i % 2) * 30}px;top:${8 + Math.floor(i / 2) * 30}px;width:24px;height:24px"></i>`).join('');
+  if (kind === 'tiles') return '<i class="P" style="left:8px;top:8px;width:84px;height:118px"></i><i class="P" style="left:100px;top:8px;width:84px;height:118px"></i>';
+  return '<i class="P" style="left:8px;top:8px;width:70px;height:56px"></i><i class="G" style="left:84px;top:8px;width:100px;height:56px"></i>' +
+    '<i class="M" style="left:8px;top:70px;width:176px;height:56px"></i>';
+}
+function arHtml(p, d) {
+  const rows = (d.chips || []).map((ch, i) => `<div class="ar-row" id="${p}k${i + 1}" style="top:${i * BAR_.step}px;height:${BAR_.rowH}px">
+      <div class="ltile ar-logo"><img src="${ch.logo}" alt=""></div>
+      <div class="ar-nm">${ch.name}<small>${ch.small || ''}</small></div><div class="ar-die">${arDie(ch.die)}</div></div>`).join('');
+  const neq = (d.chips || []).slice(1).map((_, i) => `<span class="ar-neq" id="${p}nq${i}" style="top:${(i + 1) * BAR_.step - (BAR_.step - BAR_.rowH) / 2 - 36}px">≠</span>`).join('');
+  return rows + neq;
+}
+function arFrame(B, c, p, d) {
+  (d.chips || []).forEach((_, i) => up(p + 'k' + (i + 1), B.p('k' + (i + 1), .1 + i * .2, .22 + i * .2, 'enter'), 30));
+  const x = B.at('x1', .8, .9, 'pop');
+  (d.chips || []).slice(1).forEach((_, i) => pp(p + 'nq' + i, seg(c.local, x.s + i * .12, x.e + i * .12), .3));
+}
+const BRC = { W: 880, rowY: 150, rowStep: 100, rowH: 86 };
+function rcHtml(p, d) {
+  const sx = (d.struck || []).map((s, i) => `<div class="bd-chip rc-st" id="${p}x${i + 1}" style="left:${i * 450}px;top:0;width:430px;height:104px;justify-content:center">
+      <span>${s}</span><i class="rc-line" id="${p}xl${i + 1}"></i></div>`).join('');
+  const rows = (d.terms || []).map((tm, i) => `<div class="rc-row" id="${p}t${i + 1}" style="top:${BRC.rowY + i * BRC.rowStep}px;height:${BRC.rowH}px;--acc:var(${tm.c || '--blue'})">
+      <span class="ck">${bdUse('check')}</span><b>${tm.text}</b><small>${tm.small || ''}</small></div>
+    <div class="rc-flash" id="${p}fl${i}" style="--acc:var(${tm.c || '--blue'})">${tm.text}</div>`).join('');
+  return sx + rows;
+}
+function rcFrame(B, c, p, d) {
+  const t = c.local;
+  (d.struck || []).forEach((_, i) => {
+    const x = B.at('x' + (i + 1), .05 + i * .1, .15 + i * .1, 'pop');
+    up(p + 'x' + (i + 1), seg(t, x.s - .25, x.s + .05), 16);
+    st(p + 'xl' + (i + 1), { transform: 'scaleX(' + eo(seg(t, x.s + .1, x.s + .45)).toFixed(4) + ')' });
+    dim(p + 'x' + (i + 1), seg(t, x.s + .5, x.s + .9), .55);
+  });
+  // each counted term: big and bold in the middle as it is said (.3 s), then it flies into its row (.45 s)
+  (d.terms || []).forEach((_, i) => {
+    const r = B.at('t' + (i + 1), .4 + i * .1, .5 + i * .1, 'pop'), s = r.s;
+    const big = seg(t, s, s + .22), fly = eio(seg(t, s + .3, s + .75));
+    const y = lerp(300, BRC.rowY + i * BRC.rowStep + BRC.rowH / 2, fly), sc = lerp(1, .38, fly) * (.7 + .3 * bk(big));
+    st(p + 'fl' + i, { opacity: String((cl(big * 3, 0, 1) * (1 - seg(fly, .85, 1))).toFixed(3)), transform: `translate(-50%,-50%) translateY(${y.toFixed(1)}px) scale(${sc.toFixed(4)})` });
+    st(p + 't' + (i + 1), { opacity: String(seg(fly, .7, 1).toFixed(3)) });
+  });
+}
+/* board mode, part 3: a cache block on the CPU's edge with quick hits, the long RAM trip greyed, a fan by the CPU */
+function bdP3Html(p, d) {
+  let h = '';
+  if (d.cache) h += `<div class="bd-cache" id="${p}cache" style="left:236px;top:244px;width:118px;height:78px">${d.cache.text || 'Cache'}</div>
+    <i class="bd-pulse" id="${p}ch0" style="--pc:var(--green)"></i><i class="bd-pulse" id="${p}ch1" style="--pc:var(--green)"></i>
+    <i class="bd-pulse" id="${p}rt0" style="--pc:var(--tx3)"></i>
+    <span class="bd-skip" id="${p}skip" style="left:${BD_PART.ram.x - 30}px;top:${BD_PART.ram.y + 140}px">${d.cache.skip || 'Skipped'}</span>`;
+  if (d.fan) h += `<div class="bd-fan" id="${p}k1" style="left:120px;top:420px;width:130px;height:130px;color:var(--blue);z-index:6">${BD_ICON.fan}</div>`;
+  return h;
+}
+function bdP3Frame(B, c, p, d) {
+  const t = c.local;
+  if (d.cache) {
+    pp(p + 'cache', B.p('cache', .2, .3, 'pop'), .5);
+    const pl = B.at('pulse', .4, .5, 'enter'), x1 = B.at('x1', .6, .7, 'pop');
+    // hits: CPU die → cache and back, quick (0.6 s a round trip)
+    [0, 1].forEach(i => {
+      if (t < pl.s) { st(p + 'ch' + i, { opacity: '0' }); return; }
+      const q = (((t - pl.s) / .6 + i * .5) % 1), k = q < .5 ? q * 2 : 2 - q * 2, xy = [lerp(180, 295, k), lerp(200, 283, k)];
+      st(p + 'ch' + i, { opacity: String(cl((t - pl.s) * 4, 0, 1)), left: xy[0].toFixed(1) + 'px', top: xy[1].toFixed(1) + 'px' });
+    });
+    // the long trip to RAM: a slow grey pulse, then it stops and RAM reads "skipped"
+    const on = t >= pl.s + .3, gone = seg(t, x1.s, x1.s + .4);
+    const q = on ? ((t - pl.s - .3) / 2.4) % 1 : 0, xy = bdAlong([[180, 200], [335, 210], [430, 210]], q < .5 ? q * 2 : 2 - q * 2);
+    st(p + 'rt0', { opacity: String((on ? .8 : 0) * (1 - gone)), left: xy[0].toFixed(1) + 'px', top: xy[1].toFixed(1) + 'px' });
+    pp(p + 'skip', x1.p, .5);
+    dim(p + 'ram', seg(t, x1.s, x1.s + .4), .45);
+  }
+  if (d.fan) {
+    pp(p + 'k1', B.p('k1', .3, .4, 'pop'), .5);
+    const f = el(p + 'k1'); if (f) f.querySelector('svg').style.transform = 'rotate(' + ((t * 260) % 360).toFixed(1) + 'deg)';
+  }
+}
+const P3_MODES = { clock: [ckHtml, ckFrame], ipc: [ipHtml, ipFrame], cores: [coHtml, coFrame], arch: [arHtml, arFrame], recap: [rcHtml, rcFrame] };
 /* laptops: 270 + 24 + 88; board: the board + gap + chips/cases */
 function bdHeight(d) {
   if (d.mode === 'laptops') return 382 + ((d.cast || []).length ? 260 : 0);
   if (d.mode === 'bottle') return BTL.H;
   if (d.mode === 'ddr') return (d.rows || []).length * BDDR.rowStep + 40 + BD.chipH;
   if (d.mode === 'dual') return (d.panels || []).length * BDU.step + (d.tag ? 110 : 0);
+  if (d.mode === 'clock') return d.heat ? 690 : 600;
+  if (d.mode === 'ipc') return (d.lanes || []).length * BIP.step + 10 + (d.chips || []).length * BD.chipStep - 16;
+  if (d.mode === 'cores') return BCO.dieH + (d.tasks ? BD.gap + BD.chipH : d.big ? BD.gap + 250 : 0);
+  if (d.mode === 'arch') return (d.chips || []).length * BAR_.step - (BAR_.step - BAR_.rowH);
+  if (d.mode === 'recap') return BRC.rowY + (d.terms || []).length * BRC.rowStep - (BRC.rowStep - BRC.rowH);
   const n = (d.chips || []).length, row = n === 3 || d.chipRow;
   return BD.H + ((d.cases || []).length ? BD.gap + 120 : n ? BD.gap + (row ? BD.chipH : n * BD.chipStep - 16) : 0);
 }
 defineTemplate('board', {
   check: d => req(d, ['eyebrow', 'h1'], 'board'),
   beats: d => baseBeats(d).concat(['board', 's1', 's2', 's3', 'cpu', 'ram', 'ssd', 'trace', 'ops', 't1', 'ap', 'os', 'lock', 'f1',
-    'lap1', 'lap2', 'r1', 'r2', 'bar', 'one', 'two', 'lanes', 'x1', 'x2', 'x3', 'c1', 'c2', 'c3', 'k1', 'k2', 'k3', 'em'], castBeats(d.cast, d.bubbles)),
+    'lap1', 'lap2', 'r0', 'r1', 'r2', 'bar', 'one', 'two', 'lanes', 'wave', 'n', 'heat', 'q', 'die', 'w', 'eight', 'cache', 'pulse', 't2', 't3', 't4', 't5', 'x1', 'x2', 'x3', 'c1', 'c2', 'c3', 'k1', 'k2', 'k3', 'em'], castBeats(d.cast, d.bubbles)),
   html: (d, c) => {
     const p = c.p, H = bdHeight(d);
     let body;
@@ -291,6 +519,7 @@ defineTemplate('board', {
     else if (d.mode === 'bottle') body = btHtml(p, d);
     else if (d.mode === 'ddr') body = ddrHtml(p, d);
     else if (d.mode === 'dual') body = duHtml(p, d);
+    else if (P3_MODES[d.mode]) body = P3_MODES[d.mode][0](p, d);
     else body = bdBoard(p, d) + ((d.cases || []).length ? bdCases(p, d, BD.H + BD.gap) : bdChips(p, d, BD.H + BD.gap)) +
       (d.pin ? `<div class="bd-chip" id="${p}${d.pin.beat}" style="left:${d.pin.x != null ? d.pin.x : BD.W - 380}px;top:${d.pin.y != null ? d.pin.y : BD.H - 112}px;width:${d.pin.w || 360}px;height:84px;font-size:32px;justify-content:center;z-index:7;${bdAcc(d.pin.acc || d.accent)}">${d.pin.icon ? bdUse(d.pin.icon) : ''}${d.pin.text}</div>` : '');
     return `${heading(p, d)}<div class="content"><div class="rel" style="height:${H}px;${bdAcc(d.accent)}">
@@ -299,8 +528,8 @@ defineTemplate('board', {
   frame: (u, c) => {
     const p = c.p, d = c.data, B = beats(c), t = c.local;
     headIn(B, p);
-    if (d.mode === 'bottle' || d.mode === 'ddr' || d.mode === 'dual') {
-      (d.mode === 'bottle' ? btFrame : d.mode === 'ddr' ? ddrFrame : duFrame)(B, c, p, d);
+    if (d.mode === 'bottle' || d.mode === 'ddr' || d.mode === 'dual' || P3_MODES[d.mode]) {
+      (P3_MODES[d.mode] ? P3_MODES[d.mode][1] : d.mode === 'bottle' ? btFrame : d.mode === 'ddr' ? ddrFrame : duFrame)(B, c, p, d);
       castPlay(B, c, p, d.cast, d.bubbles);
       footIn(B, p); holdLife(B, p, d, { alias: d.alias || {} });
       return;
@@ -313,7 +542,7 @@ defineTemplate('board', {
       const k = B.at('k1', .3, .4, 'pop');
       pp(p + 'tg1', k.p, .6); pp(p + 'tg2', seg(t, k.s + .12, k.e + .12), .6);
       pp(p + 'eq', seg(t, k.s + .3, k.e + .3), .4);
-      if (d.eq) {
+      if (d.eq && !d.eqText) {   // an OR between two options is a question, never struck
         const x = B.at('x1', .6, .7, 'pop');
         st(p + 'x1', { opacity: String(cl(x.p * 3, 0, 1)), transform: 'rotate(28deg) scaleY(' + eo(x.p).toFixed(3) + ')' });
       }
@@ -324,7 +553,7 @@ defineTemplate('board', {
     const bd = B.at('board', .02, .12, 'enter', { focal: false, chain: false });
     up(p + 'board', d.boardIn === false ? 1 : bd.p, 30);
     // camera: cam0 → cam over the first .9 s (cut scenes continue the previous framing)
-    const a = bdCamXf(d.cam0 || d.cam), b = bdCamXf(d.cam), k = eio(seg(t, .05, .95));
+    const a = bdCamXf(d.cam0 || d.cam), b = bdCamXf(d.cam), cs = d.camOn ? B.at(d.camOn, .3, .4).s - .2 : .05, k = eio(seg(t, cs, cs + .9));
     st(p + 'world', { transform: `translate(${lerp(a.tx, b.tx, k).toFixed(1)}px,${lerp(a.ty, b.ty, k).toFixed(1)}px) scale(${lerp(a.s, b.s, k).toFixed(4)})` });
     // sockets: numbered ones light on s1..s3; a seated part's socket is lit; `lit` ones glow from the start
     ['cpu', 'ram', 'ssd'].forEach((kk, i) => {
@@ -363,6 +592,7 @@ defineTemplate('board', {
       st(p + 'ap' + i, { opacity: String(cl(q * 4, 0, 1)), left: x.toFixed(1) + 'px', top: y.toFixed(1) + 'px', transform: 'scale(' + (.8 + .2 * eo(q)).toFixed(3) + ')' });
     });
     if (d.pin) up(p + d.pin.beat, B.p(d.pin.beat, .5, .6, 'enter'), 16);
+    bdP3Frame(B, c, p, d);
     // pulses: a route storage → RAM → CPU, looping from its beat; in a bottleneck they queue at the weak part
     const route = d.pulse ? B.at(d.pulse.beat || 't1', .5, .7, 'enter', { focal: d.pulse.focal !== false }) : null;
     const trace = d.trace ? B.at('trace', .3, .5, 'enter') : null;
