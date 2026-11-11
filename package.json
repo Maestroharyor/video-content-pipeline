@@ -39,7 +39,8 @@
     "beat-frames": "node scripts/beat-frames.js",
     "social-cut": "node scripts/social-cut.js",
     "deliver": "node scripts/deliver.js",
-    "pauses": "node scripts/pauses.js"
+    "pauses": "node scripts/pauses.js",
+    "check-code": "node scripts/check-code.js"
   },
   "devDependencies": {
     "puppeteer": "^25.11.0",
