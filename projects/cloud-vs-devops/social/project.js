@@ -10,6 +10,7 @@ window.PROJECT = Object.assign({}, window.PROJECT, window.PROJECT && window.PROJ
   title: 'Cloud Engineer vs DevOps Engineer (social cuts)',
   hold: 0,                      // the cut ends on its last word, not on a held frame
   captions: { on: true },       // burned into the text pass; the deck pass renders with --captions off
+  resolution: '4k', fps: 60, crf: 10,   // 2160x3840 at 60fps (YouTube's top bitrate tier), crf 10 on every pass (the user's call, 2026-10-30)
   cta: null, splice: null,      // the audio (voice + effects) comes from the 4K master, spliced intro skipped by cuts.json
 });
 delete window.PROJECT.vertical;   // already applied; core/grid.js must not lay it over this file's settings again
