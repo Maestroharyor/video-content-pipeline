@@ -90,6 +90,9 @@ step references. Each says what to do and why it was decided, so an edge case ca
 
 ## Vertical and mobile
 
+- **Every vertical / social-media video stays under 512 MB** (the user, 2026-11-08). renderer/config.js caps `maxSize` at
+  512 MB on the vertical canvas (masters, social cuts, previews); neither project.js nor `--max-size` can raise it. 16:9
+  masters keep their 2 GB budget. ffprobe the size before handing a cut over.
 - **Safe zones.** On the 1080×1920 stage everything readable stays inside x 60-940, y 220-1500 (`GRID.mobile`); the
   posting apps cover the bottom ~420px and the right ~140px. `npm run probe` fails UNSAFE and SMALL (text under 28px). The
   user's explicit exceptions on social cuts: the hook band at the very top (0-124) and captions from 1560. When a placement
@@ -116,7 +119,15 @@ step references. Each says what to do and why it was decided, so an edge case ca
   3. Judge per frame, not per slide: a window starts and ends on word starts inside the run, mid-slide when the run
      starts mid-slide, with a .45 s ramp (`in`/`out`). Text-light scenes go `over` the face; diagram scenes `split`.
      **End the face early:** the fade-out must be finished a full second before the run ends (`to` = run end - 1 - out),
-     or the ramp shows him already looking down (ai-concepts review 2, every window). The fade-in may start on the run.
+     or the ramp shows him already looking down (ai-concepts review 2, every window).
+     **His own times are exact** (reverse-proxy review 3: "You didn't follow the timestamps I provided"): when he lists
+     the stretches he was on the lens, each window starts and ends on his times (mapped to deck time, shifted for any
+     pauses), never trimmed by the early-fade rule and never snapped to a slide boundary. The early fade is only for
+     runs the detector proposes.
+     **Confirm the clock his times are on** (review 5: a whole round of windows was 4 s early because his times were
+     read without the intro while they were mapped as preview times). Before writing windows, check one of his times
+     against a frame: what is on screen at that second of the preview, and is he on the lens there. Say which clock
+     you used when you report the windows. The fade-in may start on the run.
      **Ramps are .3 s and seamless:** a fade between a split/over window and the full deck must dissolve one layout
      into the other, never pass through the bare full-frame footage. `npm run dual` does this for every ramp of an
      `over`/`split` window (it captures the window's alpha layout under the fading deck); after any change to
@@ -126,8 +137,20 @@ step references. Each says what to do and why it was decided, so an edge case ca
      `npm run dual` warns about every sliver; fix them all before the preview.
   4. Check any doubtful run on an eye sheet (2 fps eye crops): on the lens the iris sits centred with white below it;
      reading, the lids drop and the iris rests on the lower lid.
+  4b. **Before every preview, an eye sheet for every window** (2 fps eye crops across the whole window, not just its
+     edges). A window with frames off the lens is cut back to where he is on it. Reverse-proxy review 1 (2026-11-11): four
+     windows were drawn where he read the prompter ("Not looking at the camera here"); the 2-means split had to be
+     recalibrated with --dark from his labels.
+  4c. **Over = the backend-one-click overlay**: the left of the frame darkens under a gradient fade, the heading sits
+     top-left and each point is its own row under it, terms in their own style. Never an opaque card on the face, never a
+     single card holding every point. The fade covers only the text column. Diagram scenes inside a lens run go
+     **split** (face on the left third, the slide in the right two thirds on its own plate; reverse-proxy review 2:
+     "Still no split view"); text-light scenes go over.
   5. List the windows for him at the preview. He has the last word: never keep a window he says he was not on the lens
-     for, and add the ones he names.
+     for, and add the ones he names. **A window he watched and did not flag stays** when the detector is recalibrated
+     (reverse-proxy review 2: a stricter cutoff silently dropped s24, s30, s35, "places I'm showing my face and not
+     showing again now"): recalibration removes only what he flagged, and anything else it would drop gets an eye sheet
+     first.
   The teleprompter sits by the lens, so eye openness alone misleads; the older per-video constants are in
   scripts/lens-windows.py for reference. Scan the A-roll for transitions baked into his edit
   (`select='gt(scene,0.25)'`) and cut before the first blurred frame.
@@ -157,6 +180,87 @@ step references. Each says what to do and why it was decided, so an edge case ca
   `--lufs match` keeps the original level). Without denoise, run it with `--atten 0` to level only.
 - **Outro music only on request.** When he asks for it, it rises under the spoken CTA: it starts with the outro slide
   and fades in over ~2.5 s (`sfx.outroFadeIn: 2.5`). Otherwise `sfx.outroBed: false` and the subscribe overlay closes.
+- **No real names on screen: a neutral made-up one** (reverse-proxy-lb-gateway review 1, 2026-11-11). Terminal prompts,
+  usernames, file paths and sample accounts use a plain made-up first name such as josh (`josh@MacBook-Pro ~ %`,
+  `/Users/josh/…`), never the user's own name or handle.
+- **Code is never cut off and always formatted like prettier** (same review: a JS line ran past the editor's edge, nginx
+  upstreams sat on one line). One statement per line, blocks on their own lines (`upstream products {` / one `server` per line
+  / `}`), JS through prettier (printWidth 80). The editor fits its longest line (the font steps down to a floor of 16 px; past
+  that the file is reformatted, never clipped). `npm run check-code` fails long lines and one-line blocks.
+- **Nothing answers before the voice does** (same review: "It covers the core" was on screen before he asked "So is Nginx a
+  full API gateway?"). A heading or item that states an answer enters on the words that say it, never on the slide's first
+  frame; a slide whose line opens with a question shows the question first.
+- **Arrows guide every flow.** A request path, a routing decision, someone pointing a guest: an arrow (drawn on, arrowhead)
+  shows where it goes, and a request that travels does so along a visible path that stays on screen long enough to follow
+  (same review: "No arrow guiding", the three-jobs path "only shows for half a second").
+- **Requests move as arrows, on straight lines** (reverse-proxy review 2: "all the dots have curved movements, I don't like
+  that and I prefer it with arrow moving"; "the dots is very wrong and annoying"). A request is an arrow drawing itself
+  along a straight drawn path with the head at the tip, never a glowing dot easing along a curve or sliding in from
+  somewhere else before it snaps to its path (an entrance animation stacked on a walk does exactly that). No `bend` on
+  flow edges. Load balancing shows an arrow to every backend in turn, and a backend that is taken out stops getting them.
+- **No overlap, checked by the probe** (same review, "No overlap. Add to pipeline"). No text runs into other text (a pill
+  laid over a pill, a callout over a caption) and no diagram line crosses a label. `npm run review` / `scripts/probe.js`
+  reports `OVERLAP a × b` and `OVERLAP line <edge> through <label>`; it must be 0 like every other probe check. Labels sit
+  centred on the thing they name (a "Layer 7" pill level with its request card).
+- **No left accent bars on pills or rows** ("I don't really like border left AI-like look"). A row is a filled, tinted icon
+  chip + text; a card can carry its role colour on the top edge.
+- **Characters are never colour-inverted.** Black line-art characters on a dark ground get a light sticker outline instead.
+- **Editors scroll like the real app** ("the UI should scroll like a normal UI"). The line being typed is always in view;
+  code written above it scrolls away naturally and the view glides back up when the voice returns to it (bistro `scroll:
+  [{b, row}]`). Never hide the top of a file while it is typed, never number lines out of order.
+- **The ground moves** (same review, "like the backend video"): grain, faint routes and the video's objects watermarked at
+  about 5%, drifting slowly. A flat dot grid is not enough.
+- **The outro shows the YouTube channel itself** (a screenshot of the channel page, captured with Puppeteer and logged in
+  SOURCES.md), not a list of other networks.
+- **An arrow never crosses a card or starts before its card** (review 3, "arrow moves across cards and even before cards
+  show up"). A path through several stations is one arrow per hop, in the gap between two cards, drawn on that station's
+  word after its card is in, left drawn so the path builds up. An arrow runs exactly along its drawn line (no bends the
+  line does not have). The probe's SPILL check also fails text running out of its own card (review 3: "overflow issues").
+- **The face window decides the layout, not the slide** (review 4: a split window ran into a slide that was not marked
+  split and drew it full width over the face). bistro reads PROJECT.reveals at render time: inside a split window any slide
+  shrinks into the right two thirds with the moving ground on its plate; inside an over window the slide's overlay rows
+  sit on the face (a slide with no rows goes split). Nothing in a split may sit left of the panel edge (the tracker moves in).
+- **The overlay stays clear of the face and every row has an icon** (review 3: "All overlays should have icons", "overlap
+  with my face"). The over column is about 520 px from the left edge, heading ~50 px, rows ~26 px and wrapping inside it;
+  nothing is added to the right of a row. An icon tile is a filled colour with the icon dark on it.
+- **An extra beat in the voice comes from the raw take, or not at all** (review 4: "Don't just pause and insert empty frame.
+  Check the original video, there should be space to cut"). First measure the raw silence at that join (source/islands.json,
+  edl.json); if the take has the room, widen the gap in the edit. Only when he asks for it anyway and the face is on screen,
+  `npm run pauses` with `fill: { hold: 'bounce' }`; a bounce he can see (it read as a glitch before "the load balancer") is
+  dropped. Every time after a pause shifts: re-time windows, cues and the CTA.
+- **Split windows wipe, they never dissolve** (reverse-proxy-lb-gateway, review 6: "why is the code editor transparent"). A
+  crossfade between the split view and the full deck drew both layouts at half strength for the ramp, so an editor read
+  as see-through. With `split: { …, wipe: true }` the deck's plate grows over the face (or shrinks off it) and dual-render
+  lays that capture on the face with no dissolve. Footage that turns unusable inside a window (a cut to black before the
+  intro splice) is held on its last clean frame with `split.freeze` (review 6: "a black bar on the left").
+- **The same file on consecutive slides stays put** (review 6: "same code block here, no need to transition"). The next
+  slide cuts in (`xf: 'cut'`) with the editor at the same place and size, the shared lines already there (`pre`/`keep`, so the
+  rows match the slide before one for one) and only the new lines typed. The gutter numbers the rows on screen, like a real
+  editor: lines still to be typed push nothing down.
+- **The line being typed is always on screen** (review 7: "plays the typing sound while it scrolls up, as if something is
+  still being typed"). Typing finishes before a scroll entry moves the view (`blocks[].by`), the view never leaves the caret
+  while keys sound, and it keeps two rows of room under the typed line, gliding there when typing jumps down ("should
+  scroll down when typing this").
+- **A route not taken is still drawn, muted** (review 7, the load balancer picking orders #2: "show the arrow to the others
+  also, but not active, greyed out"). The choice reads as one of several.
+- **Icons draw their dots as filled circles,** never zero-length strokes: those vanish wherever the icon is drawn without
+  round caps, and the "?" read as cut off in the cards (review 7).
+- **A check goes to the thing that checks** (review 6, the maître d': "should the reservation check point to the
+  reservations desk?"). When a scene names a desk or service for a step, that step's arrow reaches it.
+- **Restaurant-style metaphors read best as a floor plan from above** (review 3: "closer to the initial diagram, easier to
+  show the request path"): rooms in a row, the door in a wall, one straight lane the request walks.
+- **Illustrations stay simple.** One idea lit at a time, few props and people; a busy scene with labels everywhere was
+  "too crowded".
+- **Every code example is real and checked, and shown in a real UI** (reverse-proxy-lb-gateway, 2026-11-11: "ensure all the
+  code examples and snippets are correct and use real UI mockups where possible"). The complete files a video shows live in
+  `projects/<slug>/code/`; `npm run check-code -- --project <slug>` checks each with the real tool (`node --check`,
+  `nginx -t` in a scratch prefix, `caddy validate`, `bash -n`, JSON.parse) and writes `code.js` (window.CODE). Slides read
+  `CODE[file]` or an excerpt of it with the file's own line numbers (`start`), never retyped lines, and a stage of a file
+  that changes on screen (a header added, a method swapped) is its own checked file. The run must report 0 FAIL; an
+  UNCHECKED file (no checker on this machine) is raised with the user, never passed silently. Claims about defaults
+  ("random if you leave it out") are checked against the tool's own docs and noted in the cue sheet. Code, commands and
+  screens sit in real app UIs (VS Code Dark Modern, macOS Terminal, Chrome + DevTools, the AWS console), never a bare
+  code card.
 - **Code types character by character, and only then clicks** (flutter-vs-rn-styling, preview 1, 2026-10-27: "Should be
   typing animation or if we're sticking with scroll, no sound effects"). Key clicks come from the measured typing
   (`PROJECT.sfx.typed`), never from a beat alone under code that wipes or scrolls in. The editor is an accurate VS Code

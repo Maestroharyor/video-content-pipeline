@@ -146,7 +146,7 @@ and the alive kit (`npm run kit -- --project <slug> --character … / --emoji �
 run `npm run timeline -- --project <slug>` so the strips are timed, then `npm run review -- --project <slug>` and **look at every
 poster and every filmstrip** (elements must arrive spread across the line on their beats, not bunched in the first tiles), fix, repeat.
 
-**Gate:** probe reports 0 layout issues and 0 load errors; `npm run timeline -- --project <slug> --check` has 0 errors; every
+**Gate:** `npm run check-code -- --project <slug>` reports 0 FAIL (every snippet on screen comes from a checked file in `code/`, any UNCHECKED file raised with the user); probe reports 0 layout issues and 0 load errors; `npm run timeline -- --project <slug> --check` has 0 errors; every
 poster and strip reviewed; click flows visible mid-motion; with stickers or bursts, `npm run beat-frames` sheet reviewed.
 
 ## Step 4 — Timeline, preview, master, deliver
