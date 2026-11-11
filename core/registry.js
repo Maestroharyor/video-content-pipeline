@@ -170,7 +170,9 @@
     c.beats = e ? e.beats : null; c.hero = e ? e.hero || null : null; c.exit = c.screen - (e ? e.xfOut || 0 : 0);
     s.frame(u, c);
     FXL().forEach(f => f.frame(c, root));
-    if (c.out > 0) exitTransform(root, o.xfType, c.out);
+    // a slide mid split-wipe (bistro .wiping) holds instead of fading: its exit would fade the plate the wipe is moving, and
+    // the face showed through the panel (reverse-proxy-lb-gateway, preview 7); the next slide still cuts in on time
+    if (c.out > 0 && !root.classList.contains('wiping')) exitTransform(root, o.xfType, c.out);
     if (window.bgFrame) window.bgFrame(c.T);
     if (window.capsFrame) window.capsFrame(c.T);
   }

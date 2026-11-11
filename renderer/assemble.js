@@ -54,7 +54,24 @@ async function captureTimeline(cfg, L, o) {
     process.stdout.write('\n');
     save();
   }
+  if (o.transparent) keepAlpha(o.dir, from, to);
   return { dir: o.dir, frames: N, from, to };
+}
+/* Chrome writes a frame with no transparent pixel as a plain RGB PNG even with omitBackground. A sequence that switches
+   from RGBA to RGB mid-stream breaks ffmpeg's overlay (with -reinit_filter 0 those frames came out empty; with reinit the
+   frame beside the switch did): a split wipe whose plate covers the whole frame at its last frames showed the face beside
+   a black panel (reverse-proxy-lb-gateway, preview 7). Every alpha capture is made RGBA throughout: an RGB file (PNG colour
+   type 2, the byte after IHDR's size and bit depth) is rewritten with an opaque alpha channel. */
+function keepAlpha(dir, from, to) {
+  for (let f = from; f < to; f++) {
+    const file = path.join(dir, String(f).padStart(5, '0') + '.png');
+    if (!fs.existsSync(file)) continue;
+    const fd = fs.openSync(file, 'r'), b = Buffer.alloc(1); fs.readSync(fd, b, 0, 1, 25); fs.closeSync(fd);
+    if (b[0] === 6 || b[0] === 4) continue;   // already RGBA / grey+alpha
+    const tmp = file + '.rgba.png';
+    execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', file, '-pix_fmt', 'rgba', tmp]);
+    fs.renameSync(tmp, file);
+  }
 }
 async function main() {
   const args = parseArgs(process.argv.slice(2));
