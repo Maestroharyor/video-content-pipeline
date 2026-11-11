@@ -1,0 +1,65 @@
+{
+ "kind": "lens-vs-prompter logistic regression (scripts/gaze-model.py)",
+ "speaker": "LifeTech Facts host",
+ "features": [
+  "v_m",
+  "open_m",
+  "pitch_m",
+  "lookDown_m",
+  "lookUp_m",
+  "h_m",
+  "h_sd",
+  "snaps",
+  "drift"
+ ],
+ "fps": 8,
+ "smooth": 2.0,
+ "mu": [
+  -0.047995,
+  0.324309,
+  5.954572,
+  0.262855,
+  0.043264,
+  0.515846,
+  0.017421,
+  0.056244,
+  0.005587
+ ],
+ "sd": [
+  0.008603,
+  0.01591,
+  3.181809,
+  0.093007,
+  0.020046,
+  0.015444,
+  0.008105,
+  0.057293,
+  0.002308
+ ],
+ "w": [
+  -3.370108,
+  0.065028,
+  1.159126,
+  2.002207,
+  -0.904076,
+  0.712945,
+  0.401628,
+  -0.329496,
+  -0.067863
+ ],
+ "b": 0.336149,
+ "trained_on": [
+  "ai-can-clone-apps",
+  "ai-concepts",
+  "flutter-vs-rn-styling",
+  "frontend-one-click",
+  "mise-version-manager",
+  "mongoose-vs-prisma",
+  "react-to-solid",
+  "reverse-proxy-lb-gateway",
+  "what-makes-computer-faster",
+  "what-makes-laptop-faster-3",
+  "worst-week-in-cybersecurity"
+ ],
+ "frames": 8364
+}

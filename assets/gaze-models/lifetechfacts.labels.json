@@ -1,0 +1,66 @@
+{
+ "speaker": "LifeTech Facts host",
+ "about": "Training labels for scripts/gaze-model.py. Seconds of each project's footage file (src). lens = he holds the camera lens; read = he reads the prompter. Only spans he confirmed in a review, or videos he approved with the face shown throughout. Footage lives in each project folder (git-ignored); the spans are kept here so the model can be retrained on a machine that has the footage.",
+ "videos": {
+  "react-to-solid": {
+   "src": "projects/react-to-solid/aroll-clean.mp4",
+   "note": "Full animation; he says he never looked at the camera in it (2026-11-11). Reading only; its old gaze-mp --lens spans were wrong. Recording time.",
+   "read": [[40, 100], [200, 260], [400, 460], [600, 660]]
+  },
+  "ai-can-clone-apps": {
+   "src": "projects/ai-can-clone-apps/aroll-clean.mp4",
+   "note": "His review: reasons section 3:51-6:53 mostly lens, off 243-264, 286-299, 332-352, 391-397.",
+   "lens": [[231, 243], [264, 286], [299, 332], [352, 391], [397, 413]],
+   "read": [[243, 264], [286, 299], [332, 352], [391, 397]]
+  },
+  "reverse-proxy-lb-gateway": {
+   "src": "projects/reverse-proxy-lb-gateway/aroll.mp4",
+   "note": "Review 1 (preview = deck + 4 after 35.56): off the lens in s23 (round-robin), s32 from 'a product service', s41 before 10:40 preview; on it 10:40-10:50 preview.",
+   "lens": [[636.5, 645]],
+   "read": [[312.5, 328.5], [466, 485], [615, 634]]
+  },
+  "worst-week-in-cybersecurity": {
+   "src": "projects/worst-week-in-cybersecurity/aroll-clean.mp4",
+   "note": "Review 2 labels: lens on 'subscribe', 'cook.py' and the closing face; reading s04 and s23.",
+   "lens": [[207.2, 208.2], [346.64, 354.16], [513.94, 519.4]],
+   "read": [[42.06, 57.73], [334.26, 346.64]]
+  },
+  "ai-concepts": {
+   "src": "projects/ai-concepts/aroll-clean.mp4",
+   "note": "Review 2: s27 on the lens only 392-394.5; reads 553-560 and through s30.",
+   "lens": [[392, 394.5]],
+   "read": [[437, 457.8], [553, 560]]
+  },
+  "mise-version-manager": {
+   "src": "projects/mise-version-manager/aroll-clean.mp4",
+   "note": "He said s11 (1:21-1:30) is off the lens.",
+   "read": [[80.66, 89.52]]
+  },
+  "frontend-one-click": {
+   "src": "projects/frontend-one-click/aroll-clean.mp4",
+   "note": "He removed 164.25-170.05 and 315.75-328.64 as reading; on the lens from 354.0 and 498.0; closing face approved.",
+   "lens": [[354, 362], [498, 506], [862.55, 868]],
+   "read": [[164.25, 170.05], [315.75, 328.64]]
+  },
+  "mongoose-vs-prisma": {
+   "src": "projects/mongoose-vs-prisma/aroll-clean.mp4",
+   "note": "Short; approved with the face on the lens nearly throughout.",
+   "lens": [[2, 128]]
+  },
+  "what-makes-computer-faster": {
+   "src": "projects/what-makes-computer-faster/aroll-clean.mp4",
+   "note": "Short; approved with the face on the lens nearly throughout.",
+   "lens": [[2, 92]]
+  },
+  "flutter-vs-rn-styling": {
+   "src": "projects/flutter-vs-rn-styling/aroll-clean.mp4",
+   "note": "Short; lens 0-65.2 and 66.5-112, eye sheet checked.",
+   "lens": [[2, 64.5], [67, 110]]
+  },
+  "what-makes-laptop-faster-3": {
+   "src": "projects/what-makes-laptop-faster-3/aroll-clean.mp4",
+   "note": "Short; lens 0-92.25 and 93.75-123.25.",
+   "lens": [[2, 91.5], [94.5, 122.5]]
+  }
+ }
+}
