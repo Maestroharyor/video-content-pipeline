@@ -4,7 +4,7 @@
 const path = require('path');
 const { ROOT, CANVAS, RES, RES_DEFAULT, loadProject, syncIndex } = require('./project');
 
-const DEFAULTS = { fps: 60, hold: 1, dur: 5, gifScale: 0.5, crf: 16, preset: 'slow', maxSize: 2e9, previewFps: 30, gifMaxFps: 30 };
+const DEFAULTS = { fps: 60, hold: 1, dur: 5, gifScale: 0.5, crf: 16, preset: 'slow', maxSize: 2e9, maxSizeVertical: 512e6, previewFps: 30, gifMaxFps: 30 };
 
 /* '2G' | '800M' | '1.5g' | bytes → bytes */
 function parseSize(v) {
@@ -33,7 +33,11 @@ function resolve(o = {}) {
     dur: project.dur != null ? project.dur : DEFAULTS.dur,
     transition: project.transition || null,   // the deck's default slide transition; scripts/timeline.js uses it unless --xf is given
     crf: pick(o.crf, project.crf, DEFAULTS.crf), preset: o.preset || project.preset || DEFAULTS.preset,
-    maxSize: parseSize(pick(o.maxSize, project.maxSize, DEFAULTS.maxSize)),
+    /* 9:16 (vertical masters, social cuts): never above 512 MB, whatever project.js or --max-size asks (the user's rule,
+       2026-11-08: every vertical / social-media video stays under 512 MB). 16:9 keeps the 2 GB budget. */
+    maxSize: canvas === 'vertical'
+      ? Math.min(parseSize(pick(o.maxSize, project.maxSize, DEFAULTS.maxSizeVertical)), DEFAULTS.maxSizeVertical)
+      : parseSize(pick(o.maxSize, project.maxSize, DEFAULTS.maxSize)),
     deck: path.join(dir, 'index.html'),
     // a variant renders beside the base deck, never over it: renders/<variant>/, frames/<variant>/, <slug>-<variant>.mp4
     variant: o.variant || null, outName: project.slug + (o.variant ? '-' + o.variant : ''),
