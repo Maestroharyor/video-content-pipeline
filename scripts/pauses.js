@@ -43,6 +43,20 @@ parts.forEach((p, i) => {
   args.push('-ss', String(frame(p.from)), ...span, '-i', path.join(dir, P.pauses.from));
   args.push('-ss', String(frame(p.from)), ...span, '-i', voWav);
   const v = 2 * i, s = 2 * i + 1;
+  /* fill.hold 'bounce' (reverse-proxy review 3: a short beat added while the face is on screen, where a held frame reads
+     as a freeze): the last pad/2 s before the gap play backwards, then forwards again, so the picture lands exactly
+     on the frame it left and moves the whole time; the room tone under it does the same. Only for short pauses taken
+     in a silence (the speaker is still between lines). */
+  if (p.pad && p.fill && p.fill.hold === 'bounce') {
+    const h = p.pad / 2, len = frame(p.to) - frame(p.from), t0 = (len - h).toFixed(4);
+    fc.push(`[${v}:v]setpts=PTS-STARTPTS,split=3[vm${i}][vr${i}][vf${i}]`);
+    fc.push(`[vr${i}]trim=start=${t0},setpts=PTS-STARTPTS,reverse[vrr${i}]`, `[vf${i}]trim=start=${t0},setpts=PTS-STARTPTS[vff${i}]`);
+    fc.push(`[vm${i}][vrr${i}][vff${i}]concat=n=3:v=1:a=0[v${i}]`);
+    fc.push(`[${s}:a]${MONO},asetpts=PTS-STARTPTS,asplit=3[am${i}][ar${i}][af${i}]`);
+    fc.push(`[ar${i}]atrim=start=${t0},asetpts=PTS-STARTPTS,areverse[arr${i}]`, `[af${i}]atrim=start=${t0},asetpts=PTS-STARTPTS[aff${i}]`);
+    fc.push(`[am${i}][arr${i}][aff${i}]concat=n=3:v=0:a=1[a${i}]`);
+    return;
+  }
   fc.push(`[${v}:v]setpts=PTS-STARTPTS${p.pad ? `,tpad=stop_mode=clone:stop_duration=${p.pad}` : ''}[v${i}]`);
   if (!p.fill) { fc.push(`[${s}:a]${MONO},asetpts=PTS-STARTPTS${p.pad ? `,apad=pad_dur=${p.pad}` : ''}[a${i}]`); return; }
   const f = 2 * parts.length + fills.length;

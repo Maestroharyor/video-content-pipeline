@@ -86,6 +86,60 @@ const CLIP = ['.rowbar', '.chip', '.badge', '.aws-btn', '.aws-bill .bl', '.chk .
             }
           });
         }
+        /* OVERLAP (reverse-proxy review 2, "No overlap. Add to pipeline"): no text may run into other text (a pill laid on
+           a pill, a chip over code), and no drawn line (a diagram edge) may cross a label. Text is measured as its words
+           (a range), clipped by any overflow-hidden ancestor (code scrolled out of an editor is not on screen), at both
+           probe times. A run inside the same block as the other (a word inside its own line) is not a collision. */
+        {
+          const runs = [];
+          sl.querySelectorAll('*').forEach(e => {
+            const tn = [...e.childNodes].filter(n => n.nodeType === 3 && n.textContent.trim());
+            if (!tn.length || e.closest('svg,.bgfx,.fx-emoji,.fx-burst,.caps')) return;
+            let op = 1; for (let x = e; x && x !== sl; x = x.parentElement) { const c = getComputedStyle(x);
+              if (c.display === 'none' || c.visibility === 'hidden') return; op *= parseFloat(c.opacity); }
+            if (op < .5) return;
+            const rg = document.createRange(); rg.setStartBefore(tn[0]); rg.setEndAfter(tn[tn.length - 1]);
+            let b = rg.getBoundingClientRect(); if (b.width < 2 || b.height < 2) return;
+            b = { l: b.left, t: b.top, r: b.right, b: b.bottom };
+            for (let x = e.parentElement; x && x !== sl; x = x.parentElement) { if (getComputedStyle(x).overflow === 'visible') continue;
+              const q = x.getBoundingClientRect(); b = { l: Math.max(b.l, q.left), t: Math.max(b.t, q.top), r: Math.min(b.r, q.right), b: Math.min(b.b, q.bottom) }; }
+            if (b.r - b.l < 2 || b.b - b.t < 2) return;
+            runs.push({ e, b, nm: (e.id || e.className.toString().slice(0, 20) || e.tagName.toLowerCase()) + ' "' + e.textContent.trim().slice(0, 22) + '"' });
+          });
+          // the block a run belongs to: its nearest positioned item (a card, chip, tile, window), so two lines of one card never collide
+          const block = e => { for (let x = e; x && x !== sl; x = x.parentElement) { const pa = x.parentElement;
+            if (pa && (pa.classList.contains('cf-world') || pa.classList.contains('rows') || pa.classList.contains('content'))) return x; } return e.closest('.eyebrow,.h1') ? 'heading' : e; };   // eyebrow + headline are one heading
+          const P2 = 3;
+          for (let i = 0; i < runs.length; i++) for (let j = i + 1; j < runs.length; j++) {
+            const A = runs[i], Bq = runs[j];
+            if (A.e.contains(Bq.e) || Bq.e.contains(A.e) || block(A.e) === block(Bq.e)) continue;
+            const w = Math.min(A.b.r, Bq.b.r) - Math.max(A.b.l, Bq.b.l), h = Math.min(A.b.b, Bq.b.b) - Math.max(A.b.t, Bq.b.t);
+            if (w > P2 && h > P2) out.push('OVERLAP ' + A.nm + ' × ' + Bq.nm);
+          }
+          /* SPILL (review 3, "overflow issues, fix all"): text running out of the item that holds it (a card label wider
+             than its card). The TIGHT check skips gradient panels, so this measures every run against its item's box. */
+          runs.forEach(rn => {
+            // name tags under characters, labels under bars and an arrow's own label sit outside their item by design
+            if (rn.e.closest('.nm,.cf-bar > b,.bs-arw')) return;
+            const it = block(rn.e); if (typeof it === 'string' || it === rn.e) return;
+            const q = it.getBoundingClientRect(), k = q.width / (it.offsetWidth || q.width) || 1;
+            const over = Math.max(q.left - rn.b.l, rn.b.r - q.right, q.top - rn.b.t, rn.b.b - q.bottom) / k;
+            if (over > 2) out.push('SPILL ' + rn.nm + ' runs ' + over.toFixed(0) + 'px out of ' + (it.id || it.className.toString().slice(0, 20)));
+          });
+          // a diagram edge drawn through a label: sample the visible path every 6px
+          sl.querySelectorAll('path.cf-edge').forEach(pe => {
+            const cs = getComputedStyle(pe); if (cs.display === 'none' || parseFloat(cs.opacity) < .3 || cs.visibility === 'hidden') return;
+            let L = 0; try { L = pe.getTotalLength(); } catch (err) { return; }
+            const drawn = cs.strokeDasharray && cs.strokeDasharray !== 'none' && !pe.classList.contains('dash') ? L - (parseFloat(cs.strokeDashoffset) || 0) : L;
+            const M = pe.getScreenCTM(); if (!M || L < 1) return;
+            const hit = new Set();
+            for (let d = 0; d <= Math.max(0, drawn); d += 6) {
+              const p = pe.getPointAtLength(d), x = M.a * p.x + M.c * p.y + M.e, y = M.b * p.x + M.d * p.y + M.f;
+              runs.forEach(rn => { if (rn.e.closest('.ride')) return; if (x > rn.b.l + 2 && x < rn.b.r - 2 && y > rn.b.t + 2 && y < rn.b.b - 2) hit.add(rn.nm); });   // .ride: a token meant to sit on its line
+            }
+            hit.forEach(nm => out.push('OVERLAP line ' + (pe.id || 'edge') + ' through ' + nm));
+          });
+        }
         /* vertical: every visible text run and logo inside the phone's safe zone (GRID.mobile), not only the selectors
            above (a timeline's axis label hung off the left edge unchecked), and large enough to read on a phone:
            MINPX rendered px after every scale (vfit, a template's own) */

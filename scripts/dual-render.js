@@ -178,7 +178,8 @@ async function main() {
      as well as the closing one); the sfx track is one file for the whole video, so it is not repeated. */
   const inProj = f => path.resolve(cfg.projectDir, untilde(f));
   const sp = P.splice || null, cta = P.cta || null;
-  const ctaWins = cta ? [cta].concat((cta.also || []).map(w => Object.assign({}, cta, w))) : [];
+  // a cta block without a clip (file + at) only carries the effects track (sfx): no CTA windows (reverse-proxy review 3)
+  const ctaWins = cta && cta.file && cta.at != null ? [cta].concat((cta.also || []).map(w => Object.assign({}, cta, w))) : [];
   const ctaOf = c => ctaWins.find(w => c.t0 >= w.at && c.t1 <= w.to) || null;
   const forced = [];
   if (sp && sp.at != null) forced.push(r3(sp.at));
@@ -304,7 +305,13 @@ async function main() {
         /* split.clean: footage before this second is unusable (a transition baked into the edit), so the face panel
            holds the first clean frame until then instead of showing it; the deck's timing is untouched. */
         const hold = sp.clean > ss ? r3(Math.min(sp.clean - ss, dur)) : 0;
-        return { hold, base: `[1:v]${fit},fps=${fps},setpts=PTS-STARTPTS,${hold ? `tpad=start_duration=${hold}:start_mode=clone,` : ''}${zp0 ? zp0 + ',' : ''}` +
+        /* split.freeze: the mirror of clean. From this second the footage is unusable (the recording fades to black into
+           the place the intro is spliced), so the face panel holds the last clean frame to the window's end
+           (reverse-proxy-lb-gateway, review 6: "a black bar on the left for a second or two" before the intro) */
+        const fz = sp.freeze != null && sp.freeze < ss + dur ? r3(sp.freeze - ss) : null;
+        if (fz != null && fz <= 0) throw new Error(`split.freeze ${sp.freeze}s is at or before this chunk's start (${ss}s): no clean frame to hold`);
+        const freeze = fz != null ? `trim=end=${fz},setpts=PTS-STARTPTS,tpad=stop_duration=${r3(dur - fz + 1 / fps)}:stop_mode=clone,` : '';
+        return { hold, base: `[1:v]${fit},fps=${fps},setpts=PTS-STARTPTS,${hold ? `tpad=start_duration=${hold}:start_mode=clone,` : ''}${freeze}${zp0 ? zp0 + ',' : ''}` +
           `crop=${cw}:${chh}:${cx}:${cy},scale=${third}:${H}:flags=lanczos,pad=${W}:${H}:0:0:color=${sp.plate || '0x050913'}[bg]` };
       };
       const onCta = ctaOf(c);
@@ -336,11 +343,14 @@ async function main() {
         fs.rmSync(framesOv, { recursive: true, force: true });
         await captureTimeline(cfg, L, { dir: framesOv, jobs: args.jobs || defaultJobs(), inject, from: c.t0, to: c.t1, transparent: true });
         const { base, hold } = winBase(c.split);
-        const fade = c.mode === 'out' ? `fade=t=out:st=0:d=${dur}:alpha=1` : `fade=t=in:st=0:d=${dur}:alpha=1`;
+        /* split.wipe: the deck's own capture already moves between the layouts (its plate grows over the face or shrinks
+           off it, core/templates/bistro.js), so the ramp is that capture on the face third with no dissolve over it.
+           A dissolve drew both layouts at half strength, and an editor read as see-through (reverse-proxy-lb-gateway, review 6). */
+        const fade = c.split && c.split.wipe ? null : c.mode === 'out' ? `fade=t=out:st=0:d=${dur}:alpha=1` : `fade=t=in:st=0:d=${dur}:alpha=1`;
         const ovSeq = ['-framerate', String(fps), '-start_number', String(c.f0), '-i', path.join(framesOv, '%05d.png')];
         run(['-reinit_filter', '0', ...seq, '-ss', String(hold ? r3(ss + hold) : ss), '-t', String(dur), '-i', source, ...ovSeq, ...capSeq,
-          '-filter_complex', `${base};[2:v]${toYuv(cfg, 'yuva444p')}[ov];[bg][ov]overlay=0:0:format=auto:eof_action=pass[wb];` +
-            `[0:v]${toYuv(cfg, 'yuva444p')},${fade}[fg];[wb][fg]overlay=0:0:format=auto:eof_action=pass` + capsOver(3),
+          '-filter_complex', `${base};[2:v]${toYuv(cfg, 'yuva444p')}[ov];[bg][ov]overlay=0:0:format=auto:eof_action=pass` + (fade
+            ? `[wb];[0:v]${toYuv(cfg, 'yuva444p')},${fade}[fg];[wb][fg]overlay=0:0:format=auto:eof_action=pass` : '') + capsOver(3),
           '-map', '[v]', '-frames:v', String(c.n), ...x264, fb]);
       } else if (c.mode === 'none') {
         run(['-ss', String(ss), '-t', String(dur), '-i', source, ...capSeq,
