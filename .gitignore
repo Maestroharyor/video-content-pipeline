@@ -66,3 +66,7 @@ projects/*/code/*/dist/
 
 # stray top-level render output (renders belong under projects/<slug>/renders)
 /renders/
+
+# Python bytecode (scripts/*.py imported by each other)
+__pycache__/
+*.pyc
