@@ -1,0 +1,280 @@
+/* "bistro" theme (PROJECT.theme = 'bistro'), built for projects/reverse-proxy-lb-gateway (revision 2).
+   The video explains three infrastructure roles with a restaurant at night: a deep ink-blue ground with the restaurant's
+   warm light pooling low in the frame, a faint dot grid, dark glass panels with a 4px role-colour bar, and requests as
+   glowing packets on lit paths with arrowheads. One colour per role, everywhere: forward proxy amber, reverse proxy
+   coral, load balancer sky, API gateway mint (Caddy teal). The over-the-face look is projects/backend-one-click's: the
+   left of the frame darkens under a gradient and the points stack down that side, never a card on the face.
+   Linked after cafe.css (the scene engine's structure) and lanes.css (cast + fx blocks: theme trap 3). */
+#stage.theme-bistro{
+  --bg0:#090D18; --bg1:#121829; --bg2:#182036; --bd:rgba(255,255,255,.09); --bd2:rgba(255,255,255,.18);
+  --tx:#F3F5FA; --tx2:#AEB8CD; --tx3:#7C88A1;
+  --amber:#FFB547; --rose:#FF6B57; --blue:#4DB5FF; --green:#34D399; --teal:#2DD4BF; --violet:#A78BFA; --orange:#FF8A3D;
+  --glass:linear-gradient(180deg,rgba(28,36,60,.92),rgba(16,22,40,.94));
+  background:#090D18;
+}
+#stage.theme-bistro.transparent{background:transparent}   /* alpha captures must stay clear (theme trap 1) */
+.theme-bistro .bgfx .grid{inset:-60px;opacity:1;background:radial-gradient(rgba(255,255,255,.07) 1.2px,transparent 1.4px) 0 0/36px 36px;
+  -webkit-mask:radial-gradient(90% 80% at 50% 45%,#000 40%,transparent 90%);mask:radial-gradient(90% 80% at 50% 45%,#000 40%,transparent 90%)}
+.theme-bistro .bgfx .glow.a{background:radial-gradient(60% 45% at 50% 110%,rgba(255,170,90,.16),transparent 70%)}
+.theme-bistro .bgfx .glow.b{background:radial-gradient(55% 40% at 12% -5%,rgba(77,120,255,.16),transparent 70%)}
+.theme-bistro .bgfx .vig{background:radial-gradient(120% 100% at 50% 45%,transparent 55%,rgba(0,0,0,.6))}
+#stage.theme-bistro.transparent .bgfx{display:none}
+
+/* heading: a dot + mono eyebrow, white headline, the key phrase in the role colour with its underline */
+#stage.theme-bistro .eyebrow{font:700 var(--eb-size) JB;letter-spacing:.2em;text-transform:uppercase;color:var(--acc,var(--rose))}
+#stage.theme-bistro .eyebrow::before{content:"";display:inline-block;vertical-align:.12em;margin-right:16px;width:12px;height:12px;border-radius:50%;background:currentColor;box-shadow:0 0 14px currentColor}
+#stage.theme-bistro .eyebrow.b{color:var(--blue)} #stage.theme-bistro .eyebrow.g{color:var(--green)} #stage.theme-bistro .eyebrow.a{color:var(--amber)}
+#stage.theme-bistro .eyebrow.t{color:var(--teal)} #stage.theme-bistro .eyebrow.v{color:var(--violet)} #stage.theme-bistro .eyebrow.r{color:var(--rose)}
+#stage.theme-bistro .h1{color:var(--tx);letter-spacing:-.03em}
+#stage.theme-bistro .sub{color:var(--tx2)}
+#stage.theme-bistro .caps{width:max-content}   /* theme trap 2 */
+
+/* ---------- edges: lit paths with arrowheads ---------- */
+.theme-bistro .cf-edge{stroke:rgba(255,255,255,.35);stroke-width:4;filter:drop-shadow(0 0 6px rgba(255,255,255,.18))}
+.theme-bistro .cf-edges marker path{fill:rgba(255,255,255,.6)}
+.theme-bistro .cf-edge.r{stroke:var(--rose);filter:drop-shadow(0 0 8px rgba(255,107,87,.6))} .theme-bistro .cf-edge.b,.theme-bistro .cf-edge.hot{stroke:var(--blue);filter:drop-shadow(0 0 8px rgba(77,181,255,.6))}
+.theme-bistro .cf-edge.g,.theme-bistro .cf-edge.ok{stroke:var(--green);filter:drop-shadow(0 0 8px rgba(52,211,153,.6))} .theme-bistro .cf-edge.a{stroke:var(--amber);filter:drop-shadow(0 0 8px rgba(255,181,71,.6))}
+.theme-bistro .cf-edge.t{stroke:var(--teal);filter:drop-shadow(0 0 8px rgba(45,212,191,.6))} .theme-bistro .cf-edge.mute{stroke:rgba(255,255,255,.22);filter:none}
+.theme-bistro .cf-edge.bad{stroke:var(--rose)}
+.theme-bistro .cf-edge.strike{stroke:#FF4D4D;stroke-width:9}
+.theme-bistro .cf-edge.thick{stroke-width:6}
+
+/* ---------- dark glass cards with a role-colour bar ---------- */
+.theme-bistro .cf-card{background:var(--glass);color:var(--tx);border:1.5px solid var(--bd);border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.45),inset 0 4px 0 var(--cbar,rgba(255,255,255,.14))}
+.theme-bistro .cf-card b{font:800 32px ID;color:var(--tx)} .theme-bistro .cf-card small{font:600 22px Inter;color:var(--tx2)}
+.theme-bistro .cf-card .ic{color:var(--cbar,var(--tx));width:64px;height:64px}
+.theme-bistro .cf-card .mk{width:84px;height:84px;background:#fff;border-radius:18px} .theme-bistro .cf-card .mk img{max-width:56px;max-height:56px}
+.theme-bistro .cf-card .ph{width:84px;height:84px;max-height:84px;flex:none;object-fit:contain;border-radius:14px;background:#fff;padding:8px;box-sizing:border-box}
+.theme-bistro .cf-card .wh{width:120px;height:120px;filter:drop-shadow(2px 0 0 #E9EEF8) drop-shadow(-2px 0 0 #E9EEF8) drop-shadow(0 2px 0 #E9EEF8) drop-shadow(0 -2px 0 #E9EEF8)}
+.theme-bistro .cf-card .tg{background:rgba(255,255,255,.1);color:var(--tx);border:1px solid var(--bd2)}
+.theme-bistro .cf-card.r{--cbar:var(--rose)} .theme-bistro .cf-card.b{--cbar:var(--blue)} .theme-bistro .cf-card.g{--cbar:var(--green)}
+.theme-bistro .cf-card.a{--cbar:var(--amber)} .theme-bistro .cf-card.t{--cbar:var(--teal)} .theme-bistro .cf-card.v{--cbar:var(--violet)}
+.theme-bistro .cf-card.hot{outline:3px solid var(--cbar,var(--blue));outline-offset:4px;box-shadow:0 0 40px rgba(77,181,255,.35),0 24px 60px rgba(0,0,0,.45),inset 0 4px 0 var(--cbar,var(--blue))}
+.theme-bistro .cf-card.okc{outline:3px solid var(--green);outline-offset:4px;box-shadow:0 0 40px rgba(52,211,153,.35),0 24px 60px rgba(0,0,0,.45)}
+.theme-bistro .cf-card.red{background:linear-gradient(180deg,rgba(80,24,24,.95),rgba(50,16,20,.95));--cbar:#FF4D4D} .theme-bistro .cf-card.red b{color:#FFB4A8}
+.theme-bistro .cf-card.idle{filter:grayscale(1);opacity:.35}
+.theme-bistro .cf-card.left{gap:24px}
+/* brand marks on white tiles (logos readable on dark: house rule) */
+.theme-bistro .cf-logo .mk{background:#fff;border:0;border-radius:24px;box-shadow:0 0 0 1px rgba(255,255,255,.2),0 20px 50px rgba(0,0,0,.5)}
+.theme-bistro .cf-logo b{color:var(--tx);font:800 28px ID}
+.theme-bistro .cf-logo.hot .mk{box-shadow:0 0 0 4px var(--acc,var(--rose)),0 0 40px var(--acc,var(--rose))}
+.theme-bistro .cf-logo.idle{filter:grayscale(1);opacity:.35}
+/* characters (DiceBear Notionists, black line art): never colour-inverted (review 2); a light sticker outline keeps the
+   silhouette readable on the dark ground */
+.theme-bistro .cf-who img{filter:drop-shadow(2px 0 0 #E9EEF8) drop-shadow(-2px 0 0 #E9EEF8) drop-shadow(0 2px 0 #E9EEF8) drop-shadow(0 -2px 0 #E9EEF8)}
+.theme-bistro .cf-who .nm{font:700 20px JB;letter-spacing:.06em;color:var(--tx);background:rgba(18,24,41,.95);border:1px solid var(--bd2);border-radius:8px;padding:6px 14px;bottom:-34px}
+.theme-bistro .cf-who.idle{opacity:.35}
+/* chips, stamps, text, tickets, bubbles */
+.theme-bistro .cf-chip{background:rgba(18,24,41,.92);border:1.5px solid var(--bd2);color:var(--tx);border-radius:999px;font:700 24px Inter;padding:10px 22px}
+.theme-bistro .cf-chip.mono{font:700 22px JB}
+.theme-bistro .cf-chip img{background:#fff;border-radius:8px}
+.theme-bistro .cf-chip svg{stroke:currentColor}
+.theme-bistro .cf-chip.r{border-color:var(--rose);color:#FFC2B8} .theme-bistro .cf-chip.b{border-color:var(--blue);color:#BEE3FF}
+.theme-bistro .cf-chip.g{border-color:var(--green);color:#B6F2DA} .theme-bistro .cf-chip.a{border-color:var(--amber);color:#FFE2B3}
+.theme-bistro .cf-chip.t{border-color:var(--teal);color:#B4F5EC} .theme-bistro .cf-chip.v{border-color:var(--violet);color:#DDD3FF}
+.theme-bistro .cf-chip.fill-r{background:var(--rose);border-color:var(--rose);color:#1A0A07} .theme-bistro .cf-chip.fill-b{background:var(--blue);border-color:var(--blue);color:#06182A}
+.theme-bistro .cf-chip.fill-g{background:var(--green);border-color:var(--green);color:#04201A} .theme-bistro .cf-chip.fill-a{background:var(--amber);border-color:var(--amber);color:#241600}
+.theme-bistro .cf-chip.fill-t{background:var(--teal);border-color:var(--teal);color:#04201D}
+.theme-bistro .cf-chip.x{text-decoration:line-through;text-decoration-thickness:4px;opacity:.45}
+.theme-bistro .cf-stamp{color:var(--rose);border-color:var(--rose);background:rgba(9,13,24,.88);font:900 38px ID;box-shadow:0 0 30px rgba(255,107,87,.35)}
+.theme-bistro .cf-stamp.b{color:var(--blue);border-color:var(--blue);box-shadow:0 0 30px rgba(77,181,255,.35)} .theme-bistro .cf-stamp.g{color:var(--green);border-color:var(--green);box-shadow:0 0 30px rgba(52,211,153,.35)}
+.theme-bistro .cf-stamp.a{color:var(--amber);border-color:var(--amber)} .theme-bistro .cf-stamp.t{color:var(--teal);border-color:var(--teal)}
+.theme-bistro .cf-txt{color:var(--tx)} .theme-bistro .cf-txt.mono{font:700 24px JB;color:var(--tx2)}
+.theme-bistro .cf-txt.lbl{font:700 20px JB;letter-spacing:.16em;text-transform:uppercase;color:var(--tx3);white-space:nowrap}
+.theme-bistro .cf-txt.big{color:var(--tx)} .theme-bistro .cf-txt .n{margin-right:.2em}
+.theme-bistro .cf-txt.r{color:var(--rose)} .theme-bistro .cf-txt.b{color:var(--blue)} .theme-bistro .cf-txt.g{color:var(--green)} .theme-bistro .cf-txt.a{color:var(--amber)} .theme-bistro .cf-txt.t{color:var(--teal)}
+.theme-bistro .cf-txt.hand{font:700 40px Caveat;color:var(--tx2)}
+.theme-bistro .cf-tile{background:#F6F1E3;color:#1B1408;border-radius:6px;box-shadow:0 14px 30px rgba(0,0,0,.5)}
+.theme-bistro .cf-tile b{font:700 22px JB} .theme-bistro .cf-tile small{font:600 18px JB;color:#5E5442}
+.theme-bistro .cf-tile.r{border-top:6px solid var(--rose)} .theme-bistro .cf-tile.b{border-top:6px solid var(--blue)} .theme-bistro .cf-tile.g{border-top:6px solid var(--green)}
+.theme-bistro .cf-tile.a{border-top:6px solid var(--amber)} .theme-bistro .cf-tile.red{background:#FFD9D2;border-top:6px solid #E5483A}
+.theme-bistro .cf-tile.dark{background:rgba(18,24,41,.95);color:var(--tx);border:1px solid var(--bd2)} .theme-bistro .cf-tile.dark small{color:var(--tx2)}
+.theme-bistro .cf-tile.ghost{background:transparent;border:2px dashed var(--tx3);box-shadow:none;color:var(--tx3)}
+.theme-bistro .cf-bubble{background:#F6F1E3;color:#1B1408;font:700 26px Inter}
+.theme-bistro .cf-bubble::after{background:#F6F1E3}
+.theme-bistro .cf-bar{background:rgba(255,255,255,.07);border-radius:12px 12px 0 0} .theme-bistro .cf-bar i{background:var(--blue);box-shadow:0 0 24px rgba(77,181,255,.5)} .theme-bistro .cf-bar b{color:var(--tx2)}
+.theme-bistro .cf-bar.g i{background:var(--green);box-shadow:0 0 24px rgba(52,211,153,.5)} .theme-bistro .cf-bar.r i{background:var(--rose);box-shadow:0 0 24px rgba(255,107,87,.5)}
+
+/* ---------- the illustration, packets, flips ---------- */
+.theme-bistro .bs-svg{z-index:1} .theme-bistro .bs-svg svg{width:100%;height:100%;overflow:visible}
+.theme-bistro .bs-svg [data-part]{transition:none}
+.theme-bistro .bs-svg .lit{filter:drop-shadow(0 0 14px var(--lc,#FFD27A)) brightness(1.25)}
+.theme-bistro .bs-svg .lit.r{--lc:#FF6B57} .theme-bistro .bs-svg .lit.b{--lc:#4DB5FF} .theme-bistro .bs-svg .lit.g{--lc:#34D399} .theme-bistro .bs-svg .lit.a{--lc:#FFB547}
+.theme-bistro .bs-svg .dim{opacity:.35}
+/* a request is an arrow drawing itself along a straight path, the head at the tip (revision 3: no dots on curves) */
+.theme-bistro .bs-arw{z-index:9;overflow:visible;--pc:var(--rose)}
+.theme-bistro .bs-arw .aw{position:absolute;left:0;top:0;overflow:visible}
+.theme-bistro .bs-arw .tr{fill:none;stroke:var(--pc);stroke-width:6;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 8px var(--pc))}
+.theme-bistro .bs-arw .hd{fill:var(--pc);filter:drop-shadow(0 0 10px var(--pc))}
+.theme-bistro .bs-arw.b{--pc:var(--blue)} .theme-bistro .bs-arw.g{--pc:var(--green)} .theme-bistro .bs-arw.a{--pc:var(--amber)} .theme-bistro .bs-arw.w{--pc:#E9EEF8} .theme-bistro .bs-arw.t{--pc:var(--teal)}
+.theme-bistro .bs-arw .lb{position:absolute;font:700 20px JB;color:var(--tx);white-space:nowrap;background:rgba(18,24,41,.95);border:1px solid var(--bd2);border-radius:8px;padding:7px 14px}
+.theme-bistro .bs-flip{perspective:1600px;z-index:3}
+.theme-bistro .bs-flip .fl{position:absolute;inset:0;transform-style:preserve-3d}
+.theme-bistro .bs-flip .fa,.theme-bistro .bs-flip .fb{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;background:var(--glass);
+  border:1.5px solid var(--bd);box-shadow:0 24px 60px rgba(0,0,0,.45);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center}
+.theme-bistro .bs-flip .fb{transform:rotateY(180deg)}
+.theme-bistro .bs-flip .fa{box-shadow:0 24px 60px rgba(0,0,0,.45),inset 0 5px 0 var(--amber)} .theme-bistro .bs-flip .fb{box-shadow:0 24px 60px rgba(0,0,0,.45),inset 0 5px 0 var(--rose)}
+.theme-bistro .bs-flip b{font:900 44px ID;color:var(--tx)} .theme-bistro .bs-flip small{font:600 24px Inter;color:var(--tx2)}
+.theme-bistro .bs-flip .k{font:700 20px JB;letter-spacing:.16em;text-transform:uppercase}
+.theme-bistro .bs-flip .fa .k{color:var(--amber)} .theme-bistro .bs-flip .fb .k{color:var(--rose)}
+.theme-bistro .bs-flip svg{width:64px;height:64px;fill:none;stroke:var(--tx);stroke-width:1.7}
+
+/* ---------- VS Code, Dark Modern chrome + Dark+ tokens ---------- */
+.theme-bistro .bs-vscw,.theme-bistro .bs-termw,.theme-bistro .bs-chromew,.theme-bistro .bs-awsw{z-index:4}
+.bs-vsc{position:absolute;inset:0;display:flex;flex-direction:column;background:#1F1F1F;border:1px solid #3C3C3C;border-radius:14px;overflow:hidden;
+  box-shadow:0 30px 80px rgba(0,0,0,.6),0 0 0 1px rgba(255,255,255,.06);font-family:Inter;color:#CCCCCC}
+.bs-vsc .vt{height:40px;flex:none;background:#181818;border-bottom:1px solid #2B2B2B;display:flex;align-items:center;gap:14px;padding:0 14px;position:relative}
+.bs-vsc .dots,.bs-term .dots,.bs-chrome .dots{display:flex;gap:8px} .bs-vsc .dots i,.bs-term .dots i,.bs-chrome .dots i{width:13px;height:13px;border-radius:50%;background:#FF5F57}
+.bs-vsc .dots i:nth-child(2),.bs-term .dots i:nth-child(2),.bs-chrome .dots i:nth-child(2){background:#FEBC2E}
+.bs-vsc .dots i:nth-child(3),.bs-term .dots i:nth-child(3),.bs-chrome .dots i:nth-child(3){background:#28C840}
+.bs-vsc .nv{font:400 16px Inter;color:#9D9D9D;letter-spacing:.2em}
+.bs-vsc .cc{position:absolute;left:50%;transform:translateX(-50%);width:42%;height:26px;border:1px solid #3C3C3C;border-radius:6px;background:#222;
+  display:flex;align-items:center;justify-content:center;gap:8px;font:400 15px Inter;color:#9D9D9D}
+.bs-vsc svg{width:18px;height:18px;fill:none;stroke:currentColor;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.bs-vsc .vm{flex:1;display:flex;min-height:0}
+.bs-vsc .ab{width:52px;flex:none;background:#181818;border-right:1px solid #2B2B2B;display:flex;flex-direction:column;align-items:center;padding-top:10px;gap:20px;color:#868686}
+.bs-vsc .ab span{width:52px;display:flex;justify-content:center;padding:4px 0} .bs-vsc .ab span.on{color:#D7D7D7;box-shadow:inset 2px 0 0 #0078D4}
+.bs-vsc .ab svg{width:26px;height:26px}
+.bs-vsc .ex{width:230px;flex:none;background:#181818;border-right:1px solid #2B2B2B;font:400 16px Inter;color:#CCCCCC}
+.bs-vsc .ex .eh{font:400 13px Inter;letter-spacing:.06em;color:#9D9D9D;padding:10px 20px}
+.bs-vsc .ex .ep{font:700 13px Inter;padding:4px 12px;color:#CCCCCC}
+.bs-vsc .ex .ef{display:flex;align-items:center;gap:8px;height:28px;white-space:nowrap;padding-left:20px}
+.bs-vsc .ex .ef.on{background:#37373D;outline:1px solid #0078D4;outline-offset:-1px}
+.bs-vsc .fi{font:700 12px Inter;font-style:normal;width:18px;text-align:center}
+.bs-vsc .ea{flex:1;display:flex;flex-direction:column;min-width:0;background:#1F1F1F}
+.bs-vsc .tabs{height:40px;flex:none;background:#181818;border-bottom:1px solid #2B2B2B;display:flex}
+.bs-vsc .tab{display:flex;align-items:center;gap:8px;padding:0 14px;font:400 16px Inter;color:#9D9D9D;border-right:1px solid #2B2B2B}
+.bs-vsc .tab.on{background:#1F1F1F;color:#FFFFFF;box-shadow:inset 0 2px 0 #0078D4;margin-bottom:-1px}
+.bs-vsc .tab .x{font-style:normal;color:#CCCCCC;margin-left:6px}
+.bs-vsc .bc{height:30px;flex:none;display:flex;align-items:center;gap:6px;padding:0 16px;font:400 15px Inter;color:#A9A9A9}
+.bs-vsc .bc b{font-weight:400;color:#6E6E6E}
+.bs-vsc .cd{flex:1;overflow:hidden;padding:8px 0 14px;font:400 var(--fs,22px)/1.55 JB;font-variant-ligatures:none}
+.bs-vsc .ln{display:flex;white-space:pre;position:relative}
+.bs-vsc .ln .g{width:56px;flex:none;text-align:right;padding-right:22px;color:#6E7681}
+.bs-vsc .ln.typing .g{color:#CCCCCC}
+.bs-vsc .ln.typing .t::after{content:"";display:inline-block;width:2px;height:1.1em;background:#AEAFAD;vertical-align:-.15em;margin-left:1px}
+.bs-vsc .ln.typing.blink .t::after{opacity:0}
+.bs-vsc .ln.hl{background:rgba(38,79,120,.85)} .bs-vsc .ln.hl .g{color:#CCCCCC}
+.bs-vsc .ln.hl::before,.bs-vsc .ln.edited::before{content:"";position:absolute;left:52px;top:0;bottom:0;width:4px;background:#2EA043}
+.bs-vsc .ln.hl::before{background:#0078D4}
+.bs-vsc .ln.bad{background:rgba(198,40,40,.32)}
+.bs-vsc .sb{height:30px;flex:none;background:#181818;border-top:1px solid #2B2B2B;display:flex;align-items:center;gap:22px;padding-right:16px;font:400 15px Inter;color:#9D9D9D}
+.bs-vsc .sb .rm{background:#0078D4;color:#fff;height:100%;width:44px;display:flex;align-items:center;justify-content:center}
+.bs-vsc .sb .sp{flex:1}
+.bs-vsc .k{color:#569CD6} .bs-vsc .kc{color:#C586C0} .bs-vsc .s{color:#CE9178} .bs-vsc .n{color:#B5CEA8} .bs-vsc .c{color:#6A9955}
+.bs-vsc .fn{color:#DCDCAA} .bs-vsc .ty{color:#4EC9B0} .bs-vsc .tg{color:#569CD6} .bs-vsc .at,.bs-vsc .v{color:#9CDCFE} .bs-vsc .pu{color:#D4D4D4} .bs-vsc .tc{color:#4EC9B0}
+
+/* ---------- macOS Terminal (the dark Pro look) ---------- */
+.bs-term{position:absolute;inset:0;display:flex;flex-direction:column;background:#1E1E1E;border-radius:12px;overflow:hidden;border:1px solid #3A3A3A;
+  box-shadow:0 30px 80px rgba(0,0,0,.6)}
+.bs-term .tb{height:40px;flex:none;background:linear-gradient(#3A3A3A,#2E2E2E);border-bottom:1px solid #111;display:flex;align-items:center;padding:0 14px;position:relative}
+.bs-term .tt{position:absolute;left:0;right:0;text-align:center;font:600 16px Inter;color:#B5B5B5;pointer-events:none}
+.bs-term .bd{flex:1;padding:16px 20px;font:400 22px/1.55 Menlo,JB;color:#E6E6E6;overflow:hidden;font-variant-ligatures:none}
+.bs-term .ln{white-space:pre-wrap;word-break:break-all;position:relative}
+.bs-term .pr{color:#7CE38B}
+.bs-term .k{color:#FFB547;font-weight:700} .bs-term .s{color:#6CB6FF} .bs-term .fn{color:#fff;font-weight:700}
+.bs-term .ln.typing .t::after{content:"";display:inline-block;width:.6em;height:1.1em;background:#BFBFBF;vertical-align:-.18em}
+.bs-term .ln.typing.blink .t::after{opacity:0}
+.bs-term .ln.hl{background:rgba(255,181,71,.18)}
+
+/* ---------- Chrome (dark) ---------- */
+.bs-chrome{position:absolute;inset:0;display:flex;flex-direction:column;background:#fff;border-radius:12px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.6);font-family:Inter;color:#1F1F1F}
+.bs-chrome .tabs{height:44px;flex:none;background:#202124;display:flex;align-items:flex-end;gap:10px;padding:0 12px}
+.bs-chrome .tabs .dots{align-self:center;margin-right:10px}
+.bs-chrome .tab{height:36px;background:#35363A;border-radius:10px 10px 0 0;display:flex;align-items:center;gap:10px;padding:0 14px;min-width:240px;font:500 15px Inter;color:#E8EAED}
+.bs-chrome .tab img{width:18px;height:18px;background:#fff;border-radius:4px} .bs-chrome .tab .gl{width:16px;height:16px;border-radius:50%;border:2px solid #9AA0A6}
+.bs-chrome .tab .x{font-style:normal;margin-left:auto;color:#9AA0A6}
+.bs-chrome .nt{align-self:center;font:400 22px Inter;color:#9AA0A6}
+.bs-chrome .tool{height:46px;flex:none;background:#35363A;display:flex;align-items:center;gap:14px;padding:0 14px}
+.bs-chrome .nav{font:400 18px Inter;color:#9AA0A6;letter-spacing:.3em}
+.bs-chrome .omni{flex:1;height:32px;border-radius:16px;background:#202124;display:flex;align-items:center;gap:10px;padding:0 16px;font:400 17px Inter;color:#E8EAED}
+.bs-chrome .omni .lk{font-style:normal;color:#9AA0A6;font-size:14px}
+.bs-chrome .me{width:26px;height:26px;border-radius:50%;background:#8AB4F8}
+.bs-chrome .page{flex:1;position:relative;overflow:hidden;background:#fff}
+.theme-bistro .bs-awsw .awsbox{position:absolute;left:0;top:0}
+.theme-bistro .bs-awsw .aws{position:relative;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+
+/* ---------- over the face: the left of the frame darkens, the points stack down it (backend-one-click) ---------- */
+.theme-bistro .bs-ov{position:absolute;inset:0;display:none;z-index:30;pointer-events:none}
+/* the fade stays on the text column (revision 3: "limit overlay to there") */
+.theme-bistro .bs-ov .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(6,9,18,.9) 0%,rgba(6,9,18,.76) 24%,rgba(6,9,18,.3) 38%,rgba(6,9,18,0) 48%)}
+.theme-bistro .bs-ov .row .sd{width:96px;height:96px;margin-left:6px;filter:drop-shadow(2px 0 0 #E9EEF8) drop-shadow(-2px 0 0 #E9EEF8) drop-shadow(0 2px 0 #E9EEF8) drop-shadow(0 -2px 0 #E9EEF8)}
+.theme-bistro .bs-ov .row .shot{display:block;width:520px;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.18);box-shadow:0 30px 70px rgba(0,0,0,.6)}
+.theme-bistro .bs-ov .row .shot img{display:block;width:100%;height:auto;padding:0;background:none;border-radius:0;box-shadow:none}
+.theme-bistro .bs-ov .col{position:absolute;left:64px;top:90px;width:520px;display:flex;flex-direction:column;gap:14px}
+.theme-bistro .bs-ov .eb{font:700 22px JB;letter-spacing:.2em;text-transform:uppercase;color:var(--acc,var(--rose));display:flex;align-items:center;gap:12px}
+.theme-bistro .bs-ov .eb::before{content:"";width:11px;height:11px;border-radius:50%;background:currentColor;box-shadow:0 0 12px currentColor}
+.theme-bistro .bs-ov .hd{font:900 50px ID;letter-spacing:-.03em;line-height:1.04;color:#fff;text-shadow:0 4px 30px rgba(0,0,0,.6)}
+.theme-bistro .bs-ov .hd em{font-style:normal;color:var(--acc,var(--rose))}
+.theme-bistro .bs-ov .rows{display:flex;flex-direction:column;gap:14px;margin-top:22px}
+.theme-bistro .bs-ov .row{display:flex;align-items:center;gap:18px;align-self:flex-start;max-width:520px;font:600 26px Inter;line-height:1.25;color:#E9EEF8;opacity:0;--rc:var(--acc,var(--rose));
+  text-shadow:0 2px 18px rgba(0,0,0,.7)}
+.theme-bistro .bs-ov .row img{width:56px;height:56px;flex:none;background:#fff;border-radius:14px;padding:8px;box-sizing:border-box;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.theme-bistro .bs-ov .row .ic{width:56px;height:56px;flex:none;display:grid;place-items:center;border-radius:14px;color:#0B0F1C!important;background:var(--rc);box-shadow:0 0 0 1px rgba(255,255,255,.15),0 8px 26px color-mix(in srgb,var(--rc) 40%,transparent)} .theme-bistro .bs-ov .row .ic svg{width:30px!important;height:30px!important} .theme-bistro .bs-ov .row .ic svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:2}
+.theme-bistro .bs-ov .row code{font:700 25px JB;color:#fff;background:rgba(255,255,255,.1);padding:2px 10px;border-radius:6px}
+.theme-bistro .bs-ov .row b{color:var(--rc);font-weight:800}
+.theme-bistro .bs-ov .row.r{--rc:var(--rose)} .theme-bistro .bs-ov .row.r .ic,.theme-bistro .bs-ov .row.r b{color:var(--rose)}
+.theme-bistro .bs-ov .row.b{--rc:var(--blue)} .theme-bistro .bs-ov .row.b .ic,.theme-bistro .bs-ov .row.b b{color:var(--blue)}
+.theme-bistro .bs-ov .row.g{--rc:var(--green)} .theme-bistro .bs-ov .row.g .ic,.theme-bistro .bs-ov .row.g b{color:var(--green)}
+.theme-bistro .bs-ov .row.a{--rc:var(--amber)} .theme-bistro .bs-ov .row.a .ic,.theme-bistro .bs-ov .row.a b{color:var(--amber)}
+#stage.theme-bistro.transparent .slide.ovs .bs-ov{display:block}
+#stage.theme-bistro.transparent .slide.ovs > :not(.bs-ov){visibility:hidden}
+
+/* illustration type and the characters inside it (DiceBear line art, never inverted: a light sticker outline) */
+.theme-bistro .bs-svg .lb{font:700 18px JB;letter-spacing:.16em}
+.theme-bistro .bs-svg .sg{font:800 22px ID;letter-spacing:.22em;fill:#FFE2D8}
+.theme-bistro .bs-svg .mn{font:800 20px JB;letter-spacing:.2em;fill:#BEE3FF}
+.theme-bistro .bs-svg .cs{font:800 19px JB;letter-spacing:.12em;fill:#E9EEF8}
+.theme-bistro .bs-svg .av{filter:drop-shadow(2px 0 0 #E9EEF8) drop-shadow(-2px 0 0 #E9EEF8) drop-shadow(0 2px 0 #E9EEF8) drop-shadow(0 -2px 0 #E9EEF8)}
+.theme-bistro .bs-svg g.lit,.theme-bistro .bs-svg image.lit{filter:drop-shadow(0 0 18px var(--lc,#FFD27A)) brightness(1.3)}
+.theme-bistro .bs-svg image.lit{filter:drop-shadow(2px 0 0 #E9EEF8) drop-shadow(-2px 0 0 #E9EEF8) drop-shadow(0 2px 0 #E9EEF8) drop-shadow(0 -2px 0 #E9EEF8) drop-shadow(0 0 14px var(--lc,#FFD27A))}
+
+/* parts that appear on a word (RESTO/HALL o.hide): hidden until a lit entry gives them `shown` */
+.theme-bistro .bs-svg .hp{opacity:0} .theme-bistro .bs-svg .hp.shown{opacity:1}
+.theme-bistro .bs-svg g.hp.shown,.theme-bistro .bs-svg image.hp.shown{filter:drop-shadow(2px 0 0 #E9EEF8) drop-shadow(-2px 0 0 #E9EEF8) drop-shadow(0 2px 0 #E9EEF8) drop-shadow(0 -2px 0 #E9EEF8)}
+
+/* the ground: grain, faint routes with creeping arrows, the story's objects watermarked and drifting (installGround) */
+.theme-bistro .bs-ground{position:absolute;inset:0;pointer-events:none}
+.theme-bistro .bs-ground .grain{position:absolute;inset:0;opacity:.35;mix-blend-mode:screen;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='5'/><feColorMatrix values='0 0 0 0 .55  0 0 0 0 .6  0 0 0 0 .75  0 0 0 .08 0'/></filter><rect width='300' height='300' filter='url(%23f)'/></svg>")}
+.theme-bistro .bs-ground .rt{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.theme-bistro .bs-ground .rt path.rp{fill:none;stroke:#9FB0D6;stroke-width:2.5;stroke-dasharray:12 12;opacity:.07}
+.theme-bistro .bs-ground .rt path.ah{fill:#9FB0D6;stroke:none;opacity:.16}
+.theme-bistro .bs-ground .wm{position:absolute;fill:none;stroke:#B9C6E4;stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round;opacity:.05}
+
+/* split (version B side by side): the slide shrinks into the right two thirds on its own plate; dual-render lays the face
+   crop on the left third. The plate's left edge lands on x 640 after the scale. Opaque captures (version A) ignore this.
+   Review 6 (the editor read as see-through while split and full crossfaded): a split window's ramp is a wipe, not a
+   dissolve. bistro.js eases --spk 1 -> .8 and --spx 0 -> 320px over the ramp, so the plate grows over the face from the
+   left edge (x 0) to x 640 or shrinks back; the plate and its ground are placed so their left edge is always at 2 x spx. */
+#stage.theme-bistro.transparent.canvas-horizontal .slide.split{scale:var(--spk,.8);translate:var(--spx,320px) 0;transform-origin:50% 50%}
+#stage.theme-bistro.transparent.canvas-horizontal .slide.split .fx-emoji{display:none}
+#stage.theme-bistro.transparent.canvas-horizontal .slide.split::before{content:"";position:absolute;left:calc(960px - (960px - var(--spx,320px)) / var(--spk,.8));top:-400px;width:2600px;height:1900px;z-index:-2;
+  background:radial-gradient(55% 40% at 30% 0%,rgba(77,120,255,.14),transparent 70%),radial-gradient(60% 45% at 60% 110%,rgba(255,170,90,.12),transparent 70%),#090D18;
+  box-shadow:-6px 0 0 var(--rose),-40px 0 80px rgba(0,0,0,.55)}
+
+/* section tracker (cafe .cf-sec): dots for each part, the current one named and lit in its colour, done ones filled */
+#stage.theme-bistro .cf-sec{left:56px;top:40px;gap:8px;padding:9px 16px;border-radius:999px;background:rgba(18,24,41,.88);border:1px solid var(--bd2);font:700 19px Inter;color:var(--tx)}
+#stage.theme-bistro .cf-sec span{gap:8px} #stage.theme-bistro .cf-sec i{width:10px;height:10px;background:rgba(255,255,255,.22)}
+#stage.theme-bistro .cf-sec span:nth-child(1){--sc:var(--amber)} #stage.theme-bistro .cf-sec span:nth-child(2){--sc:var(--rose)}
+#stage.theme-bistro .cf-sec span:nth-child(3){--sc:var(--blue)} #stage.theme-bistro .cf-sec span:nth-child(4){--sc:var(--green)} #stage.theme-bistro .cf-sec span:nth-child(5){--sc:var(--violet)}
+#stage.theme-bistro .cf-sec span.done i{background:var(--sc);opacity:.55}
+#stage.theme-bistro .cf-sec span.on i{background:var(--sc);box-shadow:0 0 10px var(--sc)} #stage.theme-bistro .cf-sec span.on{color:var(--sc)}
+/* a new part opens: a soft band of light in the slide's colour crosses the frame once */
+.theme-bistro .bs-sweep{position:absolute;left:0;top:0;width:60%;height:100%;z-index:40;pointer-events:none;opacity:0;
+  background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--acc,var(--rose)) 10%,transparent) 35%,color-mix(in srgb,var(--acc,var(--rose)) 22%,transparent) 50%,color-mix(in srgb,var(--acc,var(--rose)) 10%,transparent) 65%,transparent)}
+#stage.theme-bistro.transparent .slide.ovs .bs-sweep{display:none}
+
+.theme-bistro .bs-ov .sbw{position:relative;width:518px;height:66px;margin-top:26px}
+.theme-bistro .bs-ov .sbw .sub-cta{position:absolute;opacity:1}
+
+/* the split plate's own ground (the stage ground is off in overlay captures): only inside a split capture, under the slide.
+   Both the plate (-2) and its ground (-1) sit below the slide's content: at z 0 the ground came after the content and
+   was painted over it, its routes and marks showing through an empty editor (review 7, "the background still shows inside
+   the code editor"). The slide is a stacking context (scale), so negative z stays inside it. */
+.theme-bistro .bs-sg{display:none}
+#stage.theme-bistro.transparent.canvas-horizontal .slide.split .bs-sg{display:block;position:absolute;left:calc(960px - (960px - var(--spx,320px)) / var(--spk,.8));
+  top:calc(540px - 540px / var(--spk,.8));width:calc(1920px / var(--spk,.8));height:calc(1080px / var(--spk,.8));z-index:-1}
+
+/* in a split the tracker sits inside the panel (the slide's left edge lands under the face at the .8 scale) */
+#stage.theme-bistro.transparent.canvas-horizontal .slide.split .cf-sec{left:calc(56px + 164px * var(--spq,1))}
