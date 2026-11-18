@@ -1,0 +1,329 @@
+/* "heap" theme (PROJECT.theme = 'heap'), built for projects/postgres-for-everything (look A, "Heap page", picked 2026-11-17).
+   The deck is drawn as Postgres's own 8 KB heap page: a light paper ground (#eef1f5) under a faint 48px grid in Postgres
+   blue, navy ink, white cards with a 2px navy border and an 8px hard offset shadow, JetBrains Mono eyebrows, Inter
+   Display ExtraBold headlines with the key phrase in Postgres blue over an amber underline. Postgres blue is the primary
+   (and worker A), amber the second worker and warnings, green the wins, red the breaks. Dead rows are hatched grey and
+   struck, the way VACUUM finds them. Code, commands and pages sit in accurate app windows (VS Code Dark Modern, macOS
+   Terminal, Chrome) from bistro.css, which keep their own dark chrome. The over-the-face overlay stays dark with light
+   text: it sits on video, not on the paper.
+   The shared section mirrors signed.css (bistro's theme-scoped skin) re-scoped to .theme-heap and re-coloured for a light
+   ground; the heap pieces follow it. Linked after lanes.css (cast + fx: theme trap 3), cafe.css and bistro.css.
+   Amber (#e0a030) and the brand green (#2e8b57) are too light for text on the paper (2.0:1 and 3.8:1), so text in those
+   roles uses their ink copies (--amberI #8a5a00, --greenI #22704a); fills carrying text use navy on amber, white on the
+   green ink. Every other role colour passes 4.5:1 on the ground as text. */
+#stage.theme-heap{
+  --bg0:#EEF1F5; --bg1:#FFFFFF; --bg2:#F5F7FA; --bd:rgba(19,35,59,.16); --bd2:rgba(19,35,59,.38);
+  --tx:#13233B; --tx2:#45556C; --tx3:#5B6676;
+  --navy:#13233B; --pg:#336791;
+  --blue:#336791; --amber:#E0A030; --green:#2E8B57; --rose:#B33A3A; --teal:#0F766E; --violet:#6D28D9; --orange:#C2410C;
+  --amberI:#8A5A00; --greenI:#22704A;        /* text copies of the two light role colours (AA on the paper) */
+  --rule:#D6DDE6;                             /* row rules inside the page */
+  --glass:#FFFFFF;
+  background:#EEF1F5;
+}
+#stage.theme-heap.transparent{background:transparent}   /* alpha captures must stay clear (theme trap 1) */
+/* the paper: a 48px grid in Postgres blue at 7%, no glow, the faintest navy edge instead of a dark vignette */
+.theme-heap .bgfx .grid{inset:-96px;opacity:1;background:
+  linear-gradient(90deg,rgba(51,103,145,.07) 1px,transparent 1px) 0 0/48px 48px,
+  linear-gradient(rgba(51,103,145,.07) 1px,transparent 1px) 0 0/48px 48px}
+.theme-heap .bgfx .glow.a{background:radial-gradient(60% 45% at 50% 110%,rgba(224,160,48,.06),transparent 70%)}
+.theme-heap .bgfx .glow.b{background:radial-gradient(55% 40% at 12% -5%,rgba(51,103,145,.07),transparent 70%)}
+.theme-heap .bgfx .vig{background:radial-gradient(120% 100% at 50% 45%,transparent 60%,rgba(19,35,59,.07))}
+#stage.theme-heap.transparent .bgfx{display:none}
+
+/* heading: a square + mono eyebrow, navy headline, the key phrase in Postgres blue over an amber underline */
+#stage.theme-heap .eyebrow{font:700 var(--eb-size) JB;letter-spacing:.24em;text-transform:uppercase;color:var(--blue)}
+#stage.theme-heap .eyebrow::before{content:"";display:inline-block;vertical-align:.12em;margin-right:16px;width:11px;height:11px;border-radius:2px;background:currentColor}
+#stage.theme-heap .eyebrow.b{color:var(--blue)} #stage.theme-heap .eyebrow.g{color:var(--greenI)} #stage.theme-heap .eyebrow.a{color:var(--amberI)}
+#stage.theme-heap .eyebrow.t{color:var(--teal)} #stage.theme-heap .eyebrow.v{color:var(--violet)} #stage.theme-heap .eyebrow.r{color:var(--rose)}
+#stage.theme-heap .eyebrow.o{color:var(--orange)}
+#stage.theme-heap .h1{color:var(--tx);letter-spacing:-.025em;font-weight:800}
+#stage.theme-heap .h1 em{color:var(--blue);background-image:linear-gradient(var(--amber),var(--amber));background-size:calc(var(--ul,0) * 100%) .1em;background-position:0 96%}
+/* the em follows the slide's accent where the accent is a role (breaks red, wins green); amber is a fill, so an amber
+   slide keeps the blue phrase and draws the underline in amber as always */
+#stage.theme-heap .h1[style*="--rose"] em{color:var(--rose)} #stage.theme-heap .h1[style*="--green"] em{color:var(--greenI)}
+#stage.theme-heap .h1[style*="--teal"] em{color:var(--teal)} #stage.theme-heap .h1[style*="--violet"] em{color:var(--violet)}
+#stage.theme-heap .h1[style*="--orange"] em{color:var(--orange)}
+#stage.theme-heap .sub{color:var(--tx2)}
+#stage.theme-heap .foot{color:var(--tx2)}
+#stage.theme-heap .caps{width:max-content}   /* theme trap 2 */
+
+/* ---------- edges: navy paths with arrowheads, role colours ---------- */
+.theme-heap .cf-edge{stroke:rgba(19,35,59,.55);stroke-width:4;filter:none}
+.theme-heap .cf-edges marker path{fill:var(--navy)}
+.theme-heap .cf-edge.r{stroke:var(--rose)} .theme-heap .cf-edge.b,.theme-heap .cf-edge.hot{stroke:var(--blue)}
+.theme-heap .cf-edge.g,.theme-heap .cf-edge.ok{stroke:var(--green)} .theme-heap .cf-edge.a{stroke:var(--amber)}
+.theme-heap .cf-edge.t{stroke:var(--teal)} .theme-heap .cf-edge.v{stroke:var(--violet)} .theme-heap .cf-edge.mute{stroke:rgba(19,35,59,.25)}
+.theme-heap .cf-edge.bad{stroke:var(--rose)}
+.theme-heap .cf-edge.strike{stroke:#C42B2B;stroke-width:9}
+.theme-heap .cf-edge.thick{stroke-width:6}
+
+/* ---------- white cards: 2px navy border, an 8px hard offset shadow, a role-colour bar ---------- */
+.theme-heap .cf-card{background:#fff;color:var(--tx);border:2px solid var(--navy);border-radius:10px;box-shadow:8px 8px 0 var(--navy),inset 0 6px 0 var(--cbar,transparent)}
+.theme-heap .cf-card b{font:800 32px ID;color:var(--tx)} .theme-heap .cf-card small{font:600 22px Inter;color:var(--tx2)}
+.theme-heap .cf-card .ic{color:var(--cbar,var(--tx));width:64px;height:64px}
+.theme-heap .cf-card .mk{width:84px;height:84px;background:#fff;border:2px solid var(--navy);border-radius:12px;box-sizing:border-box} .theme-heap .cf-card .mk img{max-width:52px;max-height:52px}
+.theme-heap .cf-card .ph{width:84px;height:84px;max-height:84px;flex:none;object-fit:contain;border-radius:12px;background:#fff;border:2px solid var(--navy);padding:10px;box-sizing:border-box}
+.theme-heap .cf-card .wh{width:120px;height:120px;filter:none}
+.theme-heap .cf-card .tg{background:var(--bg2);color:var(--tx);border:1.5px solid var(--bd2)}
+.theme-heap .cf-card.r{--cbar:var(--rose)} .theme-heap .cf-card.b{--cbar:var(--blue)} .theme-heap .cf-card.g{--cbar:var(--green)}
+.theme-heap .cf-card.a{--cbar:var(--amber)} .theme-heap .cf-card.t{--cbar:var(--teal)} .theme-heap .cf-card.v{--cbar:var(--violet)}
+.theme-heap .cf-card.hot{outline:4px solid var(--blue);outline-offset:5px;box-shadow:8px 8px 0 var(--blue),inset 0 6px 0 var(--cbar,var(--blue))}
+.theme-heap .cf-card.okc,.theme-heap .cf-card.ok{outline:4px solid var(--green);outline-offset:5px;box-shadow:8px 8px 0 var(--green),inset 0 6px 0 var(--green)}
+.theme-heap .cf-card.red{background:#FBEAEA;border-color:var(--rose);box-shadow:8px 8px 0 var(--rose),inset 0 6px 0 var(--rose);--cbar:var(--rose)} .theme-heap .cf-card.red b{color:#8E2626}
+.theme-heap .cf-card.idle{filter:grayscale(1);opacity:.35}
+.theme-heap .cf-card.dark{background:var(--navy);color:#fff} .theme-heap .cf-card.dark b{color:#fff} .theme-heap .cf-card.dark small{color:#C9D3E0}
+.theme-heap .cf-card.left{gap:24px}
+/* brand marks on white tiles with a navy border (logos readable: house rule) */
+.theme-heap .cf-logo .mk{background:#fff;border:2px solid var(--navy);border-radius:20px;box-shadow:6px 6px 0 var(--navy);box-sizing:border-box}
+.theme-heap .cf-logo b{color:var(--tx);font:800 28px ID}
+.theme-heap .cf-logo.hot .mk{border-color:var(--blue);box-shadow:6px 6px 0 var(--blue),0 0 0 5px rgba(51,103,145,.18)}
+.theme-heap .cf-logo.ok .mk{border-color:var(--green);box-shadow:6px 6px 0 var(--green)}
+.theme-heap .cf-logo.red .mk{border-color:var(--rose);box-shadow:6px 6px 0 var(--rose)}
+.theme-heap .cf-logo.idle{filter:grayscale(1);opacity:.35}
+/* characters (DiceBear Notionists, black line art): read as drawn on the paper, never inverted, no sticker outline needed */
+.theme-heap .cf-who img{filter:none}
+.theme-heap .cf-who .nm{font:700 20px JB;letter-spacing:.06em;color:var(--tx);background:#fff;border:2px solid var(--navy);border-radius:8px;padding:6px 14px;bottom:-34px}
+.theme-heap .cf-who.idle{opacity:.35}
+/* chips, stamps, text, tickets, bubbles */
+.theme-heap .cf-chip{background:#fff;border:2px solid var(--navy);color:var(--tx);border-radius:999px;font:700 24px Inter;padding:10px 22px;box-shadow:4px 4px 0 var(--navy)}
+.theme-heap .cf-chip.mono{font:700 22px JB}
+.theme-heap .cf-chip img{background:#fff;border:1.5px solid var(--bd2);border-radius:8px}
+.theme-heap .cf-chip svg{stroke:currentColor}
+.theme-heap .cf-chip.r{border-color:var(--rose);color:var(--rose);box-shadow:4px 4px 0 var(--rose)} .theme-heap .cf-chip.b{border-color:var(--blue);color:var(--blue);box-shadow:4px 4px 0 var(--blue)}
+.theme-heap .cf-chip.g{border-color:var(--green);color:var(--greenI);box-shadow:4px 4px 0 var(--green)} .theme-heap .cf-chip.a{border-color:var(--amber);color:var(--amberI);box-shadow:4px 4px 0 var(--amber)}
+.theme-heap .cf-chip.t{border-color:var(--teal);color:var(--teal);box-shadow:4px 4px 0 var(--teal)} .theme-heap .cf-chip.v{border-color:var(--violet);color:var(--violet);box-shadow:4px 4px 0 var(--violet)}
+.theme-heap .cf-chip.o{border-color:var(--orange);color:var(--orange);box-shadow:4px 4px 0 var(--orange)}
+.theme-heap .cf-chip.fill-r{background:var(--rose);border-color:var(--navy);color:#fff} .theme-heap .cf-chip.fill-b{background:var(--blue);border-color:var(--navy);color:#fff}
+.theme-heap .cf-chip.fill-g{background:var(--greenI);border-color:var(--navy);color:#fff} .theme-heap .cf-chip.fill-a{background:var(--amber);border-color:var(--navy);color:var(--navy)}
+.theme-heap .cf-chip.fill-t{background:var(--teal);border-color:var(--navy);color:#fff} .theme-heap .cf-chip.fill-v{background:var(--violet);border-color:var(--navy);color:#fff}
+.theme-heap .cf-chip.fill-n{background:var(--navy);border-color:var(--navy);color:#fff}
+/* state classes a chip takes on a beat (item.on): red (broke), hot (current), ok (won), idle (out of play), x (struck) */
+.theme-heap .cf-chip.red{background:#FBEAEA;border-color:var(--rose);color:#8E2626;box-shadow:4px 4px 0 var(--rose)}
+.theme-heap .cf-chip.hot{background:#E3ECF4;border-color:var(--blue);color:var(--navy);box-shadow:4px 4px 0 var(--blue),0 0 0 5px rgba(51,103,145,.16)}
+.theme-heap .cf-chip.ok{background:#E6F2EB;border-color:var(--green);color:#1B5A3B;box-shadow:4px 4px 0 var(--green)}
+.theme-heap .cf-chip.idle{filter:grayscale(1);opacity:.35}
+.theme-heap .cf-chip.x{text-decoration:line-through;text-decoration-thickness:4px;opacity:.45}
+.theme-heap .cf-stamp{color:var(--rose);border-color:var(--rose);background:#fff;font:900 38px ID;box-shadow:6px 6px 0 var(--rose)}
+.theme-heap .cf-stamp.b{color:var(--blue);border-color:var(--blue);box-shadow:6px 6px 0 var(--blue)} .theme-heap .cf-stamp.g{color:var(--greenI);border-color:var(--green);box-shadow:6px 6px 0 var(--green)}
+.theme-heap .cf-stamp.a{color:var(--amberI);border-color:var(--amber);box-shadow:6px 6px 0 var(--amber)} .theme-heap .cf-stamp.t{color:var(--teal);border-color:var(--teal);box-shadow:6px 6px 0 var(--teal)}
+.theme-heap .cf-txt{color:var(--tx)} .theme-heap .cf-txt.mono{font:700 24px JB;color:var(--tx2)}
+.theme-heap .cf-txt.lbl{font:700 20px JB;letter-spacing:.16em;text-transform:uppercase;color:var(--tx3);white-space:nowrap}
+.theme-heap .cf-txt.big{color:var(--tx)} .theme-heap .cf-txt .n{margin-right:.2em}
+.theme-heap .cf-txt.r{color:var(--rose)} .theme-heap .cf-txt.b{color:var(--blue)} .theme-heap .cf-txt.g{color:var(--greenI)} .theme-heap .cf-txt.a{color:var(--amberI)} .theme-heap .cf-txt.t{color:var(--teal)}
+.theme-heap .cf-txt.v{color:var(--violet)} .theme-heap .cf-txt.o{color:var(--orange)}
+.theme-heap .cf-txt.hand{font:700 40px Caveat;color:var(--tx2)}
+.theme-heap .cf-tile{background:#fff;color:var(--tx);border:2px solid var(--navy);border-radius:8px;box-shadow:5px 5px 0 var(--navy)}
+.theme-heap .cf-tile b{font:700 22px JB} .theme-heap .cf-tile small{font:600 18px JB;color:var(--tx2)}
+.theme-heap .cf-tile.r{border-top:6px solid var(--rose)} .theme-heap .cf-tile.b{border-top:6px solid var(--blue)} .theme-heap .cf-tile.g{border-top:6px solid var(--green)}
+.theme-heap .cf-tile.a{border-top:6px solid var(--amber)} .theme-heap .cf-tile.red{background:#FBEAEA;border-top:6px solid var(--rose)}
+.theme-heap .cf-tile.dark{background:var(--navy);color:#fff;border:2px solid var(--navy)} .theme-heap .cf-tile.dark small{color:#C9D3E0}
+.theme-heap .cf-tile.ghost{background:transparent;border:2px dashed var(--tx3);box-shadow:none;color:var(--tx3)}
+.theme-heap .cf-bubble{background:#fff;color:var(--tx);font:700 26px Inter;border:2px solid var(--navy);box-shadow:5px 5px 0 var(--navy)}
+.theme-heap .cf-bubble::after{background:var(--navy)}
+.theme-heap .bub{border:2px solid var(--navy);box-shadow:5px 5px 0 var(--navy);color:var(--tx)}
+.theme-heap .bub em{color:var(--blue)}
+.theme-heap .cf-bar{background:rgba(19,35,59,.07);border:2px solid var(--navy);border-bottom:0;border-radius:8px 8px 0 0} .theme-heap .cf-bar i{background:var(--blue);border-radius:6px 6px 0 0} .theme-heap .cf-bar b{color:var(--tx2)}
+.theme-heap .cf-bar.g i{background:var(--green)} .theme-heap .cf-bar.r i{background:var(--rose)} .theme-heap .cf-bar.a i{background:var(--amber)}
+
+/* ---------- the illustration, packets, flips ---------- */
+.theme-heap .bs-svg{z-index:1} .theme-heap .bs-svg svg{width:100%;height:100%;overflow:visible}
+.theme-heap .bs-svg [data-part]{transition:none}
+.theme-heap .bs-svg .lit{filter:drop-shadow(0 0 10px var(--lc,#E0A030))}
+.theme-heap .bs-svg .lit.r{--lc:#B33A3A} .theme-heap .bs-svg .lit.b{--lc:#336791} .theme-heap .bs-svg .lit.g{--lc:#2E8B57} .theme-heap .bs-svg .lit.a{--lc:#E0A030}
+.theme-heap .bs-svg .dim{opacity:.35}
+/* a request is an arrow drawing itself along a straight path, the head at the tip */
+.theme-heap .bs-arw{z-index:9;overflow:visible;--pc:var(--blue)}
+.theme-heap .bs-arw .aw{position:absolute;left:0;top:0;overflow:visible}
+.theme-heap .bs-arw .tr{fill:none;stroke:var(--pc);stroke-width:6;stroke-linecap:round;stroke-linejoin:round}
+.theme-heap .bs-arw .hd{fill:var(--pc)}
+.theme-heap .bs-arw.r{--pc:var(--rose)} .theme-heap .bs-arw.b{--pc:var(--blue)} .theme-heap .bs-arw.g{--pc:var(--green)} .theme-heap .bs-arw.a{--pc:var(--amber)}
+.theme-heap .bs-arw.w,.theme-heap .bs-arw.n{--pc:var(--navy)} .theme-heap .bs-arw.t{--pc:var(--teal)} .theme-heap .bs-arw.v{--pc:var(--violet)}
+.theme-heap .bs-arw .lb{position:absolute;font:700 20px JB;color:var(--tx);white-space:nowrap;background:#fff;border:2px solid var(--navy);border-radius:8px;padding:7px 14px}
+.theme-heap .bs-flip{perspective:1600px;z-index:3}
+.theme-heap .bs-flip .fl{position:absolute;inset:0;transform-style:preserve-3d}
+.theme-heap .bs-flip .fa,.theme-heap .bs-flip .fb{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:10px;background:#fff;
+  border:2px solid var(--navy);box-shadow:8px 8px 0 var(--navy);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center}
+.theme-heap .bs-flip .fb{transform:rotateY(180deg)}
+.theme-heap .bs-flip .fa{box-shadow:8px 8px 0 var(--navy),inset 0 6px 0 var(--amber)} .theme-heap .bs-flip .fb{box-shadow:8px 8px 0 var(--navy),inset 0 6px 0 var(--blue)}
+.theme-heap .bs-flip b{font:900 44px ID;color:var(--tx)} .theme-heap .bs-flip small{font:600 24px Inter;color:var(--tx2)}
+.theme-heap .bs-flip .k{font:700 20px JB;letter-spacing:.16em;text-transform:uppercase}
+.theme-heap .bs-flip .fa .k{color:var(--amberI)} .theme-heap .bs-flip .fb .k{color:var(--blue)}
+.theme-heap .bs-flip svg{width:64px;height:64px;fill:none;stroke:var(--tx);stroke-width:1.7}
+
+/* ---------- VS Code, Terminal, Chrome: real apps keep their own dark chrome (bistro.css); a hard shadow seats them ---------- */
+.theme-heap .bs-vscw,.theme-heap .bs-termw,.theme-heap .bs-chromew,.theme-heap .bs-awsw{z-index:4}
+.theme-heap .bs-vsc,.theme-heap .bs-term,.theme-heap .bs-chrome{box-shadow:8px 8px 0 var(--navy),0 24px 50px rgba(19,35,59,.18)}
+.theme-heap .bs-awsw .awsbox{position:absolute;left:0;top:0}
+.theme-heap .bs-awsw .aws{position:relative;box-shadow:8px 8px 0 var(--navy)}
+
+/* ---------- over the face: stays DARK (it sits on footage). The left of the frame darkens, the points stack down it ----------
+   The role colours are re-pointed at light tints inside the overlay so the eyebrow, the em and the icons read on the shade. */
+.theme-heap .bs-ov{position:absolute;inset:0;display:none;z-index:30;pointer-events:none;
+  --blue:#8EC3EA; --amber:#F2C063; --green:#6FD39A; --rose:#FF8A80; --teal:#5EEAD4; --violet:#C4B5FD; --orange:#FFB27A; --greenI:#6FD39A; --amberI:#F2C063;
+  --acc:var(--blue)}
+.theme-heap .bs-ov .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(10,18,32,.9) 0%,rgba(10,18,32,.76) 24%,rgba(10,18,32,.3) 38%,rgba(10,18,32,0) 48%)}
+.theme-heap .bs-ov .row .sd{width:96px;height:96px;margin-left:6px;filter:drop-shadow(2px 0 0 #E9EEF8) drop-shadow(-2px 0 0 #E9EEF8) drop-shadow(0 2px 0 #E9EEF8) drop-shadow(0 -2px 0 #E9EEF8)}
+.theme-heap .bs-ov .row .shot{display:block;width:520px;border-radius:12px;overflow:hidden;border:1px solid rgba(255,255,255,.18);box-shadow:0 30px 70px rgba(0,0,0,.6)}
+.theme-heap .bs-ov .row .shot img{display:block;width:100%;height:auto;padding:0;background:none;border-radius:0;box-shadow:none}
+.theme-heap .bs-ov .col{position:absolute;left:64px;top:90px;width:520px;display:flex;flex-direction:column;gap:14px}
+.theme-heap .bs-ov .eb{font:700 22px JB;letter-spacing:.22em;text-transform:uppercase;color:var(--acc,var(--blue));display:flex;align-items:center;gap:12px}
+.theme-heap .bs-ov .eb::before{content:"";width:11px;height:11px;border-radius:2px;background:currentColor}
+.theme-heap .bs-ov .hd{font:800 50px ID;letter-spacing:-.025em;line-height:1.04;color:#fff;text-shadow:0 4px 30px rgba(0,0,0,.6)}
+.theme-heap .bs-ov .hd em{font-style:normal;color:var(--acc,var(--blue));text-decoration:underline;text-decoration-color:#E0A030;text-decoration-thickness:5px;text-underline-offset:8px}
+.theme-heap .bs-ov .rows{display:flex;flex-direction:column;gap:14px;margin-top:22px}
+.theme-heap .bs-ov .row{display:flex;align-items:center;gap:18px;align-self:flex-start;max-width:520px;font:600 26px Inter;line-height:1.25;color:#E9EEF8;opacity:0;--rc:var(--acc,var(--blue));
+  text-shadow:0 2px 18px rgba(0,0,0,.7)}
+.theme-heap .bs-ov .row img{width:56px;height:56px;flex:none;background:#fff;border-radius:12px;padding:8px;box-sizing:border-box;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.theme-heap .bs-ov .row .ic{width:56px;height:56px;flex:none;display:grid;place-items:center;border-radius:12px;color:#0B1424!important;background:var(--rc);box-shadow:0 0 0 1px rgba(255,255,255,.15),0 8px 26px color-mix(in srgb,var(--rc) 40%,transparent)} .theme-heap .bs-ov .row .ic svg{width:30px!important;height:30px!important} .theme-heap .bs-ov .row .ic svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:2}
+.theme-heap .bs-ov .row code{font:700 25px JB;color:#fff;background:rgba(255,255,255,.12);padding:2px 10px;border-radius:6px}
+.theme-heap .bs-ov .row b{color:var(--rc);font-weight:800}
+.theme-heap .bs-ov .row.r{--rc:var(--rose)} .theme-heap .bs-ov .row.r .ic,.theme-heap .bs-ov .row.r b{color:var(--rose)}
+.theme-heap .bs-ov .row.b{--rc:var(--blue)} .theme-heap .bs-ov .row.b .ic,.theme-heap .bs-ov .row.b b{color:var(--blue)}
+.theme-heap .bs-ov .row.g{--rc:var(--green)} .theme-heap .bs-ov .row.g .ic,.theme-heap .bs-ov .row.g b{color:var(--green)}
+.theme-heap .bs-ov .row.a{--rc:var(--amber)} .theme-heap .bs-ov .row.a .ic,.theme-heap .bs-ov .row.a b{color:var(--amber)}
+.theme-heap .bs-ov .row.t{--rc:var(--teal)} .theme-heap .bs-ov .row.t .ic,.theme-heap .bs-ov .row.t b{color:var(--teal)}
+.theme-heap .bs-ov .row.v{--rc:var(--violet)} .theme-heap .bs-ov .row.v .ic,.theme-heap .bs-ov .row.v b{color:var(--violet)}
+#stage.theme-heap.transparent .slide.ovs .bs-ov{display:block}
+#stage.theme-heap.transparent .slide.ovs > :not(.bs-ov){visibility:hidden}
+/* theme trap 4: nothing borrowed hides the heap over card; if a project links redline.css for its editor, its
+   `.slide.ovs > :not(.rl-ov)` rule would hide .bs-ov, so it is shown again explicitly */
+#stage.theme-heap.transparent .slide.ovs > .bs-ov{visibility:visible}
+
+/* illustration type and the characters inside it (line art on paper: no outline) */
+.theme-heap .bs-svg .lb{font:700 18px JB;letter-spacing:.16em;fill:var(--tx3)}
+.theme-heap .bs-svg .sg{font:800 22px ID;letter-spacing:.22em;fill:var(--navy)}
+.theme-heap .bs-svg .mn{font:800 20px JB;letter-spacing:.2em;fill:var(--blue)}
+.theme-heap .bs-svg .cs{font:800 19px JB;letter-spacing:.12em;fill:var(--navy)}
+.theme-heap .bs-svg .av{filter:none}
+.theme-heap .bs-svg g.lit,.theme-heap .bs-svg image.lit{filter:drop-shadow(0 0 12px var(--lc,#E0A030))}
+
+/* parts that appear on a word (o.hide): hidden until a lit entry gives them `shown` */
+.theme-heap .bs-svg .hp{opacity:0} .theme-heap .bs-svg .hp.shown{opacity:1}
+
+/* the ground (installGround): no grain on paper; routes and marks in faint navy; the heap's own layer below */
+.theme-heap .bs-ground{position:absolute;inset:0;pointer-events:none}
+.theme-heap .bs-ground .grain{display:none}
+.theme-heap .bs-ground .rt{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.theme-heap .bs-ground .rt path.rp{fill:none;stroke:var(--navy);stroke-width:2;stroke-dasharray:12 12;opacity:.05}
+.theme-heap .bs-ground .rt path.ah{fill:var(--navy);stroke:none;opacity:.08}
+.theme-heap .bs-ground .wm{position:absolute;fill:none;stroke:var(--navy);stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round;opacity:.05}
+
+/* split (version B side by side): the slide shrinks into the right two thirds on its own paper plate (see bistro.css) */
+#stage.theme-heap.transparent.canvas-horizontal .slide.split{scale:var(--spk,.8);translate:var(--spx,320px) 0;transform-origin:50% 50%}
+#stage.theme-heap.transparent.canvas-horizontal .slide.split .fx-emoji{display:none}
+#stage.theme-heap.transparent.canvas-horizontal .slide.split::before{content:"";position:absolute;left:calc(960px - (960px - var(--spx,320px)) / var(--spk,.8));top:-400px;width:2600px;height:1900px;z-index:-2;
+  background:linear-gradient(90deg,rgba(51,103,145,.07) 1px,transparent 1px) 0 0/48px 48px,linear-gradient(rgba(51,103,145,.07) 1px,transparent 1px) 0 0/48px 48px,#EEF1F5;
+  box-shadow:-6px 0 0 var(--navy),-40px 0 80px rgba(0,0,0,.45)}
+
+/* section tracker (cafe .cf-sec): squares for each part, the current one named and lit in its colour, done ones filled */
+#stage.theme-heap .cf-sec{left:56px;top:40px;gap:8px;padding:9px 16px;border-radius:999px;background:#fff;border:2px solid var(--navy);font:700 19px Inter;color:var(--tx)}
+#stage.theme-heap .cf-sec span{gap:8px} #stage.theme-heap .cf-sec i{width:10px;height:10px;border-radius:2px;background:rgba(19,35,59,.18)}
+#stage.theme-heap .cf-sec span:nth-child(1){--sc:var(--blue)} #stage.theme-heap .cf-sec span:nth-child(2){--sc:var(--amberI)}
+#stage.theme-heap .cf-sec span:nth-child(3){--sc:var(--greenI)} #stage.theme-heap .cf-sec span:nth-child(4){--sc:var(--rose)} #stage.theme-heap .cf-sec span:nth-child(5){--sc:var(--violet)}
+#stage.theme-heap .cf-sec span.done i{background:var(--sc);opacity:.55}
+#stage.theme-heap .cf-sec span.on i{background:var(--sc)} #stage.theme-heap .cf-sec span.on{color:var(--sc);background:#fff}
+/* a new part opens: a soft band of the slide's colour crosses the frame once */
+.theme-heap .bs-sweep{position:absolute;left:0;top:0;width:60%;height:100%;z-index:40;pointer-events:none;opacity:0;
+  background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--acc,var(--blue)) 6%,transparent) 35%,color-mix(in srgb,var(--acc,var(--blue)) 12%,transparent) 50%,color-mix(in srgb,var(--acc,var(--blue)) 6%,transparent) 65%,transparent)}
+#stage.theme-heap.transparent .slide.ovs .bs-sweep{display:none}
+
+.theme-heap .bs-ov .sbw{position:relative;width:518px;height:66px;margin-top:26px}
+.theme-heap .bs-ov .sbw .sub-cta{position:absolute;opacity:1}
+
+/* the split plate's own ground, under the slide (see bistro.css) */
+.theme-heap .bs-sg{display:none}
+#stage.theme-heap.transparent.canvas-horizontal .slide.split .bs-sg{display:block;position:absolute;left:calc(960px - (960px - var(--spx,320px)) / var(--spk,.8));
+  top:calc(540px - 540px / var(--spk,.8));width:calc(1920px / var(--spk,.8));height:calc(1080px / var(--spk,.8));z-index:-1}
+#stage.theme-heap.transparent.canvas-horizontal .slide.split .cf-sec{left:calc(56px + 164px * var(--spq,1))}
+
+/* ---------- 9:16 ---------- */
+#stage.theme-heap.canvas-vertical .cf-sec{display:none}
+.theme-heap.canvas-vertical .bs-ov .shade{background:linear-gradient(180deg,rgba(10,18,32,.88) 0%,rgba(10,18,32,.6) 26%,rgba(10,18,32,0) 31%,rgba(10,18,32,0) 64%,rgba(10,18,32,.7) 69%,rgba(10,18,32,.92) 100%)}
+.theme-heap.canvas-vertical .bs-ov .col{left:70px;top:236px;bottom:380px;width:870px;gap:16px}
+.theme-heap.canvas-vertical .bs-ov .eb{font-size:28px}
+.theme-heap.canvas-vertical .bs-ov .hd{font-size:72px}
+.theme-heap.canvas-vertical .bs-ov .rows{margin-top:auto;gap:18px}
+.theme-heap.canvas-vertical .bs-ov .row{max-width:870px;font-size:38px;gap:22px}
+.theme-heap.canvas-vertical .bs-ov .row img,.theme-heap.canvas-vertical .bs-ov .row .ic{width:68px;height:68px}
+.theme-heap.canvas-vertical .bs-ov .row .ic svg{width:36px!important;height:36px!important}
+.theme-heap.canvas-vertical .cf-card small,.theme-heap.canvas-vertical .cf-chip,.theme-heap.canvas-vertical .cf-txt.lbl,
+.theme-heap.canvas-vertical .cf-who .nm,.theme-heap.canvas-vertical .cf-logo b{font-size:32px}
+.theme-heap.canvas-vertical .cf-card b{font-size:36px}
+.theme-heap.canvas-vertical .hp-page .hd{font-size:28px} .theme-heap.canvas-vertical .hp-page .rw{font-size:30px}
+.theme-heap.canvas-vertical .hp-page .rw .pl,.theme-heap.canvas-vertical .hp-page .rw .lk{font-size:28px}
+.theme-heap.canvas-vertical .hp-trk span{font-size:30px}
+.theme-heap.canvas-vertical .hp-score{display:none}   /* phones: the top 220px sit under the apps' bar */
+
+
+/* ======================= heap: the page and its pieces ======================= */
+
+/* the ground: line pointers and tuple strips drifting up both margins (heap.js BS_GROUND.html) */
+.theme-heap .bs-ground svg.hg{position:absolute;inset:0;width:100%;height:100%}
+.theme-heap .bs-ground svg.hg text{font:500 16px JB;letter-spacing:.01em;fill:var(--navy)}
+.theme-heap .bs-ground svg.hg g.lp text{fill:var(--blue);font-weight:700}
+.theme-heap .bs-ground svg.hg rect{fill:#fff;fill-opacity:.6;stroke:var(--navy);stroke-width:1.5}
+.theme-heap .bs-ground svg.hg path.ht{fill:none;stroke:var(--navy);stroke-width:1.2;opacity:.6}
+.theme-heap .bs-ground svg.hg path.sk{fill:none;stroke:var(--navy);stroke-width:1.6}
+.theme-heap .bs-ground svg.hg g.tu:not(.dd) path,.theme-heap .bs-ground svg.hg g.lp path,.theme-heap .bs-ground svg.hg g.lp rect{display:none}
+.theme-heap .bs-ground svg.hg g.dd rect{stroke-dasharray:6 4}
+
+/* ---------- page: the jobs table drawn as Postgres's 8 KB heap page ---------- */
+.theme-heap .hp-pagew{z-index:4}
+.theme-heap .hp-page{position:relative;width:100%;box-sizing:border-box;background:#fff;border:2px solid var(--navy);border-radius:10px;box-shadow:8px 8px 0 var(--navy);overflow:hidden;color:var(--tx)}
+.theme-heap .hp-page .hd{display:flex;justify-content:space-between;align-items:center;height:50px;padding:0 22px;box-sizing:border-box;border-bottom:2px solid var(--navy);
+  font:700 18px JB;letter-spacing:.14em;color:var(--blue);background:#F7F9FB}
+.theme-heap .hp-page .ch{box-sizing:border-box;display:grid;align-items:center;height:40px;padding:0 22px;column-gap:16px;border-bottom:1px solid var(--rule);font:700 16px JB;letter-spacing:.12em;text-transform:uppercase;color:var(--tx3)}
+.theme-heap .hp-page .rw{box-sizing:border-box;position:relative;display:grid;align-items:center;height:76px;padding:0 22px;column-gap:16px;border-bottom:1px solid var(--rule);font:400 24px JB;color:var(--tx)}
+.theme-heap .hp-page .rw:last-child{border-bottom:0}
+.theme-heap .hp-page .rw > span{position:relative;z-index:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.theme-heap .hp-page .rw .id{font:700 26px JB}
+.theme-heap .hp-page .rw .tn{position:absolute;inset:0;z-index:0;opacity:0}
+.theme-heap .hp-page .rw .lk{display:flex;align-items:center;gap:8px;font:700 16px JB;letter-spacing:.04em;overflow:visible}
+.theme-heap .hp-page .rw .lk svg{width:18px;height:18px;flex:none;fill:none;stroke:currentColor;stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.theme-heap .hp-page .rw .pl{justify-self:stretch;text-align:center;font:700 17px JB;letter-spacing:.06em;padding:10px 12px;border-radius:8px;overflow:visible}
+/* row states: pend (waiting), a (worker A holds it), b (worker B holds it), done (finished, live), dead (old version, waiting for VACUUM), fail */
+.theme-heap .hp-page .rw.st-pend .pl{background:#E7ECF2;color:var(--navy)}
+.theme-heap .hp-page .rw.st-a .tn{background:rgba(51,103,145,.12)} .theme-heap .hp-page .rw.st-a .pl{background:var(--blue);color:#fff} .theme-heap .hp-page .rw.st-a .lk{color:var(--blue)}
+.theme-heap .hp-page .rw.st-b .tn{background:rgba(224,160,48,.18)} .theme-heap .hp-page .rw.st-b .pl{background:var(--amber);color:var(--navy)} .theme-heap .hp-page .rw.st-b .lk{color:var(--amberI)}
+.theme-heap .hp-page .rw.st-done .tn{background:rgba(46,139,87,.09)} .theme-heap .hp-page .rw.st-done .pl{background:var(--greenI);color:#fff}
+.theme-heap .hp-page .rw.st-fail .tn{background:rgba(179,58,58,.1)} .theme-heap .hp-page .rw.st-fail .pl{background:var(--rose);color:#fff}
+.theme-heap .hp-page .rw.st-dead .tn{background:repeating-linear-gradient(135deg,#F3F4F6 0 10px,#E6E8EC 10px 20px)}
+.theme-heap .hp-page .rw.st-dead > span{color:var(--tx3);text-decoration:line-through;text-decoration-thickness:2px}
+.theme-heap .hp-page .rw.st-dead .pl{background:transparent;color:var(--tx3);text-decoration:none}
+.theme-heap .hp-page .rw.hot{outline:3px solid var(--blue);outline-offset:-3px}
+
+/* ---------- trk: a small numbered tracker (the quick-fire five, the three final columns) ---------- */
+.theme-heap .hp-trkw{z-index:6}
+.theme-heap .hp-trk{display:flex;gap:12px;height:100%}
+.theme-heap .hp-trk span{flex:1;display:flex;align-items:center;gap:12px;padding:0 16px;min-width:0;border-radius:10px;background:#fff;border:2px solid var(--navy);
+  font:700 22px Inter;color:var(--tx);white-space:nowrap;box-sizing:border-box}
+.theme-heap .hp-trk span b{flex:none;width:40px;height:40px;border-radius:6px;display:grid;place-items:center;font:700 19px JB;background:#E7ECF2;color:var(--navy)}
+.theme-heap .hp-trk span em{font-style:normal;overflow:hidden;text-overflow:ellipsis}
+.theme-heap .hp-trk span.done{color:var(--tx2)} .theme-heap .hp-trk span.done b{background:var(--greenI);color:#fff}
+.theme-heap .hp-trk span.on{background:#E3ECF4;border-color:var(--blue);box-shadow:4px 4px 0 var(--blue)} .theme-heap .hp-trk span.on b{background:var(--blue);color:#fff}
+.theme-heap .hp-trk span.q em,.theme-heap .hp-trk span:not(.q) i{display:none}
+.theme-heap .hp-trk span.q{border-style:dashed;color:var(--tx3);background:transparent}
+.theme-heap .hp-trk span.q i{font:700 22px JB;font-style:normal;color:var(--blue);letter-spacing:.1em}
+
+/* ---------- score: the scorecard docked top right (PROJECT.score), "?" until each verdict's beat ---------- */
+.theme-heap .hp-score{position:absolute;right:16px;top:16px;display:flex;align-items:stretch;background:#fff;border:2px solid var(--navy);border-radius:10px;
+  box-shadow:4px 4px 0 var(--navy);z-index:45;opacity:0;pointer-events:none;transform-origin:100% 0}
+.theme-heap .hp-score .sc{position:relative;display:flex;flex-direction:column;align-items:center;gap:3px;min-width:56px;padding:5px 8px 7px;border-left:1px solid var(--rule)}
+.theme-heap .hp-score .sc:first-child{border-left:0;border-radius:8px 0 0 8px} .theme-heap .hp-score .sc:last-child{border-radius:0 8px 8px 0}
+.theme-heap .hp-score .lg{width:32px;height:32px;box-sizing:border-box;border-radius:8px;border:1.5px solid var(--navy);background:#fff;display:grid;place-items:center;transform-origin:50% 50%}
+.theme-heap .hp-score .lg img{width:22px;height:22px;display:block}
+.theme-heap .hp-score .vd{font:700 16px/1.06 Inter;letter-spacing:-.01em;color:var(--navy);text-align:center;max-width:94px}
+.theme-heap .hp-score .q{display:block;width:100%;text-align:center;font:700 16px/1.06 JB;color:var(--blue)}
+.theme-heap .hp-score .sc .vd{display:none} .theme-heap .hp-score .sc.on .vd{display:block} .theme-heap .hp-score .sc.on .q{display:none}
+.theme-heap .hp-score .sc.on.ok{background:#E6F2EB} .theme-heap .hp-score .sc.on.keep{background:#FBF1DC}
+/* badges are 32px tall: the probe wants 6px between a glyph and the edge of the fill it sits on */
+.theme-heap .hp-score .bd{position:absolute;top:-14px;right:-10px;z-index:2;display:none;font-style:normal}
+.theme-heap .hp-score .sc.on .bd{display:grid}
+.theme-heap .hp-score .sc.ok .bd{width:32px;height:32px;box-sizing:border-box;border-radius:50%;place-items:center;background:var(--greenI);color:#fff;font:800 16px/1 Inter;border:1.5px solid var(--navy)}
+.theme-heap .hp-score .sc.keep .bd{place-items:center;height:34px;box-sizing:border-box;padding:0 8px;border-radius:6px;background:var(--amber);color:var(--navy);font:700 16px/1.1 JB;border:1.5px solid var(--navy)}
+
+/* the subscribe bar (base.css) colours its done button and the bell menu with --tx2, which is dark ink on this light
+   theme (1.6:1 on the bar): the bar keeps YouTube's own dark-on-light / light-on-dark pairs on every heap slide */
+#stage.theme-heap .sub-cta .sb-btn.done{background:#E5E9EF;color:#13233B}
+#stage.theme-heap .sub-cta .sb-mrow{color:#D6DEE8} #stage.theme-heap .sub-cta .sb-mrow.hl{color:#fff}
