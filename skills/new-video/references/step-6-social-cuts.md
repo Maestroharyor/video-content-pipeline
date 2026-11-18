@@ -106,4 +106,4 @@ opening (hook band at the top, face centred) and the end card (thumbnail, title,
 reports beats whose words were cut (they fall back to the template's schedule); look at those slides.
 
 **Gate:** the user watched each best-of preview and signed off before any `--cut all`. Then ffprobe every file
-(1080×1920, 30fps, bt709, AAC, ≤140s) and write the copy per cut with `/social-copy` (Step 5), linking the full video.
+(9:16, bt709, AAC, ≤140s, **≤512 MB**: renderer/config.js caps every vertical render at 512 MB, whatever project.js or `--max-size` says) and write the copy per cut with `/social-copy` (Step 5), linking the full video.

@@ -18,12 +18,16 @@ const { assembleMp4, bitrateCeiling } = require('./video');
 const { loadTimeline, validateTimeline } = require('./timeline');
 const { findVo } = require('./transcribe');
 const { buildCaptions, srt } = require('./captions');
+const { clearPreviews } = require('./previews');
 const TL = require('../core/timeline');
 
 /* o.transparent = capture on alpha; o.capsOnly = alpha capture of the caption band alone (dual-render's reveal layer) */
 async function captureTimeline(cfg, L, o) {
   const N = Math.round(TL.total(L) * cfg.fps);
-  const from = Math.max(0, Math.round((o.from || 0) * cfg.fps)), to = o.to != null ? Math.min(N, Math.round(o.to * cfg.fps)) : N;
+  // first frame at or after each edge, the rule scripts/dual-render.js uses for its chunks: rounding here while dual
+  // used ceil left a chunk one PNG short, and that frame showed bare footage (projects/php2shell, preview 4)
+  const fr = t => Math.ceil(t * cfg.fps - 1e-6);
+  const from = Math.max(0, fr(o.from || 0)), to = o.to != null ? Math.min(N, fr(o.to)) : N;
   fs.mkdirSync(o.dir, { recursive: true });
   const manifest = path.join(o.dir, '.manifest.json');
   // frames are only reusable at the same sampling: a manifest from another resolution or fps is discarded, never mixed in
@@ -43,7 +47,10 @@ async function captureTimeline(cfg, L, o) {
       for (let k = a; k < b; k++) {
         const f = todo[k];
         await page.evaluate(T => window.setTime(T), f / cfg.fps);
-        await stage.screenshot({ path: path.join(o.dir, String(f).padStart(5, '0') + '.png'), omitBackground: !!o.transparent, optimizeForSpeed: true });
+        /* captureBeyondViewport false: an element screenshot defaults to true, which makes Chrome re-lay out the page for every
+           capture. The stage is the viewport, so nothing beyond it is ever needed. (The 4K drop-outs on undo-git-mistakes s12
+           were not this but the ground's glow layers, core/styles/base.css.) */
+        await stage.screenshot({ path: path.join(o.dir, String(f).padStart(5, '0') + '.png'), omitBackground: !!o.transparent, optimizeForSpeed: true, captureBeyondViewport: false });
         done[f] = 1; tick();
         if (count % 300 === 0) save();   // a long 4K capture that gets interrupted continues with --resume instead of starting over
       }
@@ -51,7 +58,24 @@ async function captureTimeline(cfg, L, o) {
     process.stdout.write('\n');
     save();
   }
+  if (o.transparent) keepAlpha(o.dir, from, to);
   return { dir: o.dir, frames: N, from, to };
+}
+/* Chrome writes a frame with no transparent pixel as a plain RGB PNG even with omitBackground. A sequence that switches
+   from RGBA to RGB mid-stream breaks ffmpeg's overlay (with -reinit_filter 0 those frames came out empty; with reinit the
+   frame beside the switch did): a split wipe whose plate covers the whole frame at its last frames showed the face beside
+   a black panel (reverse-proxy-lb-gateway, preview 7). Every alpha capture is made RGBA throughout: an RGB file (PNG colour
+   type 2, the byte after IHDR's size and bit depth) is rewritten with an opaque alpha channel. */
+function keepAlpha(dir, from, to) {
+  for (let f = from; f < to; f++) {
+    const file = path.join(dir, String(f).padStart(5, '0') + '.png');
+    if (!fs.existsSync(file)) continue;
+    const fd = fs.openSync(file, 'r'), b = Buffer.alloc(1); fs.readSync(fd, b, 0, 1, 25); fs.closeSync(fd);
+    if (b[0] === 6 || b[0] === 4) continue;   // already RGBA / grey+alpha
+    const tmp = file + '.rgba.png';
+    execFileSync('ffmpeg', ['-hide_banner', '-loglevel', 'error', '-y', '-i', file, '-pix_fmt', 'rgba', tmp]);
+    fs.renameSync(tmp, file);
+  }
 }
 async function main() {
   const args = parseArgs(process.argv.slice(2));
@@ -95,12 +119,15 @@ async function main() {
   if (vo && !fs.existsSync(vo)) console.warn('  ! voiceover not found:', vo);
   const beds = L.filter(e => e.audio).map(e => ({ file: resolveAudio(cfg.projectDir, e.audio), at: e.start, id: e.id }));
   beds.filter(b => !b.file).forEach(b => console.warn('  ! audio bed not found for', b.id));
-  const out = path.join(cfg.outputDir, 'final', cfg.outName + (args.preview ? '-preview' : '') + '.mp4');
+  const out = args.preview ? path.join(cfg.previewDir, cfg.outName + '-preview.mp4') : path.join(cfg.outputDir, 'final', cfg.outName + '.mp4');
   assembleMp4(dir, cfg, { out, total, vo: vo && fs.existsSync(vo) ? vo : null, beds: beds.filter(b => b.file), preview: args.preview, over, overEnd, range: { from: args.from, to: args.to } });
-  if (inject.CAPTIONS) fs.writeFileSync(path.join(cfg.outputDir, 'final', cfg.outName + '.srt'), srt(inject.CAPTIONS.groups));
+  // the .srt goes beside the file it captions: a preview's into renders/previews/, never over the master's
+  if (inject.CAPTIONS) fs.writeFileSync(out.replace(/\.mp4$/, '.srt'), srt(inject.CAPTIONS.groups));
   if (!args.keepFrames) fs.rmSync(dir, { recursive: true, force: true });
   const bytes = fs.statSync(out).size;
   if (bytes > cfg.maxSize) console.warn(`  ! ${(bytes / 1e9).toFixed(2)} GB is over the ${(cfg.maxSize / 1e9).toFixed(2)} GB budget (raise --max-size or --crf)`);
+  /* a full master (not a --from/--to stretch) clears every preview of the project (renderer/previews.js) */
+  if (!args.preview && args.from == null && args.to == null) clearPreviews(cfg);
   console.log(`done → ${path.relative(cfg.root, out)}  ${(bytes / 1e6).toFixed(0)} MB  (capture ${capT.toFixed(0)}s, total ${((Date.now() - t0) / 1000).toFixed(0)}s${vo && fs.existsSync(vo) ? ', voiceover ' + path.basename(vo) : ', no voiceover'}${beds.length ? ', ' + beds.length + ' bed(s)' : ''})`);
 }
 if (require.main === module) main().catch(e => { console.error(e.message || e); process.exit(1); });

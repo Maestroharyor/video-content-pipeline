@@ -10,10 +10,11 @@ npm run timeline -- --project <slug> --check         # rebuild without writing a
 npm run sfx -- --project <slug>                      # sound effects from the beats (alive kit): re-run after every timeline change
 
 # 1. the preview — minutes, half size, 30fps. Show it, wait for sign-off.
-npm run dual -- --project <slug> --only a --preview --source <the voiceover>   # with a splice → <slug>-preview.mp4
-npm run assemble -- --project <slug> --preview                                 # no splice → <slug>.mp4 at half size
+npm run dual -- --project <slug> --only a --preview --source <the voiceover>   # with a splice → renders/previews/<slug>[-variant]-preview.mp4
+npm run assemble -- --project <slug> --preview                                 # no splice → renders/previews/<slug>[-variant]-preview.mp4
 
 # 2. only after the user approves it — the master
+#    (the master run deletes its own preview once written: the user, "once you're done with the main render, delete the preview")
 npm run dual -- --project <slug> --only a --source <the voiceover>   # with a splice
 npm run assemble -- --project <slug>                                 # no splice
 
@@ -98,7 +99,8 @@ Finish the cue sheet: final timeline totals, what was anchored vs estimated, not
 - Transcription: model, word count, anything corrected by hand
 - Assets downloaded and their sources; anything that could not be retrieved
 - Beats: how many resolved, what fell back to the fraction schedule and why
-- Output paths: `projects/<slug>/renders/final/<slug>.mp4` (+ `.srt`), `renders/poster`, `renders/strip`, contact sheet, cue sheet,
+- Output paths: the finished files in `projects/<slug>/deliver/`, `video/` and `posts/` (`npm run deliver -- --project <slug>` rebuilds it; the
+  finishing commands do it themselves), plus `renders/poster`, `renders/strip`, contact sheet and cue sheet for review,
   optional clips in `renders/mp4` + `renders/gif`
 - Commands to re-run: `npm run review`, `npm run assemble`, `npm run preview`
 - Which file is the preview and which is the master, named explicitly, so neither gets uploaded by mistake

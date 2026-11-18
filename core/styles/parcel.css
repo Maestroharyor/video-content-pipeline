@@ -1,0 +1,127 @@
+/* "parcel" theme (PROJECT.theme = 'parcel'), built for projects/backend-one-click as the second look.
+   The request is a parcel: kraft-paper ground, ink-bordered shipping labels with a hard offset shadow, a tracking
+   timeline, rubber stamps for verdicts (CACHED, PAID, DUPLICATE). Stations are paper cards, edges are dashed ink
+   routes, packets are little labels. A tracking stub (the HUD) rides the top-left of every scene.
+   Components: core/styles/trip.css + lanes.css. Version B plate recoloured for paper. */
+#stage.theme-parcel{--ovs-rgb:24,18,12;--paper:#FFFDF6;--paper2:#F6F0E2;--ink:#2A2118;--ink2:#7A6A55;
+  --bg1:#FFFDF6;--bg2:#F6F0E2;--bd2:#2A2118;--tx:#2A2118;--tx2:#5E4E3B;--tx3:#8B7860;
+  --plate:linear-gradient(180deg,#EDE4D2,#E2D7C0 70%);--plate-edge:#2A2118}
+/* ================= parcel: kraft paper, a shipping label and a tracking timeline ================= */
+#stage.theme-parcel{
+  --bg0:#E9DFCB; --tx:#2A2118; --tx2:#5E4E3B; --tx3:#8B7860; --ink:#2A2118;
+  --amber:#F2B33D; --rose:#C8372D; --green:#2E7D4F; --blue:#2D5DA8; --teal:#2A8C86; --violet:#6B4FA0; --orange:#D9692B;
+  background:#E9DFCB;
+}
+#stage.theme-parcel.transparent{background:transparent}
+#stage.theme-parcel .bgfx .grid{opacity:.5;background-image:radial-gradient(rgba(90,60,30,.10) 1.2px,transparent 1.4px);background-size:7px 7px}
+#stage.theme-parcel .bgfx .vig{background:radial-gradient(120% 100% at 50% 45%,transparent 60%,rgba(80,50,20,.22))}
+#stage.theme-parcel .eyebrow{font-family:JB;letter-spacing:.18em;color:#8B6A3E}
+#stage.theme-parcel .h1{color:var(--tx);font-weight:900;letter-spacing:-.03em}
+#stage.theme-parcel .h1 em{color:var(--tx);background-image:linear-gradient(var(--amber),var(--amber))}
+.lk-parcel .lk-it{position:absolute}
+.lk-parcel .label{background:#FFFDF6;border:3px solid var(--ink);box-shadow:10px 10px 0 var(--ink);font-family:JB;color:var(--ink)}
+.lk-parcel .label .hd{display:flex;justify-content:space-between;align-items:center;padding:16px 22px;background:var(--ink);color:#FFFDF6;font:700 20px JB;letter-spacing:.12em}
+.lk-parcel .label .row{display:flex;gap:18px;padding:16px 22px;border-bottom:3px dashed var(--ink);font:700 24px JB;align-items:baseline}
+.lk-parcel .label .row small{width:120px;flex:none;font:700 16px JB;letter-spacing:.14em;color:var(--tx3)}
+.lk-parcel .label .row .ip{font-size:32px;min-height:38px}
+.lk-parcel .label .row .ip::after{content:"▍";color:var(--rose)} .lk-parcel .typed .ip::after,.lk-parcel .label .row .ip.done::after{content:""}
+.lk-parcel .bar{height:74px;margin:18px 22px;background:repeating-linear-gradient(90deg,var(--ink) 0 4px,transparent 4px 7px,var(--ink) 7px 9px,transparent 9px 14px,var(--ink) 14px 19px,transparent 19px 22px,var(--ink) 22px 24px,transparent 24px 29px)}
+.lk-parcel .stamp{border:6px solid var(--rose);color:var(--rose);font:900 40px ID;padding:6px 20px;border-radius:10px;letter-spacing:.06em;white-space:nowrap;
+  background:rgba(255,253,246,.0);mix-blend-mode:multiply}
+.lk-parcel .stamp.g{border-color:var(--green);color:var(--green)} .lk-parcel .stamp.b{border-color:var(--blue);color:var(--blue)}
+.lk-parcel .trk{background:#FFFDF6;border:3px solid var(--ink);box-shadow:10px 10px 0 var(--ink)}
+.lk-parcel .trk .th{padding:16px 24px;border-bottom:3px solid var(--ink);font:700 20px JB;letter-spacing:.12em;color:var(--tx3);display:flex;justify-content:space-between}
+.lk-parcel .cp{display:flex;align-items:center;gap:20px;height:74px}
+.lk-parcel .cp .dt{width:30px;height:30px;border-radius:50%;border:4px solid var(--ink);background:#FFFDF6;flex:none;box-sizing:border-box;display:flex;align-items:center;justify-content:center}
+.lk-parcel .cp .dt svg{width:18px;height:18px;color:#FFFDF6;opacity:0}
+.lk-parcel .on .cp .dt,.lk-parcel .cp.on .dt{background:var(--ink)} .lk-parcel .on .cp .dt svg,.lk-parcel .cp.on .dt svg{opacity:1}
+.lk-parcel .cp.now .dt{background:var(--amber)}
+.lk-parcel .cp b{display:block;font:800 27px ID;color:var(--ink)}
+.lk-parcel .cp i{display:block;font:500 17px JB;font-style:normal;color:var(--tx3);margin-top:3px}
+.lk-parcel .cp .lg{display:flex;gap:10px;margin-left:auto}
+.lk-parcel .vline{background:var(--ink);transform-origin:50% 0}
+.lk-parcel .note{background:#FFF1A8;padding:14px 14px 18px;box-shadow:6px 8px 0 rgba(42,33,24,.25);transform:rotate(3deg);font:700 18px Inter;color:var(--ink)}
+.lk-parcel .note img{display:block;width:100%;border:2px solid var(--ink)}
+.lk-parcel .note span{display:block;margin-top:10px}
+.lk-parcel .chipl{display:inline-flex;align-items:center;gap:10px;padding:8px 14px;border:3px solid var(--ink);background:#FFFDF6;font:700 20px JB;color:var(--ink)}
+.lk-parcel .chipl img{width:28px;height:28px}
+.lk-parcel .seal{width:96px;height:96px;border-radius:50%;background:var(--rose);color:#FFFDF6;display:flex;align-items:center;justify-content:center;border:4px solid var(--ink)}
+.lk-parcel .seal svg{width:48px;height:48px} .lk-parcel .seal .o{display:none}
+.lk-parcel .on .seal{background:var(--green)} .lk-parcel .on .seal .c{display:none} .lk-parcel .on .seal .o{display:block}
+.lk-parcel .lk-cells i{position:absolute;background:#FFFDF6;border:3px solid var(--ink);font:700 14px JB;color:var(--tx3);display:flex;align-items:center;justify-content:center}
+.lk-parcel .lk-cells i.on{background:var(--amber);color:var(--ink)}
+.lk-parcel .route{display:flex;align-items:center;gap:18px}
+.lk-parcel .route .ar{font:900 40px ID;color:var(--ink)}
+.lk-parcel .lk-rider{display:none} .lk-parcel .lk-pulse{display:none}
+/* ---------- the pass components on paper ---------- */
+#stage.theme-parcel .dn-st{background:#FFFDF6;border:3px solid #2A2118;border-radius:6px;box-shadow:8px 8px 0 #2A2118}
+#stage.theme-parcel .dn-st .sl b{color:#2A2118} #stage.theme-parcel .dn-st .sl i{color:#8B7860}
+#stage.theme-parcel .dn-st .ic{border-radius:6px;background:color-mix(in srgb,var(--sc) 16%,#FFFDF6);border:3px solid #2A2118;color:#2A2118}
+#stage.theme-parcel .dn-st .lg{border-radius:6px;border:3px solid #2A2118;background:#fff}
+#stage.theme-parcel .dn-st.hub{box-shadow:8px 8px 0 #2A2118,0 0 0 8px color-mix(in srgb,var(--sc) 30%,transparent)}
+#stage.theme-parcel .dn-st.hot{background:#FFF1C9}
+#stage.theme-parcel .dn-tk{border:3px solid #2A2118;border-radius:4px;box-shadow:8px 8px 0 #2A2118;-webkit-mask:none;mask:none;background:#FFFDF6}
+#stage.theme-parcel .dn-tk .clip{display:none}
+#stage.theme-parcel .dn-tk .th{background:#2A2118;color:#FFFDF6;margin:-30px -26px 14px;padding:14px 22px;border:0}
+#stage.theme-parcel .dn-tk .th em{color:#E9DFCB}
+#stage.theme-parcel .dn-e>path{stroke:#2A2118;stroke-width:5;stroke-dasharray:14 10}
+#stage.theme-parcel .dn-e.hot>path{stroke:#B7791F} #stage.theme-parcel .dn-e.ok>path{stroke:#2E7D4F} #stage.theme-parcel .dn-e.rose>path{stroke:#C8372D}
+#stage.theme-parcel .dn-e.api>path,#stage.theme-parcel .dn-e.b>path{stroke:#2D5DA8} #stage.theme-parcel .dn-e.ai>path{stroke:#6B4FA0}
+#stage.theme-parcel .dn-ride span{background:#C8A46B;color:#2A2118;border:3px solid #2A2118;border-top-width:3px;border-radius:4px;
+  box-shadow:4px 4px 0 #2A2118;background-image:linear-gradient(90deg,transparent 46%,rgba(42,33,24,.25) 46% 54%,transparent 54%)}
+#stage.theme-parcel .dn-el{background:#FFFDF6;border:2px solid #2A2118;color:#2A2118}
+#stage.theme-parcel .dn-chip{background:#FFFDF6;border:3px solid #2A2118;color:#2A2118;border-radius:4px;box-shadow:4px 4px 0 #2A2118}
+#stage.theme-parcel .dn-chip.a,#stage.theme-parcel .dn-chip.t,#stage.theme-parcel .dn-chip.v,#stage.theme-parcel .dn-chip.r,#stage.theme-parcel .dn-chip.g{background:color-mix(in srgb,var(--cc) 14%,#FFFDF6);border-color:#2A2118}
+#stage.theme-parcel .dn-chip img{background:#fff}
+#stage.theme-parcel .dn-bd{background:color-mix(in srgb,var(--bc) 18%,#FFFDF6);border:3px solid #2A2118;color:#2A2118;border-radius:4px;box-shadow:4px 4px 0 #2A2118}
+#stage.theme-parcel .dn-stamp{background:transparent;mix-blend-mode:multiply;--sc:#C8372D}
+#stage.theme-parcel .dn-stamp.g{--sc:#2E7D4F} #stage.theme-parcel .dn-stamp.a{--sc:#B7791F} #stage.theme-parcel .dn-stamp.t{--sc:#2A8C86}
+#stage.theme-parcel .dn-gh{background:rgba(255,253,246,.5);border-color:#8B7860;color:#8B7860}
+#stage.theme-parcel .dn-gh b{color:#5E4E3B}
+#stage.theme-parcel .dn-cnt b{color:#2A2118} #stage.theme-parcel .dn-txt{color:#2A2118}
+#stage.theme-parcel .dn-x{background:#C8372D}
+#stage.theme-parcel .dn-ex{background:#FFFDF6;border-color:#C8372D;color:#C8372D}
+#stage.theme-parcel .h1 em::after{display:none}
+#stage.theme-parcel .bubble,#stage.theme-parcel .bub{border:3px solid #2A2118;box-shadow:5px 5px 0 #2A2118}
+
+/* ---------- the HUD: a tracking stub, top-left ---------- */
+.jr-hud{position:absolute;left:58px;top:34px;z-index:9;display:flex;align-items:center;gap:22px;opacity:0;pointer-events:none}
+.theme-parcel .jr-hud{padding:12px 18px;background:#FFFDF6;border:3px solid #2A2118;box-shadow:5px 5px 0 #2A2118}
+.theme-parcel .jr-hud .ln{position:relative;width:240px;height:22px}
+.theme-parcel .jr-hud .ln i{position:absolute;top:3px;width:14px;height:16px;background:#E9DFCB;border:2px solid #2A2118;box-sizing:border-box}
+.theme-parcel .jr-hud .ln i.done{background:#2A2118} .theme-parcel .jr-hud .ln i.on{background:#F2B33D;top:0;height:22px}
+.theme-parcel .jr-hud .tr{display:none}
+.theme-parcel .jr-hud .nm{display:flex;flex-direction:column;line-height:1.1}
+.theme-parcel .jr-hud .nm em{font:700 15px JB;font-style:normal;letter-spacing:.14em;text-transform:uppercase;color:#8B7860}
+.theme-parcel .jr-hud .nm b{font:800 21px ID;color:#2A2118}
+/* version B: the HUD rides along in over windows (above the left column) and in split windows (top of the plate) */
+#stage.transparent .jr-hud{display:none}
+#stage.transparent .slide.ovs .jr-hud,#stage.transparent .slide.split .jr-hud{display:flex}
+#stage.transparent.canvas-horizontal .slide.split .jr-hud{left:calc(960px - 600px / var(--spk,.8));top:calc(540px - 500px / var(--spk,.8))}
+
+.lk-cells{position:absolute} .lk-cells i{position:absolute}
+.lk-it.gx{transform-origin:0 50%}
+.lk-metro .count{white-space:nowrap}
+/* version B over the face: the fade is dark ink (a cream fade washed the face out), so the heading turns paper-white;
+   cards keep their paper */
+#stage.theme-parcel.transparent .slide.ovs .h1{color:#FFFDF6}
+#stage.theme-parcel.transparent .slide.ovs .eyebrow{color:#E9C98B}
+#stage.theme-parcel.transparent .slide.ovs .h1 em{color:#FFFDF6}
+/* ---------- the ground: kraft fibre, dashed routes, postmarks (kit.js) ---------- */
+.jr-ground{position:absolute;inset:-40px;pointer-events:none}
+.jr-ground.parcel .fib{position:absolute;inset:0;opacity:.55;mix-blend-mode:multiply;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='420' height='420'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.012 .9' numOctaves='3' seed='7'/><feColorMatrix values='0 0 0 0 .42  0 0 0 0 .30  0 0 0 0 .18  0 0 0 .22 0'/></filter><rect width='420' height='420' filter='url(%23f)'/></svg>")}
+.jr-ground.parcel .rt{position:absolute;left:40px;top:40px;width:1920px;height:1080px;opacity:.22}
+.jr-ground.parcel .rt path{fill:none;stroke:#7A5B36;stroke-width:4;stroke-dasharray:16 12;stroke-linecap:round}
+.jr-ground.parcel .pm{position:absolute;width:190px;height:190px;margin:-95px 0 0 -95px;border-radius:50%;border:5px double rgba(122,91,54,.28);
+  transform:rotate(var(--r));display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px}
+.jr-ground.parcel .pm b{font:800 24px JB;letter-spacing:.14em;color:rgba(122,91,54,.32)}
+.jr-ground.parcel .pm i{font:700 15px JB;font-style:normal;color:rgba(122,91,54,.28)}
+.jr-ground.parcel .pk{position:absolute;left:40px;top:40px;width:26px;height:20px;margin:-10px 0 0 -13px;background:#C8A46B;border:2px solid rgba(42,33,24,.45);opacity:.55;
+  background-image:linear-gradient(90deg,transparent 44%,rgba(42,33,24,.3) 44% 56%,transparent 56%)}
+#stage.theme-parcel .bgfx .grid{opacity:.25}
+#stage.theme-parcel .dn-e{color:#2A2118} #stage.theme-parcel .dn-e.hot{color:#B7791F} #stage.theme-parcel .dn-e.ok{color:#2E7D4F}
+#stage.theme-parcel .dn-e.rose{color:#C8372D} #stage.theme-parcel .dn-e.api,#stage.theme-parcel .dn-e.b{color:#2D5DA8} #stage.theme-parcel .dn-e.ai{color:#6B4FA0}
+/* readability (revision 1): checkpoint sub-lines were 17px light brown on cream */
+#stage .lk-parcel .cp i{font-size:20px;color:#6E5A43}
+.lk-parcel .label .row small{color:#6E5A43}

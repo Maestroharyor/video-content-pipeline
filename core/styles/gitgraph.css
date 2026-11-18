@@ -1,0 +1,439 @@
+/* "gitgraph" theme (PROJECT.theme = 'gitgraph'), built for projects/undo-git-mistakes: the deck is a dark Git client.
+   A near-black GitHub-dark ground with faint commit-graph lanes creeping across it and git marks watermarked at ~5%;
+   panels are the client's own surfaces (#161B22, 1px #30363D borders, 12px radius); commits are rings on coloured lanes
+   with mono hashes; HEAD is an orange pill with an arrowhead, branches green, the remote violet; files carry Git's status
+   letters (M amber, A green, D red, U grey). Orange is HEAD and the accent, red destructive, green safe.
+   The scene engine is bistro (core/templates/gitgraph.js on bistro.js on cafe.js). This file holds bistro's theme-scoped
+   rules renamed to .theme-gitgraph (the app windows .bs-vsc / .bs-term / .bs-chrome stay in bistro.css, which the project
+   links too), re-coloured below, then the client's own pieces. Linked after cafe.css, lanes.css (cast + fx: theme trap 3)
+   and bistro.css. */
+#stage.theme-gitgraph{
+  --bg0:#090D18; --bg1:#121829; --bg2:#182036; --bd:rgba(255,255,255,.09); --bd2:rgba(255,255,255,.18);
+  --tx:#F3F5FA; --tx2:#AEB8CD; --tx3:#7C88A1;
+  --amber:#FFB547; --rose:#FF6B57; --blue:#4DB5FF; --green:#34D399; --teal:#2DD4BF; --violet:#A78BFA; --orange:#FF8A3D;
+  --glass:linear-gradient(180deg,rgba(28,36,60,.92),rgba(16,22,40,.94));
+  background:#090D18;
+}
+#stage.theme-gitgraph.transparent{background:transparent}   /* alpha captures must stay clear (theme trap 1) */
+.theme-gitgraph .bgfx .grid{inset:-60px;opacity:1;background:radial-gradient(rgba(255,255,255,.07) 1.2px,transparent 1.4px) 0 0/36px 36px;
+  -webkit-mask:radial-gradient(90% 80% at 50% 45%,#000 40%,transparent 90%);mask:radial-gradient(90% 80% at 50% 45%,#000 40%,transparent 90%)}
+.theme-gitgraph .bgfx .glow.a{background:radial-gradient(60% 45% at 50% 110%,rgba(255,170,90,.16),transparent 70%)}
+.theme-gitgraph .bgfx .glow.b{background:radial-gradient(55% 40% at 12% -5%,rgba(77,120,255,.16),transparent 70%)}
+.theme-gitgraph .bgfx .vig{background:radial-gradient(120% 100% at 50% 45%,transparent 55%,rgba(0,0,0,.6))}
+#stage.theme-gitgraph.transparent .bgfx{display:none}
+
+/* heading: a dot + mono eyebrow, white headline, the key phrase in the role colour with its underline */
+#stage.theme-gitgraph .eyebrow{font:700 var(--eb-size) JB;letter-spacing:.2em;text-transform:uppercase;color:var(--acc,var(--rose))}
+#stage.theme-gitgraph .eyebrow::before{content:"";display:inline-block;vertical-align:.12em;margin-right:16px;width:12px;height:12px;border-radius:50%;background:currentColor;box-shadow:0 0 14px currentColor}
+#stage.theme-gitgraph .eyebrow.b{color:var(--blue)} #stage.theme-gitgraph .eyebrow.g{color:var(--green)} #stage.theme-gitgraph .eyebrow.a{color:var(--amber)}
+#stage.theme-gitgraph .eyebrow.t{color:var(--teal)} #stage.theme-gitgraph .eyebrow.v{color:var(--violet)} #stage.theme-gitgraph .eyebrow.r{color:var(--rose)}
+#stage.theme-gitgraph .h1{color:var(--tx);letter-spacing:-.03em}
+#stage.theme-gitgraph .sub{color:var(--tx2)}
+#stage.theme-gitgraph .caps{width:max-content}   /* theme trap 2 */
+
+/* ---------- edges: lit paths with arrowheads ---------- */
+.theme-gitgraph .cf-edge{stroke:rgba(255,255,255,.35);stroke-width:4;filter:drop-shadow(0 0 6px rgba(255,255,255,.18))}
+.theme-gitgraph .cf-edges marker path{fill:rgba(255,255,255,.6)}
+.theme-gitgraph .cf-edge.r{stroke:var(--rose);filter:drop-shadow(0 0 8px rgba(255,107,87,.6))} .theme-gitgraph .cf-edge.b,.theme-gitgraph .cf-edge.hot{stroke:var(--blue);filter:drop-shadow(0 0 8px rgba(77,181,255,.6))}
+.theme-gitgraph .cf-edge.g,.theme-gitgraph .cf-edge.ok{stroke:var(--green);filter:drop-shadow(0 0 8px rgba(52,211,153,.6))} .theme-gitgraph .cf-edge.a{stroke:var(--amber);filter:drop-shadow(0 0 8px rgba(255,181,71,.6))}
+.theme-gitgraph .cf-edge.t{stroke:var(--teal);filter:drop-shadow(0 0 8px rgba(45,212,191,.6))} .theme-gitgraph .cf-edge.mute{stroke:rgba(255,255,255,.22);filter:none}
+.theme-gitgraph .cf-edge.bad{stroke:var(--rose)}
+.theme-gitgraph .cf-edge.strike{stroke:#FF4D4D;stroke-width:9}
+.theme-gitgraph .cf-edge.thick{stroke-width:6}
+
+/* ---------- dark glass cards with a role-colour bar ---------- */
+.theme-gitgraph .cf-card{background:var(--glass);color:var(--tx);border:1.5px solid var(--bd);border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.45),inset 0 4px 0 var(--cbar,rgba(255,255,255,.14))}
+.theme-gitgraph .cf-card b{font:800 32px ID;color:var(--tx)} .theme-gitgraph .cf-card small{font:600 22px Inter;color:var(--tx2)}
+.theme-gitgraph .cf-card .ic{color:var(--cbar,var(--tx));width:64px;height:64px}
+.theme-gitgraph .cf-card .mk{width:84px;height:84px;background:#fff;border-radius:18px} .theme-gitgraph .cf-card .mk img{max-width:56px;max-height:56px}
+.theme-gitgraph .cf-card .ph{width:84px;height:84px;max-height:84px;flex:none;object-fit:contain;border-radius:14px;background:#fff;padding:8px;box-sizing:border-box}
+.theme-gitgraph .cf-card .wh{width:120px;height:120px;filter:drop-shadow(2px 0 0 #E9EEF8) drop-shadow(-2px 0 0 #E9EEF8) drop-shadow(0 2px 0 #E9EEF8) drop-shadow(0 -2px 0 #E9EEF8)}
+.theme-gitgraph .cf-card .tg{background:rgba(255,255,255,.1);color:var(--tx);border:1px solid var(--bd2)}
+.theme-gitgraph .cf-card.r{--cbar:var(--rose)} .theme-gitgraph .cf-card.b{--cbar:var(--blue)} .theme-gitgraph .cf-card.g{--cbar:var(--green)}
+.theme-gitgraph .cf-card.a{--cbar:var(--amber)} .theme-gitgraph .cf-card.t{--cbar:var(--teal)} .theme-gitgraph .cf-card.v{--cbar:var(--violet)}
+.theme-gitgraph .cf-card.hot{outline:3px solid var(--cbar,var(--blue));outline-offset:4px;box-shadow:0 0 40px rgba(77,181,255,.35),0 24px 60px rgba(0,0,0,.45),inset 0 4px 0 var(--cbar,var(--blue))}
+.theme-gitgraph .cf-card.okc{outline:3px solid var(--green);outline-offset:4px;box-shadow:0 0 40px rgba(52,211,153,.35),0 24px 60px rgba(0,0,0,.45)}
+.theme-gitgraph .cf-card.red{background:linear-gradient(180deg,rgba(80,24,24,.95),rgba(50,16,20,.95));--cbar:#FF4D4D} .theme-gitgraph .cf-card.red b{color:#FFB4A8}
+.theme-gitgraph .cf-card.idle{filter:grayscale(1);opacity:.35}
+.theme-gitgraph .cf-card.left{gap:24px}
+/* brand marks on white tiles (logos readable on dark: house rule) */
+.theme-gitgraph .cf-logo .mk{background:#fff;border:0;border-radius:24px;box-shadow:0 0 0 1px rgba(255,255,255,.2),0 20px 50px rgba(0,0,0,.5)}
+.theme-gitgraph .cf-logo b{color:var(--tx);font:800 28px ID}
+.theme-gitgraph .cf-logo.hot .mk{box-shadow:0 0 0 4px var(--acc,var(--rose)),0 0 40px var(--acc,var(--rose))}
+.theme-gitgraph .cf-logo.idle{filter:grayscale(1);opacity:.35}
+/* characters (DiceBear Notionists, black line art): never colour-inverted (review 2); a light sticker outline keeps the
+   silhouette readable on the dark ground */
+.theme-gitgraph .cf-who img{filter:drop-shadow(2px 0 0 #E9EEF8) drop-shadow(-2px 0 0 #E9EEF8) drop-shadow(0 2px 0 #E9EEF8) drop-shadow(0 -2px 0 #E9EEF8)}
+.theme-gitgraph .cf-who .nm{font:700 20px JB;letter-spacing:.06em;color:var(--tx);background:rgba(18,24,41,.95);border:1px solid var(--bd2);border-radius:8px;padding:6px 14px;bottom:-34px}
+.theme-gitgraph .cf-who.idle{opacity:.35}
+/* chips, stamps, text, tickets, bubbles */
+.theme-gitgraph .cf-chip{background:rgba(18,24,41,.92);border:1.5px solid var(--bd2);color:var(--tx);border-radius:999px;font:700 24px Inter;padding:10px 22px}
+.theme-gitgraph .cf-chip.mono{font:700 22px JB}
+.theme-gitgraph .cf-chip img{background:#fff;border-radius:8px}
+.theme-gitgraph .cf-chip svg{stroke:currentColor}
+.theme-gitgraph .cf-chip.r{border-color:var(--rose);color:#FFC2B8} .theme-gitgraph .cf-chip.b{border-color:var(--blue);color:#BEE3FF}
+.theme-gitgraph .cf-chip.g{border-color:var(--green);color:#B6F2DA} .theme-gitgraph .cf-chip.a{border-color:var(--amber);color:#FFE2B3}
+.theme-gitgraph .cf-chip.t{border-color:var(--teal);color:#B4F5EC} .theme-gitgraph .cf-chip.v{border-color:var(--violet);color:#DDD3FF}
+.theme-gitgraph .cf-chip.fill-r{background:var(--rose);border-color:var(--rose);color:#1A0A07} .theme-gitgraph .cf-chip.fill-b{background:var(--blue);border-color:var(--blue);color:#06182A}
+.theme-gitgraph .cf-chip.fill-g{background:var(--green);border-color:var(--green);color:#04201A} .theme-gitgraph .cf-chip.fill-a{background:var(--amber);border-color:var(--amber);color:#241600}
+.theme-gitgraph .cf-chip.fill-t{background:var(--teal);border-color:var(--teal);color:#04201D}
+.theme-gitgraph .cf-chip.x{text-decoration:line-through;text-decoration-thickness:4px;opacity:.45}
+.theme-gitgraph .cf-stamp{color:var(--rose);border-color:var(--rose);background:rgba(9,13,24,.88);font:900 38px ID;box-shadow:0 0 30px rgba(255,107,87,.35)}
+.theme-gitgraph .cf-stamp.b{color:var(--blue);border-color:var(--blue);box-shadow:0 0 30px rgba(77,181,255,.35)} .theme-gitgraph .cf-stamp.g{color:var(--green);border-color:var(--green);box-shadow:0 0 30px rgba(52,211,153,.35)}
+.theme-gitgraph .cf-stamp.a{color:var(--amber);border-color:var(--amber)} .theme-gitgraph .cf-stamp.t{color:var(--teal);border-color:var(--teal)}
+.theme-gitgraph .cf-txt{color:var(--tx)} .theme-gitgraph .cf-txt.mono{font:700 24px JB;color:var(--tx2)}
+.theme-gitgraph .cf-txt.lbl{font:700 20px JB;letter-spacing:.16em;text-transform:uppercase;color:var(--tx3);white-space:nowrap}
+.theme-gitgraph .cf-txt.big{color:var(--tx)} .theme-gitgraph .cf-txt .n{margin-right:.2em}
+.theme-gitgraph .cf-txt.r{color:var(--rose)} .theme-gitgraph .cf-txt.b{color:var(--blue)} .theme-gitgraph .cf-txt.g{color:var(--green)} .theme-gitgraph .cf-txt.a{color:var(--amber)} .theme-gitgraph .cf-txt.t{color:var(--teal)}
+.theme-gitgraph .cf-txt.hand{font:700 40px Caveat;color:var(--tx2)}
+.theme-gitgraph .cf-tile{background:#F6F1E3;color:#1B1408;border-radius:6px;box-shadow:0 14px 30px rgba(0,0,0,.5)}
+.theme-gitgraph .cf-tile b{font:700 22px JB} .theme-gitgraph .cf-tile small{font:600 18px JB;color:#5E5442}
+.theme-gitgraph .cf-tile.r{border-top:6px solid var(--rose)} .theme-gitgraph .cf-tile.b{border-top:6px solid var(--blue)} .theme-gitgraph .cf-tile.g{border-top:6px solid var(--green)}
+.theme-gitgraph .cf-tile.a{border-top:6px solid var(--amber)} .theme-gitgraph .cf-tile.red{background:#FFD9D2;border-top:6px solid #E5483A}
+.theme-gitgraph .cf-tile.dark{background:rgba(18,24,41,.95);color:var(--tx);border:1px solid var(--bd2)} .theme-gitgraph .cf-tile.dark small{color:var(--tx2)}
+.theme-gitgraph .cf-tile.ghost{background:transparent;border:2px dashed var(--tx3);box-shadow:none;color:var(--tx3)}
+.theme-gitgraph .cf-bubble{background:#F6F1E3;color:#1B1408;font:700 26px Inter}
+.theme-gitgraph .cf-bubble::after{background:#F6F1E3}
+.theme-gitgraph .cf-bar{background:rgba(255,255,255,.07);border-radius:12px 12px 0 0} .theme-gitgraph .cf-bar i{background:var(--blue);box-shadow:0 0 24px rgba(77,181,255,.5)} .theme-gitgraph .cf-bar b{color:var(--tx2)}
+.theme-gitgraph .cf-bar.g i{background:var(--green);box-shadow:0 0 24px rgba(52,211,153,.5)} .theme-gitgraph .cf-bar.r i{background:var(--rose);box-shadow:0 0 24px rgba(255,107,87,.5)}
+
+/* ---------- the illustration, packets, flips ---------- */
+.theme-gitgraph .bs-svg{z-index:1} .theme-gitgraph .bs-svg svg{width:100%;height:100%;overflow:visible}
+.theme-gitgraph .bs-svg [data-part]{transition:none}
+.theme-gitgraph .bs-svg .lit{filter:drop-shadow(0 0 14px var(--lc,#FFD27A)) brightness(1.25)}
+.theme-gitgraph .bs-svg .lit.r{--lc:#FF6B57} .theme-gitgraph .bs-svg .lit.b{--lc:#4DB5FF} .theme-gitgraph .bs-svg .lit.g{--lc:#34D399} .theme-gitgraph .bs-svg .lit.a{--lc:#FFB547}
+.theme-gitgraph .bs-svg .dim{opacity:.35}
+/* a request is an arrow drawing itself along a straight path, the head at the tip (revision 3: no dots on curves) */
+.theme-gitgraph .bs-arw{z-index:9;overflow:visible;--pc:var(--rose)}
+.theme-gitgraph .bs-arw .aw{position:absolute;left:0;top:0;overflow:visible}
+.theme-gitgraph .bs-arw .tr{fill:none;stroke:var(--pc);stroke-width:6;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 8px var(--pc))}
+.theme-gitgraph .bs-arw .hd{fill:var(--pc);filter:drop-shadow(0 0 10px var(--pc))}
+.theme-gitgraph .bs-arw.b{--pc:var(--blue)} .theme-gitgraph .bs-arw.g{--pc:var(--green)} .theme-gitgraph .bs-arw.a{--pc:var(--amber)} .theme-gitgraph .bs-arw.w{--pc:#E9EEF8} .theme-gitgraph .bs-arw.t{--pc:var(--teal)}
+.theme-gitgraph .bs-arw .lb{position:absolute;font:700 20px JB;color:var(--tx);white-space:nowrap;background:rgba(18,24,41,.95);border:1px solid var(--bd2);border-radius:8px;padding:7px 14px}
+.theme-gitgraph .bs-flip{perspective:1600px;z-index:3}
+.theme-gitgraph .bs-flip .fl{position:absolute;inset:0;transform-style:preserve-3d}
+.theme-gitgraph .bs-flip .fa,.theme-gitgraph .bs-flip .fb{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;background:var(--glass);
+  border:1.5px solid var(--bd);box-shadow:0 24px 60px rgba(0,0,0,.45);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center}
+.theme-gitgraph .bs-flip .fb{transform:rotateY(180deg)}
+.theme-gitgraph .bs-flip .fa{box-shadow:0 24px 60px rgba(0,0,0,.45),inset 0 5px 0 var(--amber)} .theme-gitgraph .bs-flip .fb{box-shadow:0 24px 60px rgba(0,0,0,.45),inset 0 5px 0 var(--rose)}
+.theme-gitgraph .bs-flip b{font:900 44px ID;color:var(--tx)} .theme-gitgraph .bs-flip small{font:600 24px Inter;color:var(--tx2)}
+.theme-gitgraph .bs-flip .k{font:700 20px JB;letter-spacing:.16em;text-transform:uppercase}
+.theme-gitgraph .bs-flip .fa .k{color:var(--amber)} .theme-gitgraph .bs-flip .fb .k{color:var(--rose)}
+.theme-gitgraph .bs-flip svg{width:64px;height:64px;fill:none;stroke:var(--tx);stroke-width:1.7}
+
+/* ---------- VS Code, Dark Modern chrome + Dark+ tokens ---------- */
+.theme-gitgraph .bs-vscw,.theme-gitgraph .bs-termw,.theme-gitgraph .bs-chromew,.theme-gitgraph .bs-awsw{z-index:4}
+.theme-gitgraph .bs-awsw .awsbox{position:absolute;left:0;top:0}
+.theme-gitgraph .bs-awsw .aws{position:relative;box-shadow:0 30px 80px rgba(0,0,0,.6)}
+
+/* ---------- over the face: the left of the frame darkens, the points stack down it (backend-one-click) ---------- */
+.theme-gitgraph .bs-ov{position:absolute;inset:0;display:none;z-index:30;pointer-events:none}
+/* the fade stays on the text column (revision 3: "limit overlay to there") */
+.theme-gitgraph .bs-ov .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(6,9,18,.9) 0%,rgba(6,9,18,.76) 24%,rgba(6,9,18,.3) 38%,rgba(6,9,18,0) 48%)}
+.theme-gitgraph .bs-ov .row .sd{width:96px;height:96px;margin-left:6px;filter:drop-shadow(2px 0 0 #E9EEF8) drop-shadow(-2px 0 0 #E9EEF8) drop-shadow(0 2px 0 #E9EEF8) drop-shadow(0 -2px 0 #E9EEF8)}
+.theme-gitgraph .bs-ov .row .shot{display:block;width:520px;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.18);box-shadow:0 30px 70px rgba(0,0,0,.6)}
+.theme-gitgraph .bs-ov .row .shot img{display:block;width:100%;height:auto;padding:0;background:none;border-radius:0;box-shadow:none}
+.theme-gitgraph .bs-ov .col{position:absolute;left:64px;top:90px;width:520px;display:flex;flex-direction:column;gap:14px}
+.theme-gitgraph .bs-ov .eb{font:700 22px JB;letter-spacing:.2em;text-transform:uppercase;color:var(--acc,var(--rose));display:flex;align-items:center;gap:12px}
+.theme-gitgraph .bs-ov .eb::before{content:"";width:11px;height:11px;border-radius:50%;background:currentColor;box-shadow:0 0 12px currentColor}
+.theme-gitgraph .bs-ov .hd{font:900 50px ID;letter-spacing:-.03em;line-height:1.04;color:#fff;text-shadow:0 4px 30px rgba(0,0,0,.6)}
+.theme-gitgraph .bs-ov .hd em{font-style:normal;color:var(--acc,var(--rose))}
+.theme-gitgraph .bs-ov .rows{display:flex;flex-direction:column;gap:14px;margin-top:22px}
+.theme-gitgraph .bs-ov .row{display:flex;align-items:center;gap:18px;align-self:flex-start;max-width:520px;font:600 26px Inter;line-height:1.25;color:#E9EEF8;opacity:0;--rc:var(--acc,var(--rose));
+  text-shadow:0 2px 18px rgba(0,0,0,.7)}
+.theme-gitgraph .bs-ov .row img{width:56px;height:56px;flex:none;background:#fff;border-radius:14px;padding:8px;box-sizing:border-box;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.theme-gitgraph .bs-ov .row .ic{width:56px;height:56px;flex:none;display:grid;place-items:center;border-radius:14px;color:#0B0F1C!important;background:var(--rc);box-shadow:0 0 0 1px rgba(255,255,255,.15),0 8px 26px color-mix(in srgb,var(--rc) 40%,transparent)} .theme-gitgraph .bs-ov .row .ic svg{width:30px!important;height:30px!important} .theme-gitgraph .bs-ov .row .ic svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:2}
+.theme-gitgraph .bs-ov .row code{font:700 25px JB;color:#fff;background:rgba(255,255,255,.1);padding:2px 10px;border-radius:6px}
+.theme-gitgraph .bs-ov .row b{color:var(--rc);font-weight:800}
+.theme-gitgraph .bs-ov .row.r{--rc:var(--rose)} .theme-gitgraph .bs-ov .row.r .ic,.theme-gitgraph .bs-ov .row.r b{color:var(--rose)}
+.theme-gitgraph .bs-ov .row.b{--rc:var(--blue)} .theme-gitgraph .bs-ov .row.b .ic,.theme-gitgraph .bs-ov .row.b b{color:var(--blue)}
+.theme-gitgraph .bs-ov .row.g{--rc:var(--green)} .theme-gitgraph .bs-ov .row.g .ic,.theme-gitgraph .bs-ov .row.g b{color:var(--green)}
+.theme-gitgraph .bs-ov .row.a{--rc:var(--amber)} .theme-gitgraph .bs-ov .row.a .ic,.theme-gitgraph .bs-ov .row.a b{color:var(--amber)}
+#stage.theme-gitgraph.transparent .slide.ovs .bs-ov{display:block}
+#stage.theme-gitgraph.transparent .slide.ovs > :not(.bs-ov){visibility:hidden}
+
+/* illustration type and the characters inside it (DiceBear line art, never inverted: a light sticker outline) */
+.theme-gitgraph .bs-svg .lb{font:700 18px JB;letter-spacing:.16em}
+.theme-gitgraph .bs-svg .sg{font:800 22px ID;letter-spacing:.22em;fill:#FFE2D8}
+.theme-gitgraph .bs-svg .mn{font:800 20px JB;letter-spacing:.2em;fill:#BEE3FF}
+.theme-gitgraph .bs-svg .cs{font:800 19px JB;letter-spacing:.12em;fill:#E9EEF8}
+.theme-gitgraph .bs-svg .av{filter:drop-shadow(2px 0 0 #E9EEF8) drop-shadow(-2px 0 0 #E9EEF8) drop-shadow(0 2px 0 #E9EEF8) drop-shadow(0 -2px 0 #E9EEF8)}
+.theme-gitgraph .bs-svg g.lit,.theme-gitgraph .bs-svg image.lit{filter:drop-shadow(0 0 18px var(--lc,#FFD27A)) brightness(1.3)}
+.theme-gitgraph .bs-svg image.lit{filter:drop-shadow(2px 0 0 #E9EEF8) drop-shadow(-2px 0 0 #E9EEF8) drop-shadow(0 2px 0 #E9EEF8) drop-shadow(0 -2px 0 #E9EEF8) drop-shadow(0 0 14px var(--lc,#FFD27A))}
+
+/* parts that appear on a word (RESTO/HALL o.hide): hidden until a lit entry gives them `shown` */
+.theme-gitgraph .bs-svg .hp{opacity:0} .theme-gitgraph .bs-svg .hp.shown{opacity:1}
+.theme-gitgraph .bs-svg g.hp.shown,.theme-gitgraph .bs-svg image.hp.shown{filter:drop-shadow(2px 0 0 #E9EEF8) drop-shadow(-2px 0 0 #E9EEF8) drop-shadow(0 2px 0 #E9EEF8) drop-shadow(0 -2px 0 #E9EEF8)}
+
+/* the ground: grain, faint routes with creeping arrows, the story's objects watermarked and drifting (installGround) */
+.theme-gitgraph .bs-ground{position:absolute;inset:0;pointer-events:none}
+.theme-gitgraph .bs-ground .grain{position:absolute;inset:0;opacity:.35;mix-blend-mode:screen;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='5'/><feColorMatrix values='0 0 0 0 .55  0 0 0 0 .6  0 0 0 0 .75  0 0 0 .08 0'/></filter><rect width='300' height='300' filter='url(%23f)'/></svg>")}
+.theme-gitgraph .bs-ground .rt{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.theme-gitgraph .bs-ground .rt path.rp{fill:none;stroke:#9FB0D6;stroke-width:2.5;stroke-dasharray:12 12;opacity:.07}
+.theme-gitgraph .bs-ground .rt path.ah{fill:#9FB0D6;stroke:none;opacity:.16}
+.theme-gitgraph .bs-ground .wm{position:absolute;fill:none;stroke:#B9C6E4;stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round;opacity:.05}
+
+/* split (version B side by side): the slide shrinks into the right two thirds on its own plate; dual-render lays the face
+   crop on the left third. The plate's left edge lands on x 640 after the scale. Opaque captures (version A) ignore this.
+   Review 6 (the editor read as see-through while split and full crossfaded): a split window's ramp is a wipe, not a
+   dissolve. bistro.js eases --spk 1 -> .8 and --spx 0 -> 320px over the ramp, so the plate grows over the face from the
+   left edge (x 0) to x 640 or shrinks back; the plate and its ground are placed so their left edge is always at 2 x spx. */
+#stage.theme-gitgraph.transparent.canvas-horizontal .slide.split{scale:var(--spk,.8);translate:var(--spx,320px) 0;transform-origin:50% 50%}
+#stage.theme-gitgraph.transparent.canvas-horizontal .slide.split .fx-emoji{display:none}
+#stage.theme-gitgraph.transparent.canvas-horizontal .slide.split::before{content:"";position:absolute;left:calc(960px - (960px - var(--spx,320px)) / var(--spk,.8));top:-400px;width:2600px;height:1900px;z-index:-2;
+  background:radial-gradient(55% 40% at 30% 0%,rgba(77,120,255,.14),transparent 70%),radial-gradient(60% 45% at 60% 110%,rgba(255,170,90,.12),transparent 70%),#090D18;
+  box-shadow:-6px 0 0 var(--rose),-40px 0 80px rgba(0,0,0,.55)}
+
+/* section tracker (cafe .cf-sec): dots for each part, the current one named and lit in its colour, done ones filled */
+#stage.theme-gitgraph .cf-sec{left:56px;top:40px;gap:8px;padding:9px 16px;border-radius:999px;background:rgba(18,24,41,.88);border:1px solid var(--bd2);font:700 19px Inter;color:var(--tx)}
+#stage.theme-gitgraph .cf-sec span{gap:8px} #stage.theme-gitgraph .cf-sec i{width:10px;height:10px;background:rgba(255,255,255,.22)}
+#stage.theme-gitgraph .cf-sec span:nth-child(1){--sc:var(--amber)} #stage.theme-gitgraph .cf-sec span:nth-child(2){--sc:var(--rose)}
+#stage.theme-gitgraph .cf-sec span:nth-child(3){--sc:var(--blue)} #stage.theme-gitgraph .cf-sec span:nth-child(4){--sc:var(--green)} #stage.theme-gitgraph .cf-sec span:nth-child(5){--sc:var(--violet)}
+#stage.theme-gitgraph .cf-sec span.done i{background:var(--sc);opacity:.55}
+#stage.theme-gitgraph .cf-sec span.on i{background:var(--sc);box-shadow:0 0 10px var(--sc)} #stage.theme-gitgraph .cf-sec span.on{color:var(--sc)}
+/* a new part opens: a soft band of light in the slide's colour crosses the frame once */
+.theme-gitgraph .bs-sweep{position:absolute;left:0;top:0;width:60%;height:100%;z-index:40;pointer-events:none;opacity:0;
+  background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--acc,var(--rose)) 10%,transparent) 35%,color-mix(in srgb,var(--acc,var(--rose)) 22%,transparent) 50%,color-mix(in srgb,var(--acc,var(--rose)) 10%,transparent) 65%,transparent)}
+#stage.theme-gitgraph.transparent .slide.ovs .bs-sweep{display:none}
+
+.theme-gitgraph .bs-ov .sbw{position:relative;width:518px;height:66px;margin-top:26px}
+.theme-gitgraph .bs-ov .sbw .sub-cta{position:absolute;opacity:1}
+
+/* the split plate's own ground (the stage ground is off in overlay captures): only inside a split capture, under the slide.
+   Both the plate (-2) and its ground (-1) sit below the slide's content: at z 0 the ground came after the content and
+   was painted over it, its routes and marks showing through an empty editor (review 7, "the background still shows inside
+   the code editor"). The slide is a stacking context (scale), so negative z stays inside it. */
+.theme-gitgraph .bs-sg{display:none}
+#stage.theme-gitgraph.transparent.canvas-horizontal .slide.split .bs-sg{display:block;position:absolute;left:calc(960px - (960px - var(--spx,320px)) / var(--spk,.8));
+  top:calc(540px - 540px / var(--spk,.8));width:calc(1920px / var(--spk,.8));height:calc(1080px / var(--spk,.8));z-index:-1}
+
+/* in a split the tracker sits inside the panel (the slide's left edge lands under the face at the .8 scale) */
+#stage.theme-gitgraph.transparent.canvas-horizontal .slide.split .cf-sec{left:calc(56px + 164px * var(--spq,1))}
+
+/* ---------- 9:16 (the social cuts, projects/reverse-proxy-lb-gateway/social) ---------- */
+/* the tracker sat at y 40, under the apps' top bar: phones cover the top 220px */
+#stage.theme-gitgraph.canvas-vertical .cf-sec{display:none}
+/* over the face on a phone: the heading high over the wall, the points low over the shirt (ending above the captions at
+   1560), the face between them left clear; the shade darkens only the two bands the text sits in */
+.theme-gitgraph.canvas-vertical .bs-ov .shade{background:linear-gradient(180deg,rgba(6,9,18,.88) 0%,rgba(6,9,18,.6) 26%,rgba(6,9,18,0) 31%,rgba(6,9,18,0) 64%,rgba(6,9,18,.7) 69%,rgba(6,9,18,.92) 100%)}
+.theme-gitgraph.canvas-vertical .bs-ov .col{left:70px;top:236px;bottom:380px;width:870px;gap:16px}
+.theme-gitgraph.canvas-vertical .bs-ov .eb{font-size:28px}
+.theme-gitgraph.canvas-vertical .bs-ov .hd{font-size:72px}
+.theme-gitgraph.canvas-vertical .bs-ov .rows{margin-top:auto;gap:18px}
+.theme-gitgraph.canvas-vertical .bs-ov .row{max-width:870px;font-size:38px;gap:22px}
+.theme-gitgraph.canvas-vertical .bs-ov .row img,.theme-gitgraph.canvas-vertical .bs-ov .row .ic{width:68px;height:68px}
+.theme-gitgraph.canvas-vertical .bs-ov .row .ic svg{width:36px!important;height:36px!important}
+/* phone type: the column scales by ~1.0-1.1 (vfit), so every small line starts at 30px and reads at 28px+ (probe SMALL) */
+.theme-gitgraph.canvas-vertical .cf-card small,.theme-gitgraph.canvas-vertical .cf-chip,.theme-gitgraph.canvas-vertical .cf-txt.lbl,
+.theme-gitgraph.canvas-vertical .cf-who .nm,.theme-gitgraph.canvas-vertical .cf-logo b{font-size:30px}
+.theme-gitgraph.canvas-vertical .cf-card b{font-size:36px}
+
+/* ======================= gitgraph: the Git client's palette and pieces ======================= */
+#stage.theme-gitgraph{
+  --bg0:#0D1117; --bg1:#161B22; --bg2:#1C2128; --bd:#30363D; --bd2:#3D444D;
+  --tx:#E6EDF3; --tx2:#9EA7B3; --tx3:#7D8590;
+  --orange:#FF8A3D; --amber:#E3B341; --rose:#F85149; --blue:#58A6FF; --green:#3FB950; --teal:#39C5CF; --violet:#BC8CFF;
+  --glass:linear-gradient(180deg,#1C2128,#161B22);
+  background:#0D1117;
+}
+.theme-gitgraph .bgfx .grid{background:radial-gradient(rgba(240,246,252,.06) 1.2px,transparent 1.4px) 0 0/40px 40px}
+.theme-gitgraph .bgfx .glow.a{background:radial-gradient(60% 45% at 85% 110%,rgba(255,138,61,.12),transparent 70%)}
+.theme-gitgraph .bgfx .glow.b{background:radial-gradient(55% 40% at 10% -5%,rgba(88,166,255,.12),transparent 70%)}
+/* the ground's lanes are a graph: solid coloured lines, not dashed routes */
+.theme-gitgraph .bs-ground .rt path.rp{stroke-dasharray:none;stroke-width:3;opacity:.06}
+.theme-gitgraph .bs-ground .rt path.rp:nth-child(1){stroke:#FF8A3D} .theme-gitgraph .bs-ground .rt path.rp:nth-child(2){stroke:#3FB950}
+.theme-gitgraph .bs-ground .rt path.rp:nth-child(3){stroke:#58A6FF} .theme-gitgraph .bs-ground .rt path.rp:nth-child(4){stroke:#BC8CFF}
+.theme-gitgraph .bs-ground .rt path.ah{d:path("M-9 0 a9 9 0 1 0 18 0 a9 9 0 1 0 -18 0");fill:#E6EDF3;opacity:.12}
+.theme-gitgraph .eyebrow{color:var(--acc,var(--orange))}
+#stage.theme-gitgraph .eyebrow.o{color:var(--orange)}
+.theme-gitgraph .cf-card{border-radius:12px;border:1px solid var(--bd)}
+.theme-gitgraph .cf-chip{background:#161B22;border:1px solid var(--bd2);border-radius:999px}
+.theme-gitgraph .cf-chip.o{border-color:var(--orange);color:#FFD2B3} .theme-gitgraph .cf-chip.fill-o{background:var(--orange);border-color:var(--orange);color:#1F0E00}
+.theme-gitgraph .cf-edge.o{stroke:var(--orange);filter:drop-shadow(0 0 8px rgba(255,138,61,.6))}
+.theme-gitgraph .bs-arw.o{--pc:var(--orange)}
+.theme-gitgraph .bs-ov .row.o{--rc:var(--orange)} .theme-gitgraph .bs-ov .row.o .ic,.theme-gitgraph .bs-ov .row.o b{color:var(--orange)}
+.theme-gitgraph .bs-ov .row.v{--rc:var(--violet)} .theme-gitgraph .bs-ov .row.v .ic,.theme-gitgraph .bs-ov .row.v b{color:var(--violet)}
+.theme-gitgraph .bs-ov .eb{color:var(--acc,var(--orange))} .theme-gitgraph .bs-ov .hd em{color:var(--acc,var(--orange))}
+#stage.theme-gitgraph.transparent.canvas-horizontal .slide.split::before{background:radial-gradient(55% 40% at 30% 0%,rgba(88,166,255,.1),transparent 70%),#0D1117;box-shadow:-6px 0 0 var(--orange),-40px 0 80px rgba(0,0,0,.55)}
+
+/* the window chrome behind a scene: title bar with the repo name and a branch picker */
+.theme-gitgraph .gg-winw{z-index:0}
+.gg-win{position:absolute;inset:0;background:#0D1117;border:1px solid var(--bd);border-radius:14px;box-shadow:0 30px 80px rgba(0,0,0,.55);overflow:hidden}
+.gg-win .wt{height:46px;display:flex;align-items:center;gap:18px;padding:0 16px;background:#161B22;border-bottom:1px solid var(--bd)}
+.gg-win .dots{display:flex;gap:8px} .gg-win .dots i{width:13px;height:13px;border-radius:50%;background:#FF5F57}
+.gg-win .dots i:nth-child(2){background:#FEBC2E} .gg-win .dots i:nth-child(3){background:#28C840}
+.gg-win .wt b{font:700 19px Inter;color:var(--tx)}
+.gg-win .br{margin-left:auto;display:flex;align-items:center;gap:8px;font:600 18px JB;color:var(--tx);background:#21262D;border:1px solid var(--bd2);border-radius:8px;padding:5px 12px}
+.gg-win .br svg,.gg-area .ah svg{width:20px;height:20px;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round}
+
+/* the three (later four) places changes live */
+.gg-area{position:absolute;inset:0;background:var(--glass);border:1px solid var(--bd);border-radius:14px;box-shadow:0 20px 50px rgba(0,0,0,.45);overflow:hidden}
+.gg-area .ah{height:58px;display:flex;align-items:center;gap:12px;padding:0 20px;border-bottom:1px solid var(--bd);background:rgba(255,255,255,.02)}
+.gg-area .ah svg{width:28px;height:28px;color:var(--ac,var(--blue))}
+.gg-area .ah b{font:800 26px ID;color:var(--tx);letter-spacing:-.01em}
+.gg-area .ah .tg{margin-left:auto;font:700 18px JB;color:#1F0E00;background:var(--ac,var(--blue));border-radius:999px;padding:4px 12px}
+.gg-area .as{padding:14px 20px;font:500 20px Inter;color:var(--tx2)}
+.gg-areaw.wd{--ac:#E3B341} .gg-areaw.st{--ac:#3FB950} .gg-areaw.rp{--ac:#58A6FF} .gg-areaw.rm{--ac:#BC8CFF} .gg-areaw.sh{--ac:#FF8A3D}
+.gg-areaw.hot .gg-area{border-color:var(--ac);box-shadow:0 0 0 2px var(--ac),0 0 40px color-mix(in srgb,var(--ac) 35%,transparent),0 20px 50px rgba(0,0,0,.45)}
+.gg-areaw.idle{opacity:.4}
+
+/* commits: a ring on its lane, the short hash, the message */
+.theme-gitgraph .gg-nodew{z-index:5}
+.gg-node{display:flex;align-items:center;gap:16px;white-space:nowrap;height:100%}
+.gg-node .dot{width:34px;height:34px;flex:none;border-radius:50%;background:#0D1117;border:6px solid var(--nc,#58A6FF);box-shadow:0 0 18px color-mix(in srgb,var(--nc,#58A6FF) 55%,transparent)}
+.gg-node b{font:700 24px JB;color:var(--nc,#58A6FF)}
+.gg-node span{font:600 24px Inter;color:var(--tx)}
+.gg-nodew.bad{--nc:#F85149} .gg-nodew.new{--nc:#3FB950} .gg-nodew.rv{--nc:#3FB950} .gg-nodew.o{--nc:#FF8A3D} .gg-nodew.v{--nc:#BC8CFF}
+.gg-nodew.ghost{opacity:.35} .gg-nodew.ghost .dot{border-style:dashed;box-shadow:none}
+.gg-nodew.bad span{color:#FFA198}
+.gg-nodew.hot .dot{background:var(--nc)}
+.theme-gitgraph .cf-edge.lane{stroke:#58A6FF;stroke-width:6;filter:none;opacity:.9}
+.theme-gitgraph .cf-edge.lane.o{stroke:#FF8A3D} .theme-gitgraph .cf-edge.lane.g{stroke:#3FB950} .theme-gitgraph .cf-edge.lane.v{stroke:#BC8CFF} .theme-gitgraph .cf-edge.lane.r{stroke:#F85149}
+.theme-gitgraph .cf-edge.lane.mute{stroke:#30363D}
+
+/* refs: HEAD orange with an arrowhead pointing at its commit, branches green, the remote violet */
+.theme-gitgraph .gg-refw{z-index:7}
+.gg-ref{display:inline-flex;align-items:center;gap:8px;font:800 21px JB;white-space:nowrap;padding:6px 14px;border-radius:8px;color:#06210F;background:#3FB950;box-shadow:0 8px 20px rgba(0,0,0,.4)}
+.gg-refw.head .gg-ref{background:#FF8A3D;color:#1F0E00;position:relative;margin-left:14px}
+.gg-refw.head .gg-ref::before{content:"";position:absolute;left:-14px;top:50%;transform:translateY(-50%);border:14px solid transparent;border-right-color:#FF8A3D;border-left:0}
+.gg-refw.remote .gg-ref{background:#BC8CFF;color:#1C0B33}
+.gg-refw.tag .gg-ref{background:#21262D;color:var(--tx);border:1px solid var(--bd2)}
+.gg-refw.ghost{opacity:.35}
+
+/* files with Git's status letters */
+.theme-gitgraph .gg-filew{z-index:6}
+.gg-file{display:inline-flex;align-items:center;gap:12px;white-space:nowrap;font:600 22px JB;color:var(--tx);background:#161B22;border:1px solid var(--bd2);border-radius:10px;padding:9px 14px;box-shadow:0 10px 24px rgba(0,0,0,.4)}
+.gg-file .fi{width:16px;height:20px;border-radius:2px;background:#9EA7B3;clip-path:polygon(0 0,70% 0,100% 28%,100% 100%,0 100%)}
+.gg-file .fi.mi{width:24px;height:24px;background:none;clip-path:none;border-radius:0;display:grid;place-items:center} .gg-file .fi.mi svg{width:24px;height:24px;display:block}   /* the file type's Material icon (bistro.js MI) */
+.gg-file b{font:800 18px JB;width:26px;height:26px;display:grid;place-items:center;border-radius:6px;color:#0D1117;background:var(--fc,#E3B341)}
+.gg-filew.m{--fc:#E3B341} .gg-filew.a{--fc:#3FB950} .gg-filew.d{--fc:#F85149} .gg-filew.u{--fc:#9EA7B3}
+.gg-filew.gone{opacity:.25} .gg-filew.gone .gg-file{text-decoration:line-through}
+.gg-filew.hot .gg-file{border-color:var(--fc);box-shadow:0 0 0 2px var(--fc),0 0 24px color-mix(in srgb,var(--fc) 45%,transparent)}
+/* probe TIGHT: status letters and panel tags keep their text clear of their own edges */
+.gg-file b{width:38px;height:38px;font-size:18px}
+.gg-area .ah .tg{padding:7px 14px}
+/* a ghost commit brought back (the reflog recovery): solid again, green */
+.gg-nodew.ghost.revive{opacity:1;--nc:#3FB950} .gg-nodew.ghost.revive .dot{border-style:solid;box-shadow:0 0 18px color-mix(in srgb,#3FB950 55%,transparent)}
+
+/* ---------- review 1 (2026-11-12) ---------- */
+/* A B C D: a letter badge left of each commit's ring, so the story's commits can be followed by name */
+.gg-node .lt{width:44px;height:44px;flex:none;display:grid;place-items:center;border-radius:10px;font:800 22px ID;font-style:normal;color:#0D1117;background:var(--nc,#58A6FF);margin-right:2px}
+.gg-nodew.ghost .lt{background:transparent;color:var(--nc,#58A6FF);box-shadow:inset 0 0 0 2px var(--nc,#58A6FF)}
+.gg-nodew.ghost.revive .lt{background:#3FB950;color:#0D1117;box-shadow:none}
+/* a reset leaves the commit behind as a ghost (it is unreachable, not deleted: the reflog finds it again) */
+.gg-nodew.gone{opacity:.32} .gg-nodew.gone .dot{border-style:dashed;box-shadow:none} .gg-nodew.gone span{text-decoration:line-through}
+/* the ground (review 1: "does not interfere with the text"): quieter grid, lanes and marks only in the margins, and a soft
+   darkening behind the content box so nothing sits behind a word */
+.theme-gitgraph .bgfx .grid{opacity:.5}
+.theme-gitgraph .bs-ground .wm{opacity:.045}
+.theme-gitgraph .bs-ground .rt path.rp{opacity:.08}
+.theme-gitgraph .bs-ground::after{content:"";position:absolute;inset:0;pointer-events:none;
+  background:radial-gradient(62% 58% at 50% 54%,rgba(13,17,23,.92) 0%,rgba(13,17,23,.75) 55%,rgba(13,17,23,0) 100%)}
+/* a panel's shop tag that appears on its own word (05): hidden until the tagon state */
+.gg-areaw.tagb .tg{opacity:0} .gg-areaw.tagb.tagon .tg{opacity:1}
+/* review 2: the shop tags ride on every panel scene, so they are quiet: the panel's colour as an outline, small mono type.
+   05, where the analogy is taught (tagb), lights each one solid on its word. */
+.gg-area .ah .tg{font:600 16px JB;letter-spacing:.02em;color:var(--ac);background:color-mix(in srgb,var(--ac) 10%,transparent);
+  border:1px solid color-mix(in srgb,var(--ac) 45%,transparent);padding:4px 10px;white-space:nowrap}
+.gg-areaw.tagb.tagon .tg{font:700 18px JB;color:#1F0E00;background:var(--ac);border-color:var(--ac);padding:6px 14px}
+.gg-areaw.n4 .ah{padding:0 16px;gap:10px} .gg-areaw.n4 .ah b{font-size:22px} .gg-areaw.n4 .ah svg{width:24px;height:24px}
+/* a status legend line: the letter's meaning beside its file (06, 24) */
+.theme-gitgraph .cf-txt.lgd{font:700 20px JB;letter-spacing:.06em;color:var(--tx2);white-space:nowrap}
+.theme-gitgraph .cf-txt.lgd b{color:var(--lc,#E3B341)} .theme-gitgraph .cf-txt.lgd.m{--lc:#E3B341} .theme-gitgraph .cf-txt.lgd.d{--lc:#F85149} .theme-gitgraph .cf-txt.lgd.a{--lc:#3FB950} .theme-gitgraph .cf-txt.lgd.u{--lc:#9EA7B3}
+.theme-gitgraph .cf-edge.lg{stroke:#7D8590;stroke-width:2;filter:none}
+/* notebook pages (15): ruled paper, a big letter, a small note */
+.gg-page .pg{position:absolute;inset:0;border-radius:8px;background-color:#F6F1E3;background-image:repeating-linear-gradient(#F6F1E3 0 30px,#E4DCC6 30px 31px);box-shadow:0 14px 30px rgba(0,0,0,.45);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;padding:12px 14px;box-sizing:border-box;color:#1B1408}
+.gg-page .pg b{font:800 52px ID;line-height:1} .gg-page .pg small{font:700 20px JB;text-align:center;line-height:1.3;color:#5E5442}
+.gg-page.bad .pg{box-shadow:inset 0 6px 0 #F85149,0 14px 30px rgba(0,0,0,.45)} .gg-page.bad .pg b{color:#C93C33}
+.gg-page.fix .pg{box-shadow:inset 0 6px 0 #3FB950,0 14px 30px rgba(0,0,0,.45)} .gg-page.fix .pg b{color:#1F7A32}
+/* chrome://history (20), rebuilt from a capture of the real page in dark mode */
+.ch-hist{position:absolute;inset:0;background:#1F2023;font:400 14px Inter;color:#E3E3E3;display:flex}
+.ch-hist .side{width:200px;flex:none;padding:14px 0;display:flex;flex-direction:column;gap:6px}
+.ch-hist .lg{display:flex;align-items:center;gap:14px;padding:0 18px 14px} .ch-hist .lg img{width:28px;height:28px} .ch-hist .lg b{font:500 22px Inter;color:#E3E3E3}
+.ch-hist .side span{display:flex;align-items:center;gap:14px;padding:10px 18px;border-radius:0 20px 20px 0;font:500 14px Inter;color:#E3E3E3}
+.ch-hist .side span i{font-style:normal;color:#C4C7C5;width:16px;text-align:center} .ch-hist .side span.on{background:#2D2E31;color:#A8C7FA} .ch-hist .side span.on i{color:#A8C7FA}
+.ch-hist .main{flex:1;padding:12px 18px 0 6px;min-width:0}
+.ch-hist .sr{height:36px;border-radius:18px;border:2px solid #7CACF8;background:#2D2E31;display:flex;align-items:center;padding:0 14px;color:#C4C7C5;font-size:14px}
+.ch-hist .tabs{display:flex;gap:30px;padding:14px 16px 0;border-bottom:1px solid #444746;font:500 14px Inter;color:#C4C7C5}
+.ch-hist .tabs span{padding-bottom:10px} .ch-hist .tabs span.on{color:#A8C7FA;box-shadow:inset 0 -3px 0 #A8C7FA}
+.ch-hist .card{margin-top:18px;background:#28292C;border-radius:10px;overflow:hidden}
+.ch-hist .dt{font:500 16px Inter;color:#E3E3E3;padding:16px 18px;border-bottom:1px solid #3C3D40}
+.ch-hist .hr{display:flex;align-items:center;gap:12px;height:38px;padding:0 14px 0 18px;white-space:nowrap}
+.ch-hist .hr.on{background:#2F3A52}
+.ch-hist .cb{width:13px;height:13px;flex:none;border:2px solid #C4C7C5;border-radius:2px}
+.ch-hist .tm{width:64px;flex:none;color:#C4C7C5;font-size:12.5px}
+.ch-hist .fv{width:15px;height:15px;flex:none;border-radius:4px}
+.ch-hist .ti{overflow:hidden;text-overflow:ellipsis;font:600 13.5px Inter;color:#E3E3E3;min-width:0}
+.ch-hist .dm{color:#C4C7C5;font-size:12.5px;flex:none} .ch-hist .km{margin-left:auto;color:#C4C7C5;flex:none}
+/* a row of equal chips (26's reset modes): label and caption centred in the chip's width */
+.theme-gitgraph .cf-chip.ctr{justify-content:center;box-sizing:border-box} .theme-gitgraph .cf-txt.ctr{text-align:center}
+/* violet, the remote / reflog colour, for arrows and filled chips (26's "Lost a commit?" row was red and unfilled) */
+.theme-gitgraph .bs-arw.v{--pc:#BC8CFF} .theme-gitgraph .cf-chip.fill-v{background:#BC8CFF;border-color:#BC8CFF;color:#1A0B33}
+/* 28: an undo command that is not needed: the command in mono, struck in red */
+.theme-gitgraph .cf-card.x28 b{font:800 40px JB;letter-spacing:-.01em} .theme-gitgraph .cf-card.x28 b s{text-decoration-color:var(--rose);text-decoration-thickness:3px}
+/* review 2 ("the background is too bland"): the margin commit graph reads as a Git client's own lanes, coloured like the
+   graph (orange HEAD lane, green branch, blue main, violet remote), with commit rings; still only in the margins and
+   under the content's own darkening, so it never competes with a word. Three soft colour pools give the ground depth. */
+.theme-gitgraph .bs-ground .rt path.rp{opacity:.22;stroke-width:3.5;stroke-dasharray:none;filter:drop-shadow(0 0 6px currentColor)}
+.theme-gitgraph .bs-ground .rt path.rp:nth-child(1){stroke:#58A6FF;color:#58A6FF} .theme-gitgraph .bs-ground .rt path.rp:nth-child(2){stroke:#3FB950;color:#3FB950}
+.theme-gitgraph .bs-ground .rt path.rp:nth-child(3){stroke:#FF8A3D;color:#FF8A3D} .theme-gitgraph .bs-ground .rt path.rp:nth-child(4){stroke:#BC8CFF;color:#BC8CFF}
+.theme-gitgraph .bs-ground .rt path.rp:nth-child(5){stroke:#9FB0D6;color:#9FB0D6;opacity:.1}
+.theme-gitgraph .bs-ground .rt path.ah{opacity:.35}
+.theme-gitgraph .bs-ground .rt .nd{fill:#0B1020;stroke-width:3.5;stroke:#58A6FF;filter:drop-shadow(0 0 8px currentColor);color:#58A6FF}
+.theme-gitgraph .bs-ground .rt .nd.l1{stroke:#3FB950;color:#3FB950} .theme-gitgraph .bs-ground .rt .nd.l2{stroke:#FF8A3D;color:#FF8A3D}
+.theme-gitgraph .bs-ground .rt .nd.l3{stroke:#BC8CFF;color:#BC8CFF} .theme-gitgraph .bs-ground .rt .nd.l4{stroke:#9FB0D6;color:#9FB0D6}
+.theme-gitgraph .bs-ground .rt{opacity:.75}
+.theme-gitgraph .bs-ground .wm{opacity:.06}
+.theme-gitgraph .bgfx .glow.a{background:radial-gradient(55% 45% at 85% 105%,rgba(255,138,61,.22),transparent 70%)}
+.theme-gitgraph .bgfx .glow.b{background:radial-gradient(50% 45% at 8% -5%,rgba(77,140,255,.24),transparent 70%),
+  radial-gradient(40% 40% at 100% 30%,rgba(188,140,255,.12),transparent 70%),radial-gradient(35% 35% at 0% 85%,rgba(63,185,80,.08),transparent 70%)}
+/* four panels across (07): header + "Store shelf" do not fit one 370 px line, so the tags sit just under the headers */
+.gg-areaw.n4 .ah{position:relative} .gg-areaw.n4 .ah b{white-space:nowrap} .gg-areaw.n4 .ah .tg{position:absolute;left:16px;top:72px;margin:0}
+/* review 3: the three new grounds (core/templates/gitgraph.js, PROJECT.ground / --var bg=) */
+.theme-gitgraph .bs-ground :is(svg.gl,svg.gs,svg.gd){position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+/* log: the log fades out toward the top, like older history scrolling away */
+.theme-gitgraph .bs-ground svg.gl{-webkit-mask:linear-gradient(180deg,transparent 0,#000 30%,#000 100%);mask:linear-gradient(180deg,transparent 0,#000 30%,#000 100%);opacity:.8}
+.theme-gitgraph .bs-ground svg.gl .mn{stroke-width:4;stroke:var(--lm);opacity:.5}
+.theme-gitgraph .bs-ground svg.gl path.br{fill:none;stroke-width:4;stroke:var(--lb);opacity:.55}
+.theme-gitgraph .bs-ground svg.gl .cm{fill:#0B1020;stroke-width:3.5;stroke:var(--lm);filter:drop-shadow(0 0 6px var(--lm))}
+.theme-gitgraph .bs-ground svg.gl circle.cm.br{stroke:var(--lb);filter:drop-shadow(0 0 6px var(--lb))}
+.theme-gitgraph .bs-ground svg.gl .cm.merge{fill:var(--lm)}
+.theme-gitgraph .bs-ground svg.gl .cm.nw{filter:drop-shadow(0 0 16px var(--lm)) brightness(1.4)}
+.theme-gitgraph .bs-ground svg.gl .c0{--lm:#58A6FF;--lb:#3FB950} .theme-gitgraph .bs-ground svg.gl .c1{--lm:#FF8A3D;--lb:#BC8CFF}
+/* stars: rings at three depths (far = small, faint dots; near = rings), thin edges, two travelling pulses */
+.theme-gitgraph .bs-ground svg.gs .ed{stroke:#9FB0D6;stroke-width:1.5;opacity:.14}
+.theme-gitgraph .bs-ground svg.gs .st{fill:#0B1020;stroke-width:2.5;stroke:var(--sc)} .theme-gitgraph .bs-ground svg.gs .st.l0{fill:var(--sc);stroke:none;opacity:.5}
+.theme-gitgraph .bs-ground svg.gs .st.l2{stroke-width:3.5;filter:drop-shadow(0 0 8px var(--sc))}
+.theme-gitgraph .bs-ground svg.gs .k0{--sc:#58A6FF} .theme-gitgraph .bs-ground svg.gs .k1{--sc:#3FB950} .theme-gitgraph .bs-ground svg.gs .k2{--sc:#FF8A3D} .theme-gitgraph .bs-ground svg.gs .k3{--sc:#BC8CFF}
+.theme-gitgraph .bs-ground svg.gs .pl{fill:#FFD9A8;filter:drop-shadow(0 0 10px #FF8A3D) drop-shadow(0 0 4px #fff)}
+.theme-gitgraph .bs-ground svg.gs{opacity:.8}
+/* diff: mono lines coloured like a diff, faint, a few lighting up */
+.theme-gitgraph .bs-ground svg.gd text{font:600 17px JB;fill:#7C88A1} .theme-gitgraph .bs-ground svg.gd{opacity:.3}
+.theme-gitgraph .bs-ground svg.gd text.p{fill:#3FB950} .theme-gitgraph .bs-ground svg.gd text.m{fill:#F85149}
+.theme-gitgraph .bs-ground svg.gd text.h{fill:#BC8CFF} .theme-gitgraph .bs-ground svg.gd text.x{fill:#FFB547}
+/* 9:16 (the social cuts, projects/undo-git-mistakes/social): slides restate their world 800 wide in data.v and vfit scales
+   it up ~1.1x, so every word is set at 28px+ here to read at phone size (probe SMALL). Scoped to .canvas-vertical: the
+   16:9 master never sees these. */
+.theme-gitgraph.canvas-vertical .gg-node b,.theme-gitgraph.canvas-vertical .gg-node span{font-size:28px}
+.theme-gitgraph.canvas-vertical .gg-node .lt{width:46px;height:46px;font-size:28px}
+.theme-gitgraph.canvas-vertical .gg-ref{font-size:28px;padding:6px 16px}
+.theme-gitgraph.canvas-vertical .gg-file{font-size:28px}
+.theme-gitgraph.canvas-vertical .gg-file b{font-size:26px;width:40px;height:40px}
+.theme-gitgraph.canvas-vertical .gg-area .ah{height:64px;padding:0 18px;gap:12px}
+.theme-gitgraph.canvas-vertical .gg-area .ah b,.theme-gitgraph.canvas-vertical .gg-areaw.n4 .ah b{font-size:30px}
+.theme-gitgraph.canvas-vertical .gg-area .ah svg,.theme-gitgraph.canvas-vertical .gg-areaw.n4 .ah svg{width:30px;height:30px}
+.theme-gitgraph.canvas-vertical .gg-area .ah .tg{font-size:28px}
+.theme-gitgraph.canvas-vertical .gg-area .as{font-size:28px}
+.theme-gitgraph.canvas-vertical .cf-txt.lgd{font-size:28px}
+.theme-gitgraph.canvas-vertical .gg-page .pg small{font-size:28px}
+.theme-gitgraph.canvas-vertical .cf-card small{font-size:28px}
+.theme-gitgraph.canvas-vertical .bs-term .bd{font-size:25px}
+/* 9:16 over the face (social cuts, faceZoom 0.6 at faceY 370: the head sits at ~600-1220): heading and Terminal above
+   the head, the rows under the chin (review 1 of the best-of: "my face is covered") */
+.theme-gitgraph.canvas-vertical .bs-ov .col{bottom:440px}
+.theme-gitgraph.canvas-vertical .bs-ov .ovt{order:2;width:870px;margin-top:8px}
+.theme-gitgraph.canvas-vertical .bs-ov .ovt .bs-term .bd{font-size:24px;padding:12px 18px}
+.theme-gitgraph.canvas-vertical .bs-ov .rows{order:3}
+.theme-gitgraph.canvas-vertical .bs-ov .sbw{order:4}

@@ -1,5 +1,5 @@
 #!/usr/bin/env node
-/* Builds projects/<slug>/assets/lf-intro-sting.wav (or sting.json's `out`) from projects/<slug>/assets/sting.json: {dur, out?, cues: [{s, t, v?, f?, d?}]}.
+/* Builds projects/<slug>/assets/lf-intro-sting.wav (or sting.json's `out`) from projects/<slug>/assets/sting.json (or argv[3]): {dur, out?, cues: [{s, t, v?, f?, d?}]}.
    Run from the repo root: node assets/logos/lifetechfacts/build-sting.js <slug>. Cue times (seconds) follow the slide's beat map.
    Sounds: tick (key click) · type (a run of key clicks, d seconds) · blip (sine ping, f Hz) · thump (sub hit) · rise (noise swell of d seconds ending at t + d) ·
            whoosh (the project's Mixkit file) · pop / shim (assets/audio, own recordings) ·
@@ -8,7 +8,7 @@
    normalise), and the last `fade` seconds fade out (0.5 unless the spec shortens it, which a ringing tail wants). */
 const { execFileSync } = require('child_process'), fs = require('fs'), path = require('path');
 const slug = process.argv[2]; if (!slug) { console.error('usage: build-sting.js <project-slug>'); process.exit(1); }
-const P = path.join('projects', slug, 'assets'), spec = JSON.parse(fs.readFileSync(path.join(P, 'sting.json'), 'utf8')), dur = spec.dur || 4, OUT = path.join(P, spec.out || 'lf-intro-sting.wav');
+const P = path.join('projects', slug, 'assets'), spec = JSON.parse(fs.readFileSync(path.join(P, process.argv[3] || 'sting.json'), 'utf8')), dur = spec.dur || 4, OUT = path.join(P, spec.out || 'lf-intro-sting.wav');
 const fade = spec.fade == null ? .5 : spec.fade;
 const lavfi = src => ['-f', 'lavfi', '-i', src], file = f => ['-i', f];
 const SOUND = {
@@ -42,10 +42,11 @@ const SOUND = {
   drop: c => ({ in: lavfi(`aevalsrc='0.3*sin(2*PI*(${c.f || 620}*t-${(c.f || 620) * .7}*t*t))*exp(-2.6*t)':s=48000:d=0.7`), fx: 'afade=t=in:st=0:d=0.01', v: 1 }),
   // f is relative to the project's assets (sfx.js outroBed writes ../../../assets/audio/…), or absolute
   /* fadeIn: seconds. d + fadeOut: stop the sample after d seconds, fading out over its last fadeOut seconds (an outro
-     shorter than its music would otherwise be cut off mid-bar when the track ends at spec.dur) */
+     shorter than its music would otherwise be cut off mid-bar when the track ends at spec.dur). skip: seconds cut from the
+     sample's head, so a cue scored to start before its scene can start with the scene and stay in sync */
   sample: c => {
     const f = path.resolve(P, c.f || ''); if (!fs.existsSync(f)) throw new Error('sample not found: ' + f);
-    const fx = [c.fadeIn ? `afade=t=in:st=0:d=${c.fadeIn}` : '', c.d ? `atrim=0:${c.d}` : '', c.d && c.fadeOut ? `afade=t=out:st=${Math.max(0, c.d - c.fadeOut).toFixed(3)}:d=${c.fadeOut}` : ''].filter(Boolean).join(',');
+    const fx = [c.skip ? `atrim=start=${c.skip},asetpts=PTS-STARTPTS` : '', c.fadeIn ? `afade=t=in:st=0:d=${c.fadeIn}` : '', c.d ? `atrim=0:${c.d}` : '', c.d && c.fadeOut ? `afade=t=out:st=${Math.max(0, c.d - c.fadeOut).toFixed(3)}:d=${c.fadeOut}` : ''].filter(Boolean).join(',');
     return { in: file(f), v: 1, fx: fx || undefined };
   },
 };

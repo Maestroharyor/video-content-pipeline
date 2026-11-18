@@ -1,0 +1,403 @@
+/* "board" theme (PROJECT.theme = 'board'), built for projects/what-makes-computer-faster.
+   The inside of the laptop: one dark green motherboard the whole deck lives on. Solder-mask green, gold (ENIG) traces
+   and pads, silkscreen-white labels. The three parts the video names each own a colour: CPU blue, RAM teal, storage
+   amber; a bottleneck flushes rose. Data is a small glowing pulse that runs the traces and queues at a slow part.
+   Depth is a hard dark offset shadow plus a thin gold rim, never blur (capture cost). Cast and sticker styles come
+   from lanes.css, which the project links. The bd* template (core/templates/board.js) is styled below. */
+
+#stage.theme-board{
+  --bg0:#06140F; --bg1:#0B2219; --bg2:#0E2C20; --bd:#1E4A37; --bd2:#2E6A50;
+  --tx:#F2F7F0; --tx2:#BFD3C6; --tx3:#8FAE9C;
+  --teal:#2DE0C4; --violet:#B69CFF; --green:#5BE38E; --rose:#FF7A8C; --amber:#F7B947; --blue:#5CC0FF; --orange:#FF9F4A;
+  --gold:#D9AE52; --gold2:#F3D27E; --pcb:#0D3626; --pcb2:#114330; --silk:#E9F2EA;
+  background:#06140F;
+}
+#stage.theme-board.transparent{background:transparent}   /* alpha captures (dual's caption layer, reveals) must stay clear */
+
+/* ---------- ground: a dark board edge with faint traces and vias ---------- */
+#stage.theme-board .bgfx .grid{opacity:1;inset:-90px;
+  background-image:
+    radial-gradient(circle at 50% 50%,rgba(217,174,82,.20) 0 3px,transparent 3.5px),
+    linear-gradient(90deg,transparent 0 49%,rgba(217,174,82,.07) 49% 51%,transparent 51%),
+    linear-gradient(0deg,transparent 0 49%,rgba(217,174,82,.05) 49% 51%,transparent 51%);
+  background-size:180px 180px,360px 120px,120px 360px}
+#stage.theme-board .bgfx .glow.a{background:radial-gradient(70% 40% at 50% 30%,rgba(45,224,196,.10),transparent 72%)}
+#stage.theme-board .bgfx .glow.b{background:radial-gradient(80% 36% at 50% 104%,rgba(217,174,82,.12),transparent 70%)}
+#stage.theme-board .bgfx .vig{background:radial-gradient(120% 90% at 50% 42%,transparent 55%,rgba(0,0,0,.55))}
+
+/* burned-in captions: a board-dark card with a gold rim; the base box wraps at 540px and strands a lone word */
+#stage.theme-board .caps{width:max-content;background:rgba(6,20,15,.94);border:3px solid var(--gold);color:var(--tx);
+  box-shadow:0 10px 0 rgba(0,0,0,.6)}
+#stage.theme-board .caps span.now{color:var(--gold2)}
+
+/* ---------- type ---------- */
+#stage.theme-board .eyebrow{font:700 32px JB;letter-spacing:.08em;text-transform:uppercase;color:var(--acc,var(--gold2))}
+#stage.theme-board .eyebrow.b{color:var(--blue)} #stage.theme-board .eyebrow.t{color:var(--teal)} #stage.theme-board .eyebrow.a{color:var(--amber)}
+#stage.theme-board .eyebrow.r{color:var(--rose)} #stage.theme-board .eyebrow.v{color:var(--violet)} #stage.theme-board .eyebrow.g{color:var(--green)}
+#stage.theme-board .h1{letter-spacing:-.035em;font-weight:900;color:var(--tx)}
+
+/* ---------- outro on the board ---------- */
+#stage.theme-board .hrow .ht{border:2px solid var(--gold);box-shadow:0 8px 0 rgba(0,0,0,.55)}
+#stage.theme-board .bbox{background:var(--bg2);border:3px solid var(--gold);box-shadow:0 10px 0 rgba(0,0,0,.55)}
+#stage.theme-board .cst-card{border-color:var(--gold);border-width:3px;box-shadow:0 10px 0 rgba(0,0,0,.55)}
+#stage.theme-board .bub{border:3px solid var(--gold);box-shadow:0 8px 0 rgba(0,0,0,.55)}
+#stage.theme-board .cst b{font-size:28px;padding:8px 16px}
+#stage.theme-board .fx-emoji{filter:drop-shadow(0 10px 12px rgba(0,0,0,.5))}
+
+/* ---------- the bd template ---------- */
+/* the board itself: solder mask with a silkscreen grid and mounting holes */
+.bd-pcb{position:absolute;left:0;top:0;box-sizing:border-box;border-radius:26px;overflow:hidden;opacity:0;
+  background:radial-gradient(120% 90% at 30% 20%,var(--pcb2),var(--pcb) 70%);border:3px solid var(--gold);box-shadow:0 14px 0 rgba(0,0,0,.6)}
+.bd-pcb::before{content:"";position:absolute;inset:0;
+  background-image:radial-gradient(circle at 50% 50%,rgba(233,242,234,.10) 0 2px,transparent 2.5px);background-size:40px 40px}
+.bd-hole{position:absolute;width:30px;height:30px;border-radius:50%;background:var(--bg0);border:5px solid var(--gold);box-sizing:border-box}
+.bd-world{position:absolute;left:0;top:0;transform-origin:0 0}
+.bd-traces{position:absolute;left:0;top:0;overflow:visible}
+.bd-traces path{fill:none;stroke:var(--gold);stroke-width:5;stroke-linecap:round;stroke-linejoin:round;opacity:.75}
+.bd-traces path.thin{stroke-width:3;opacity:.45}
+.bd-traces circle{fill:var(--bg0);stroke:var(--gold);stroke-width:3}
+
+/* a socket: an empty outline with its silkscreen number until its part seats */
+.bd-sock{position:absolute;box-sizing:border-box;border:3px dashed rgba(233,242,234,.35);border-radius:16px}
+.bd-sock .no{position:absolute;left:12px;top:8px;font:800 30px JB;color:var(--silk);opacity:.85}
+.bd-sock.lit{border:3px solid var(--acc);box-shadow:0 0 0 6px rgba(0,0,0,0),inset 0 0 40px rgba(255,255,255,.06)}
+.bd-sock .q{position:absolute;inset:0;display:grid;place-items:center;font:900 96px ID;color:var(--silk);opacity:.0}
+
+/* parts */
+.bd-cpu{position:absolute;box-sizing:border-box;border-radius:18px;opacity:0;
+  background:linear-gradient(145deg,#C9CFD6,#8C949E);border:4px solid #5D6670;box-shadow:0 10px 0 rgba(0,0,0,.5)}
+.bd-cpu .die{position:absolute;inset:22%;border-radius:10px;background:linear-gradient(145deg,#1B2B44,#0C1626);border:3px solid var(--blue);
+  display:grid;place-items:center;font:900 46px ID;letter-spacing:.02em;color:var(--blue)}
+.bd-cpu .pin{position:absolute;background:var(--gold2);border-radius:2px}
+.bd-dimm{position:absolute;box-sizing:border-box;border-radius:8px;background:#15241E;border:3px solid var(--teal);box-shadow:0 8px 0 rgba(0,0,0,.5)}
+.bd-dimm i{position:absolute;left:8px;right:8px;border-radius:4px;background:linear-gradient(180deg,#26313A,#11181E);border:2px solid #3B4A55}
+.bd-dimm b{position:absolute;left:0;right:0;bottom:-2px;height:16px;background:repeating-linear-gradient(90deg,var(--gold2) 0 4px,transparent 4px 8px);opacity:.9}
+.bd-ssd{position:absolute;box-sizing:border-box;border-radius:10px;opacity:0;background:#0E1A2A;border:3px solid var(--amber);box-shadow:0 8px 0 rgba(0,0,0,.5);
+  display:flex;align-items:center;gap:14px;padding:0 18px}
+.bd-ssd i{flex:none;width:58px;height:58px;border-radius:6px;background:linear-gradient(145deg,#2A2F38,#14171C);border:2px solid #4A505A}
+.bd-ssd b{font:800 34px JB;color:var(--amber);margin-left:auto}
+.bd-plat{position:absolute;border-radius:50%;opacity:0;box-sizing:border-box;
+  background:radial-gradient(circle at 50% 50%,#2A2F38 0 14%,#AEB6BF 15% 17%,#7D8590 18% 60%,#AEB6BF 61% 62%,#6B737D 63%);border:4px solid #4A505A}
+.bd-plat .arm{position:absolute;left:50%;top:50%;width:46%;height:10px;border-radius:5px;background:var(--amber);transform-origin:0 50%}
+.bd-lbl{position:absolute;font:800 28px JB;letter-spacing:.06em;color:var(--silk);white-space:nowrap;opacity:0}
+.bd-lbl.b{color:var(--blue)} .bd-lbl.t{color:var(--teal)} .bd-lbl.a{color:var(--amber)} .bd-lbl.r{color:var(--rose)}
+
+/* extras on the board edge: a GPU slot, a fan, a firmware/software chip */
+.bd-x{position:absolute;box-sizing:border-box;opacity:0;display:flex;align-items:center;gap:12px;border-radius:14px;padding:0 18px;
+  background:#0E1A2A;border:3px solid var(--violet);font:800 30px ID;color:var(--tx);white-space:nowrap;box-shadow:0 8px 0 rgba(0,0,0,.5)}
+.bd-x svg{width:40px;height:40px;flex:none}
+.bd-fan{position:absolute;border-radius:50%;opacity:0;box-sizing:border-box;background:#0E1A2A;border:3px solid var(--violet)}
+.bd-fan svg{position:absolute;inset:8%;width:84%;height:84%}
+
+/* data pulses */
+.bd-pulse{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;opacity:0;z-index:5;
+  background:radial-gradient(circle,#fff 0 25%,var(--pc,var(--gold2)) 30% 55%,transparent 60%)}
+.bd-pulse::after{content:"";position:absolute;inset:-14px;border-radius:50%;background:radial-gradient(circle,var(--pc,var(--gold2)),transparent 65%);opacity:.45}
+
+/* app tiles flying from storage into RAM */
+.bd-app{position:absolute;width:76px;height:76px;margin:-38px 0 0 -38px;border-radius:18px;background:#fff;display:grid;place-items:center;opacity:0;z-index:6;
+  box-shadow:0 8px 0 rgba(0,0,0,.5);border:3px solid var(--teal)}
+.bd-app img{width:48px;height:48px}
+
+/* the info panel under the board */
+.bd-chip{position:absolute;box-sizing:border-box;display:flex;align-items:center;gap:16px;height:112px;padding:0 26px;border-radius:18px;opacity:0;
+  background:var(--bg2);border:3px solid var(--acc,var(--gold));box-shadow:0 10px 0 rgba(0,0,0,.55);font:800 38px ID;letter-spacing:-.015em;color:var(--tx);white-space:nowrap}
+.bd-chip span{line-height:1.12;flex:none}
+.bd-chip small{font:700 28px JB;color:var(--tx3);letter-spacing:.02em}
+.bd-chip svg.ic{width:46px;height:46px;flex:none;fill:none;stroke:var(--acc,var(--gold2));stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+.bd-chip .tag{margin-left:auto;font:800 28px JB;padding:6px 14px;border-radius:999px;background:var(--bg0);border:2px solid var(--acc,var(--gold));color:var(--acc,var(--gold2))}
+.bd-chip.bad{border-color:var(--rose)} .bd-chip.bad .tag{border-color:var(--rose);color:var(--rose)}
+
+/* bottleneck: a part flushes red and a queue of pulses waits at it */
+.bd-hot{position:absolute;box-sizing:border-box;border-radius:18px;border:5px solid var(--rose);opacity:0;z-index:4;
+  box-shadow:0 0 0 4px rgba(255,122,140,.25),inset 0 0 50px rgba(255,122,140,.35)}
+.bd-hot b{position:absolute;left:50%;top:-28px;transform:translateX(-50%);padding:8px 18px;border-radius:999px;background:var(--rose);color:#2A0710;
+  font:800 28px JB;white-space:nowrap}
+
+/* laptops (the quiz) */
+.bd-lap{position:absolute;opacity:0}
+.bd-lap .scr{position:absolute;left:24px;right:24px;top:0;bottom:46px;border-radius:16px 16px 6px 6px;background:#0E1A2A;border:5px solid #9AA3AD;box-sizing:border-box;
+  display:grid;place-items:center}
+.bd-lap .scr b{font:900 92px ID;color:var(--tx3)}
+.bd-lap .base{position:absolute;left:0;right:0;bottom:16px;height:34px;border-radius:6px 6px 18px 18px;background:linear-gradient(180deg,#B9C1CA,#7D8590)}
+.bd-lap .nm{position:absolute;left:0;right:0;top:calc(100% + 6px);text-align:center;font:800 32px JB;color:var(--tx2)}
+.bd-tag{position:absolute;box-sizing:border-box;display:flex;align-items:center;justify-content:center;gap:12px;height:88px;border-radius:14px;opacity:0;
+  background:var(--bg2);border:3px solid var(--teal);font:900 40px ID;color:var(--tx);box-shadow:0 8px 0 rgba(0,0,0,.55)}
+.bd-tag small{font:800 30px JB;color:var(--teal)}
+.bd-eq{position:absolute;font:900 120px/1 ID;color:var(--gold2);opacity:0;text-align:center}
+.bd-eq .x{position:absolute;left:50%;top:50%;width:14px;height:150px;margin:-75px 0 0 -7px;border-radius:7px;background:var(--rose);transform-origin:50% 50%;opacity:0}
+.bd-qm{position:absolute;display:grid;place-items:center;width:88px;height:88px;border-radius:50%;background:var(--gold2);color:#1B1405;font:900 60px ID;opacity:0;
+  box-shadow:0 8px 0 rgba(0,0,0,.5)}
+.bd-part2{position:absolute;padding:10px 26px;border-radius:999px;background:var(--gold2);color:#1B1405;font:900 40px ID;white-space:nowrap;opacity:0;z-index:6;
+  box-shadow:0 8px 0 rgba(0,0,0,.5)}
+
+/* ---------- part 2 (projects/what-makes-laptop-faster-2): bottle, ddr, dual modes ---------- */
+/* bottle: glass outline, teal water (what RAM holds), the neck ringed blue (the CPU), a gold bowl */
+.bt-svg{overflow:visible;opacity:0}
+.bt-glass{fill:rgba(233,242,234,.06)}
+.bt-line{fill:none;stroke:var(--silk);stroke-width:5;stroke-linejoin:round}
+.bt-water{fill:rgba(45,224,196,.62)}
+.bt-cap{fill:none;stroke:var(--blue);stroke-width:5;opacity:0}
+.bt-bowl{fill:rgba(217,174,82,.10);stroke:var(--gold);stroke-width:6;stroke-linecap:round}
+.bt-rim{stroke:var(--gold2);stroke-width:8;stroke-linecap:round}
+.bt-stream{position:absolute;opacity:0;border-radius:8px;
+  background:repeating-linear-gradient(180deg,rgba(45,224,196,.95) 0 34px,rgba(160,250,236,.95) 34px 46px)}
+.bt-tag{position:absolute;box-sizing:border-box;height:62px;display:grid;place-items:center;border-radius:999px;opacity:0;
+  background:var(--bg2);border:3px solid var(--teal);font:900 38px ID;color:var(--tx);box-shadow:0 8px 0 rgba(0,0,0,.55)}
+.bt-meter{position:absolute;box-sizing:border-box;height:70px;display:grid;place-items:center;border-radius:16px;opacity:0;
+  background:var(--bg2);border:3px solid var(--gold);font:800 34px ID;color:var(--tx);box-shadow:0 8px 0 rgba(0,0,0,.55)}
+.bt-meter.g{border-color:var(--green);color:var(--green)}
+.bt-eq{position:absolute;left:390px;width:100px;text-align:center;font:900 72px/70px ID;color:var(--gold2);opacity:0}
+.bt-lbl{position:absolute;left:330px;width:220px;height:66px;display:flex;align-items:center;justify-content:center;opacity:0;z-index:3}
+.bt-lbl b{padding:6px 20px;border-radius:999px;background:var(--acc);color:#04131A;font:900 36px ID;letter-spacing:.02em}
+.bt-lbl i{flex:1;height:4px;background:var(--acc);opacity:.8}
+/* part 5: the body as a memory stick, the mouth as a processor, each with a callout on the left */
+.bt-dimm{opacity:0}
+.bt-ram{fill:#14202A;stroke:#3B4A55;stroke-width:3}
+.bt-pins{fill:var(--gold2);opacity:.85}
+.bt-part{position:absolute;left:0;display:flex;flex-direction:column;align-items:flex-start;gap:8px;opacity:0;z-index:3;transform-origin:0 50%}
+.bt-part .rw{display:flex;align-items:center;gap:14px}
+.bt-part b{padding:6px 22px;border-radius:999px;background:var(--acc);color:#04131A;font:900 38px ID;letter-spacing:.02em}
+.bt-part small{font:700 30px/1.2 ID;color:var(--tx)}
+.bt-part .ld{flex:1;height:4px;background:var(--acc);border-radius:2px}
+.bt-chip{position:absolute;width:108px;height:76px;box-sizing:border-box;border-radius:12px;background:#0E1A2E;border:4px solid var(--blue);display:grid;place-items:center;opacity:0;z-index:4;
+  box-shadow:0 6px 0 rgba(0,0,0,.5)}
+.bt-chip b{font:900 30px JB;color:#fff;letter-spacing:.04em}
+.bt-chip .pl,.bt-chip .pr{position:absolute;top:0;width:12px;height:100%}
+.bt-chip .pl{left:-16px}.bt-chip .pr{right:-16px}
+.bt-chip .pl i,.bt-chip .pr i{position:absolute;left:0;width:12px;height:5px;border-radius:2px;background:var(--blue)}
+
+/* ddr: a DIMM per row and its bandwidth bar */
+.dd-row{position:absolute;left:0;width:880px;box-sizing:border-box;opacity:0;border-radius:20px;background:var(--bg2);border:3px solid var(--acc);
+  box-shadow:0 10px 0 rgba(0,0,0,.55)}
+.dd-dimm{position:absolute;left:22px;top:30px;height:104px;border-radius:8px;background:#15241E;border:3px solid var(--acc);box-sizing:border-box}
+.dd-dimm i{position:absolute;top:14px;width:36px;height:52px;border-radius:4px;background:linear-gradient(180deg,#26313A,#11181E);border:2px solid #3B4A55}
+.dd-dimm .pins{position:absolute;left:0;right:0;bottom:-2px;height:16px;background:repeating-linear-gradient(90deg,var(--gold2) 0 4px,transparent 4px 8px)}
+.dd-side{position:absolute;left:316px;right:26px;top:22px;bottom:22px}
+.dd-side .nm{position:absolute;left:0;top:0;font:900 44px/1 ID;color:var(--tx);letter-spacing:-.02em;white-space:nowrap}
+.dd-side .nm small{display:block;margin-top:6px;font:700 30px JB;color:var(--tx3);letter-spacing:.02em}
+.dd-side .vl{position:absolute;right:0;top:0;font:900 44px/1 JB;color:var(--acc)}
+.dd-track{position:absolute;left:0;right:0;bottom:0;height:30px;border-radius:15px;background:var(--bg0);border:2px solid var(--bd2);overflow:hidden}
+.dd-fill{position:absolute;left:0;top:0;bottom:0;border-radius:15px;background:var(--acc);transform-origin:0 50%;transform:scaleX(0)}
+.dd-note{position:absolute;left:60px;width:760px;text-align:center;font:700 30px JB;color:var(--tx3);opacity:0}
+
+/* dual: a panel per configuration; sticks on the left, lanes of pulses into the CPU on the right */
+.du-pan{position:absolute;left:0;width:880px;box-sizing:border-box;opacity:0;border-radius:20px;background:var(--bg2);border:3px solid var(--acc);
+  box-shadow:0 10px 0 rgba(0,0,0,.55);overflow:hidden}
+.du-pan .ttl{position:absolute;left:28px;top:16px;font:800 32px ID;color:var(--tx);white-space:nowrap}
+.du-stick{position:absolute;top:70px;width:56px;height:160px;border-radius:8px;background:#15241E;border:3px solid var(--teal);box-sizing:border-box}
+.du-stick::after{content:"";position:absolute;left:0;right:0;bottom:-2px;height:14px;background:repeating-linear-gradient(90deg,var(--gold2) 0 4px,transparent 4px 8px)}
+.du-stick b{position:absolute;left:50%;top:50%;transform:translate(-50%,-50%) rotate(-90deg);font:800 26px JB;color:var(--teal);white-space:nowrap}
+.du-lane{position:absolute;left:230px;width:450px;height:10px;margin-top:-5px;border-radius:5px;background:var(--bd2)}
+.du-lane.lit{background:var(--gold)}
+.du-pl{--pc:var(--teal)}
+.du-cpu{position:absolute;right:28px;top:70px;width:150px;height:150px;border-radius:14px;box-sizing:border-box;display:grid;place-items:center;
+  background:linear-gradient(145deg,#1B2B44,#0C1626);border:4px solid var(--blue);font:900 40px ID;color:var(--blue)}
+.du-tag{position:absolute;left:50%;transform-origin:50% 50%;margin-left:-260px;width:520px;height:88px;box-sizing:border-box;display:grid;place-items:center;
+  border-radius:999px;background:var(--violet);color:#160B33;font:900 42px ID;opacity:0;box-shadow:0 8px 0 rgba(0,0,0,.5)}
+
+
+/* ---------- part 3 (projects/what-makes-laptop-faster-3): clock, ipc, cores, arch, recap + cache and fan on the board ---------- */
+/* clock: the package, a scope with the square wave, the cycle counter or the temperature bar */
+.ck-cpu{position:absolute;box-sizing:border-box;border-radius:18px;opacity:0;background:linear-gradient(145deg,#C9CFD6,#8C949E);border:4px solid #5D6670;
+  box-shadow:0 10px 0 rgba(0,0,0,.5)}
+.ck-cpu .die{position:absolute;inset:20%;border-radius:10px;background:linear-gradient(145deg,#1B2B44,#0C1626);border:3px solid var(--blue);
+  display:grid;place-items:center;font:900 40px ID;color:var(--blue)}
+.ck-cpu .led{position:absolute;right:14px;top:14px;width:22px;height:22px;border-radius:50%;background:var(--gold2);box-shadow:0 0 14px var(--gold2)}
+.ck-scope{position:absolute;box-sizing:border-box;overflow:hidden;opacity:0;border-radius:20px;background:#04110B;border:3px solid var(--blue);
+  box-shadow:0 10px 0 rgba(0,0,0,.55);
+  background-image:linear-gradient(90deg,rgba(92,192,255,.10) 1px,transparent 1px),linear-gradient(0deg,rgba(92,192,255,.10) 1px,transparent 1px);background-size:64px 46px}
+.ck-scope path{fill:none;stroke:var(--blue);stroke-width:6;stroke-linejoin:round;filter:drop-shadow(0 0 6px rgba(92,192,255,.6))}
+.ck-scope.hot{border-color:var(--rose)} .ck-scope.hot path{stroke:var(--rose)}
+.ck-rd{position:absolute;right:16px;top:12px;padding:8px 16px;border-radius:10px;background:var(--bg0);font:800 32px JB;color:var(--tx)}
+.ck-count{position:absolute;left:0;width:880px;box-sizing:border-box;height:200px;padding:16px 0;display:flex;flex-direction:column;align-items:center;justify-content:center;opacity:0;
+  border-radius:22px;background:var(--bg2);border:3px solid var(--gold);box-shadow:0 10px 0 rgba(0,0,0,.55)}
+.ck-count b{font:900 84px/1.15 JB;letter-spacing:-.02em;color:var(--gold2)}
+.ck-count small{margin-top:8px;font:700 32px JB;color:var(--tx2)}
+.ck-heat{position:absolute;left:0;width:880px;box-sizing:border-box;height:150px;opacity:0;border-radius:22px;background:var(--bg2);border:3px solid var(--rose);
+  box-shadow:0 10px 0 rgba(0,0,0,.55)}
+.ck-heat .nm{position:absolute;left:28px;top:18px;font:800 36px ID;color:var(--tx)}
+.ck-track{position:absolute;left:28px;right:28px;bottom:26px;height:36px;border-radius:18px;background:var(--bg0);border:2px solid var(--bd2);overflow:hidden}
+.ck-fill{position:absolute;inset:0;border-radius:18px;transform-origin:0 50%;transform:scaleX(.25)}
+.ck-thr{position:absolute;left:50%;margin-left:-300px;width:600px;height:96px;box-sizing:border-box;display:grid;place-items:center;border-radius:999px;opacity:0;
+  background:var(--rose);color:#2A0710;font:900 46px ID;box-shadow:0 8px 0 rgba(0,0,0,.5)}
+
+/* ipc: a lane per CPU, columns of work blocks sliding in once per tick, a work-done bar */
+.ip-lane{position:absolute;left:0;width:880px;box-sizing:border-box;opacity:0;border-radius:20px;background:var(--bg2);border:3px solid var(--acc);
+  box-shadow:0 10px 0 rgba(0,0,0,.55);overflow:hidden}
+.ip-lane .nm{position:absolute;left:26px;top:22px;width:240px;font:900 40px/1.05 ID;color:var(--tx);letter-spacing:-.02em}
+.ip-lane .nm small{display:block;margin-top:8px;font:700 28px/1.3 JB;color:var(--acc);letter-spacing:0}
+.ip-track{position:absolute;left:290px;right:26px;top:18px;height:120px;border-left:3px dashed var(--bd2);overflow:hidden}
+.ip-col{position:absolute;left:0;bottom:0;width:40px;display:flex;flex-direction:column-reverse;gap:4px;opacity:0}
+.ip-col i{display:block;width:40px;height:26px;border-radius:5px;background:var(--acc);box-shadow:inset 0 -4px 0 rgba(0,0,0,.25)}
+.ip-bar{position:absolute;left:290px;right:26px;bottom:24px;height:30px;border-radius:15px;background:var(--bg0);border:2px solid var(--bd2);overflow:hidden}
+.ip-bar i{position:absolute;inset:0;border-radius:15px;background:var(--acc);transform-origin:0 50%;transform:scaleX(0)}
+.ip-wd{position:absolute;left:26px;bottom:20px;font:700 28px JB;color:var(--tx2);opacity:0}
+
+/* cores: the die, one tile per core, each a worker with a job bar */
+.co-die{position:absolute;left:0;top:0;width:880px;box-sizing:border-box;opacity:0;border-radius:22px;background:linear-gradient(145deg,#13233A,#0A1422);
+  border:4px solid var(--violet);box-shadow:0 12px 0 rgba(0,0,0,.55)}
+.co-die .ttl{position:absolute;left:26px;top:14px;font:800 32px JB;color:var(--violet);letter-spacing:.06em}
+.co-die .cnt{position:absolute;right:22px;top:10px;padding:8px 18px;border-radius:999px;background:var(--violet);color:#160B33;font:900 32px ID;opacity:0}
+.co-die .cnt.on{opacity:1}
+.co-tile{position:absolute;box-sizing:border-box;border-radius:16px;border:3px dashed rgba(182,156,255,.35);display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:8px;color:var(--tx3)}
+.co-tile.lit{border:3px solid var(--violet);background:rgba(182,156,255,.10);color:var(--tx)}
+.co-tile .wk{width:84px;height:84px;color:var(--violet);opacity:0}
+.co-tile .wk svg,.co-big .wk svg{width:100%;height:100%}
+.co-tile b{font:800 28px JB}
+.co-tile .job,.co-big .job{display:block;position:relative;width:70%;height:12px;border-radius:6px;background:var(--bg0);overflow:hidden}
+.co-tile .job i,.co-big .job i{position:absolute;inset:0;background:var(--violet);transform-origin:0 50%;transform:scaleX(0)}
+.co-die.big{border-color:var(--green)} .co-die.big .ttl{color:var(--green);top:12px} .co-die.big .cnt{background:var(--green);color:#05210F}
+.co-big{position:absolute;top:66px;width:196px;height:162px;box-sizing:border-box;border-radius:16px;border:3px solid var(--green);background:rgba(91,227,142,.10);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px}
+.co-big .wk{width:96px;height:96px;color:var(--green)} .co-big .job i{background:var(--green)}
+
+/* arch: a row per chip family */
+.ar-row{position:absolute;left:0;width:880px;box-sizing:border-box;opacity:0;border-radius:20px;background:var(--bg2);border:3px solid var(--gold);
+  box-shadow:0 10px 0 rgba(0,0,0,.55)}
+.ar-logo{position:absolute;left:24px;top:28px;width:140px;height:140px;border-radius:22px;background:#fff;display:grid;place-items:center}
+.ar-logo img{width:96px;height:96px;object-fit:contain}
+.ar-nm{position:absolute;left:190px;top:46px;font:900 52px/1 ID;color:var(--tx);letter-spacing:-.03em;white-space:nowrap}
+.ar-nm small{display:block;margin-top:12px;font:700 28px JB;color:var(--tx3);letter-spacing:0}
+.ar-die{position:absolute;right:24px;top:28px;width:194px;height:136px;box-sizing:border-box;border-radius:12px;background:#0A1422;border:3px solid var(--blue)}
+.ar-die i{position:absolute;border-radius:6px}
+.ar-die .P{background:rgba(92,192,255,.75)} .ar-die .E{background:rgba(92,192,255,.4)} .ar-die .G{background:rgba(182,156,255,.7)} .ar-die .M{background:rgba(45,224,196,.6)}
+.ar-neq{position:absolute;right:340px;width:72px;height:72px;border-radius:50%;display:grid;place-items:center;background:var(--rose);color:#2A0710;
+  font:900 40px/1 ID;opacity:0;z-index:3;box-shadow:0 6px 0 rgba(0,0,0,.5)}
+
+/* recap: struck chips, a checklist, and the big flash of each counted term */
+.rc-st .rc-line{position:absolute;left:30px;right:30px;top:50%;height:8px;margin-top:-4px;border-radius:4px;background:var(--rose);transform-origin:0 50%;transform:scaleX(0)}
+.rc-row{position:absolute;left:0;width:880px;box-sizing:border-box;display:flex;align-items:center;gap:22px;padding:0 26px;opacity:0;border-radius:18px;
+  background:var(--bg2);border:3px solid var(--acc);box-shadow:0 8px 0 rgba(0,0,0,.55)}
+.rc-row .ck{width:48px;height:48px;border-radius:50%;background:var(--acc);display:grid;place-items:center;flex:none}
+.rc-row .ck svg{width:30px;height:30px;fill:none;stroke:#04131A;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.rc-row b{font:900 46px ID;color:var(--tx);letter-spacing:-.02em}
+.rc-row small{margin-left:auto;font:700 28px JB;color:var(--tx2)}
+.rc-flash{position:absolute;left:440px;top:0;padding:10px 40px 18px;border-radius:28px;background:var(--bg0);border:5px solid var(--acc);
+  font:900 120px/1 ID;letter-spacing:-.04em;color:var(--tx);white-space:nowrap;opacity:0;z-index:8;box-shadow:0 14px 0 rgba(0,0,0,.6)}
+
+/* cache on the board */
+.bd-cache{position:absolute;box-sizing:border-box;display:grid;place-items:center;border-radius:12px;opacity:0;z-index:4;background:#0A2A18;border:4px solid var(--green);
+  font:900 32px ID;color:var(--green);box-shadow:0 6px 0 rgba(0,0,0,.5)}
+.bd-skip{position:absolute;padding:8px 20px;border-radius:999px;background:var(--bg0);border:3px solid var(--tx3);color:var(--tx2);font:800 30px JB;white-space:nowrap;
+  opacity:0;z-index:6}
+
+/* ---------- version B: one card over the face (projects/what-makes-computer-faster/kit.js) ----------
+   Only in a transparent capture (dual's over windows): the slide's own content hides and the .bd-ov card shows, low on
+   the frame between the chin and the caption band (y ~1000-1320 of the 9:16 stage). Solid, never see-through. */
+.bd-ov{display:none}
+#stage.transparent .slide.ovs > :not(.bd-ov){visibility:hidden}
+#stage.transparent .slide.ovs .bd-ov{display:flex}
+#stage.theme-board.transparent .slide.ovs::before{display:none}   /* the card is opaque; base's dark scrim would dim the face */
+.bd-ov{position:absolute;left:60px;width:880px;box-sizing:border-box;flex-direction:column;gap:8px;padding:26px 34px 30px;border-radius:22px;opacity:0;
+  background:#0B2A1E;border:3px solid var(--gold);box-shadow:0 12px 0 rgba(0,0,0,.6)}
+.bd-ov .eb{font:700 30px JB;letter-spacing:.08em;text-transform:uppercase;color:var(--gold2)}
+.bd-ov b{font:900 64px/1.06 ID;letter-spacing:-.035em;color:var(--tx);text-wrap:balance}
+.bd-ov b em{font-style:normal;color:var(--gold2)}
+#stage.theme-board .bub{font-size:32px;line-height:1.2;padding:16px 22px}
+.bd-eq.txt{font-size:64px;line-height:120px;color:var(--tx2)}
+/* a chip in a row of three: icon over the label, so "Video editing" fits a 280px chip (part 3 review 1: overflow) */
+.bd-chip.stk{flex-direction:column;justify-content:center !important;gap:6px !important;padding:0 14px !important;font-size:30px !important}
+.bd-chip.stk svg.ic{width:38px;height:38px}
+
+/* ---------- part 4 (projects/what-makes-laptop-faster-4): storage ---------- */
+/* drives: panels, a hard drive from above (platter, spinning sheen, arm on a pivot), an M.2 SSD with flash cells */
+.dr-pan{position:absolute;box-sizing:border-box;border-radius:22px;background:var(--bg2);border:3px solid var(--acc,var(--amber));box-shadow:0 10px 0 rgba(0,0,0,.55);opacity:0}
+.dr-pan.solo{opacity:1;background:var(--pcb);border-color:var(--bd2)}
+.dr-pan .ttl{position:absolute;left:24px;top:16px;font:800 34px JB;letter-spacing:.06em;color:var(--acc,var(--amber))}
+.hd-box{position:absolute;box-sizing:border-box;border-radius:22px;background:linear-gradient(160deg,#9AA3AD,#5E666F);border:4px solid #3E454D;box-shadow:0 10px 0 rgba(0,0,0,.5);opacity:0}
+.hd-plat{position:absolute;border-radius:50%;overflow:hidden;box-sizing:border-box;border:4px solid #3E454D;
+  background:radial-gradient(circle,#D9DEE3 0 12%,#8C949D 13% 36%,#B7BEC6 37% 38%,#8C949D 39% 64%,#B7BEC6 65% 66%,#7D858E 67%)}
+.hd-spin{position:absolute;inset:0;border-radius:50%;background:repeating-conic-gradient(from 0deg,rgba(255,255,255,.28) 0 5deg,transparent 5deg 40deg,rgba(0,0,0,.12) 40deg 46deg,transparent 46deg 90deg)}
+.hd-plat .hub{position:absolute;left:50%;top:50%;width:22%;height:22%;margin:-11% 0 0 -11%;border-radius:50%;background:#2A2F38;border:4px solid #B7BEC6}
+.hd-tgt{position:absolute;width:26px;height:26px;margin:-13px 0 0 -13px;border-radius:50%;background:var(--amber);opacity:0;box-shadow:0 0 0 6px rgba(247,185,71,.35)}
+.hd-tgt.on{opacity:1}
+.hd-arm{position:absolute;height:18px;margin-top:-9px;border-radius:9px;background:linear-gradient(180deg,#D9DEE3,#8C949D);transform-origin:0 50%;border:3px solid #3E454D;box-sizing:border-box}
+.hd-arm i{position:absolute;right:-8px;top:50%;width:26px;height:26px;margin-top:-13px;border-radius:6px;background:#3E454D}
+.hd-arm.on{background:linear-gradient(180deg,var(--gold2),var(--amber))}
+.hd-piv{position:absolute;width:44px;height:44px;border-radius:50%;background:#2A2F38;border:5px solid #B7BEC6;box-sizing:border-box}
+.sd-m2{position:absolute;box-sizing:border-box;border-radius:12px;background:#0F3B2A;border:3px solid var(--green);box-shadow:0 8px 0 rgba(0,0,0,.5)}
+.sd-m2 .ctl{position:absolute;left:50%;top:14px;width:62%;height:22%;margin-left:-31%;border-radius:8px;background:#1C2128;border:2px solid #4A505A;display:grid;place-items:center;color:var(--tx3)}
+.sd-m2 .ci{width:46%;height:70%}
+.sd-m2 .cells{position:absolute;left:12%;right:12%;top:calc(22% + 30px);bottom:46px;display:grid;grid-template-columns:repeat(4,1fr);gap:8px}
+.sd-m2 .cells i{border-radius:4px;background:#1C2128;border:2px solid #3B4A55}
+.sd-m2 .cells i.on{background:#1E5A3E;border-color:var(--green)}
+.sd-m2 .cells i.hit{background:var(--green);box-shadow:0 0 0 5px rgba(91,227,142,.35)}
+.sd-m2 .edge{position:absolute;left:10%;right:10%;bottom:-3px;height:18px;background:repeating-linear-gradient(90deg,var(--gold2) 0 6px,transparent 6px 11px)}
+.sd-m2 .notch{position:absolute;left:30%;bottom:-3px;width:10px;height:22px;background:var(--bg2)}
+.dr-mv{position:absolute;right:20px;top:18px;display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;background:var(--bg0);border:2px solid var(--bd2);
+  font:700 28px JB;color:var(--tx2);opacity:0}
+.dr-mv svg{width:28px;height:28px}
+.dr-mv .ln{position:absolute;left:8px;right:8px;top:50%;height:5px;margin-top:-2px;border-radius:3px;background:var(--rose);transform-origin:0 50%;transform:scaleX(0)}
+.dr-rd{position:absolute;left:24px;right:24px;bottom:22px;text-align:center;font:800 32px JB;color:var(--amber);opacity:0}
+.dr-rd.ok{color:var(--green)}
+.dr-win{position:absolute;left:50%;top:44%;width:330px;margin-left:-165px;text-align:center;padding:14px 0 16px;border-radius:16px;background:var(--green);color:#06140F;
+  font:900 48px/1 ID;letter-spacing:-.02em;box-shadow:0 10px 0 rgba(0,0,0,.55);opacity:0;z-index:3}
+/* speeds: SSD rows */
+.sp-row{position:absolute;left:0;width:880px;box-sizing:border-box;opacity:0;border-radius:18px;background:var(--bg2);border:3px solid var(--acc);box-shadow:0 8px 0 rgba(0,0,0,.5);z-index:2}
+.sp-row .sp-m2{position:absolute;left:22px;top:26px;width:160px;height:52px;border-radius:6px;background:#0F3B2A;border:3px solid var(--acc);box-sizing:border-box}
+.sp-m2 i{position:absolute;top:8px;width:30px;height:30px;border-radius:4px;background:#1C2128;border:2px solid #3B4A55}
+.sp-m2 i:nth-child(1){left:10px} .sp-m2 i:nth-child(2){left:50px} .sp-m2 i:nth-child(3){left:90px}
+.sp-m2 b{position:absolute;right:-3px;top:8px;bottom:8px;width:12px;background:repeating-linear-gradient(0deg,var(--gold2) 0 4px,transparent 4px 8px)}
+.sp-row .nm{position:absolute;left:206px;top:20px;font:900 40px/1 ID;color:var(--tx);letter-spacing:-.02em;white-space:nowrap}
+.sp-row .nm small{margin-left:14px;font:700 28px JB;color:var(--tx3);letter-spacing:.02em}
+.sp-row .vl{position:absolute;right:24px;top:20px;font:900 40px/1 JB;color:var(--acc)}
+.sp-row .dd-track{left:206px;right:24px;bottom:22px;top:auto;height:28px;position:absolute}
+.sp-grp{position:absolute;left:-10px;width:900px;box-sizing:border-box;border-radius:24px;border:3px dashed var(--violet);opacity:0;z-index:1}
+.sp-grp .ttl{position:absolute;left:22px;top:20px;font:800 32px JB;letter-spacing:.04em;color:var(--violet)}
+.sp-pci{position:absolute;right:24px;top:12px;padding:8px 18px;border-radius:999px;background:var(--violet);color:#160C33;font:800 28px JB;opacity:0}
+/* swap: RAM and storage panels, the swap slice, app tiles, a straight arrow that draws (--k) with its head at the tip */
+.sw-pan{position:absolute;box-sizing:border-box;border-radius:22px;background:var(--bg2);border:3px solid var(--acc);box-shadow:0 10px 0 rgba(0,0,0,.55);opacity:0}
+.sw-pan.bad{border-color:var(--rose);box-shadow:0 0 0 5px rgba(255,122,140,.25),0 10px 0 rgba(0,0,0,.55)}
+.sw-pan .ttl{position:absolute;left:24px;top:16px;font:800 34px JB;letter-spacing:.06em;color:var(--acc)}
+.sw-full{position:absolute;right:20px;top:14px;padding:6px 16px;border-radius:999px;background:var(--rose);color:#2A0710;font:800 28px JB;opacity:0}
+.sw-slot{position:absolute;width:150px;height:150px;border-radius:18px;border:3px dashed rgba(233,242,234,.25);box-sizing:border-box}
+.sw-app{width:104px;height:104px;margin:-52px 0 0 -52px;border-radius:24px}
+.sw-app img{width:64px;height:64px}
+.sw-slice{position:absolute;left:24px;right:24px;top:80px;height:200px;border-radius:18px;border:3px dashed var(--teal);box-sizing:border-box;opacity:0;display:flex;align-items:flex-end;justify-content:center;padding-bottom:10px}
+.sw-slice.on{background:rgba(45,224,196,.12)}
+.sw-slice b{position:absolute;top:12px;left:0;right:0;text-align:center;font:800 30px JB;color:var(--teal);letter-spacing:.04em}
+.sw-files{position:absolute;left:24px;right:24px;top:304px;bottom:24px;display:flex;flex-wrap:wrap;gap:14px;align-content:flex-start;justify-content:center;color:var(--tx3)}
+.sw-files span svg{width:62px;height:62px}
+.sw-files small{width:100%;text-align:center;font:700 28px JB;color:var(--tx2)}
+.p4-arw{position:absolute;opacity:0;--k:0}
+.p4-arw .sh{position:absolute;background:var(--gold2);border-radius:5px}
+.p4-arw .hd{position:absolute;width:0;height:0;border-style:solid}
+.p4-arw.h{height:24px;margin-top:-12px}
+.p4-arw.h .sh{left:0;top:7px;height:10px;width:calc((100% - 22px) * var(--k))}
+.p4-arw.h .hd{top:-2px;left:calc((100% - 22px) * var(--k));border-width:14px 0 14px 24px;border-color:transparent transparent transparent var(--gold2)}
+.p4-arw.v{width:24px}
+.p4-arw.v .sh{top:0;left:7px;width:10px;height:calc((100% - 22px) * var(--k))}
+.p4-arw.v .hd{left:-2px;top:calc((100% - 22px) * var(--k));border-width:24px 14px 0 14px;border-color:var(--gold2) transparent transparent transparent}
+/* swap lanes */
+.sw-lane{position:absolute;left:0;width:880px;box-sizing:border-box;border-radius:22px;background:var(--bg2);border:3px solid var(--acc);box-shadow:0 10px 0 rgba(0,0,0,.55);opacity:0}
+.sw-lane.bad{border-color:var(--rose)}
+.sw-lane .ttl{position:absolute;left:24px;top:16px;font:900 38px ID;letter-spacing:-.02em;color:var(--tx)}
+.sw-ltag{position:absolute;right:20px;top:14px;padding:6px 16px;border-radius:999px;background:var(--acc);color:#06140F;font:800 28px JB;opacity:0}
+.sw-lane.bad .sw-ltag{background:var(--rose);color:#2A0710}
+.sw-ram{position:absolute;left:28px;top:84px;width:150px;height:130px;border-radius:12px;background:#0F3B2A;border:3px solid var(--teal);box-sizing:border-box}
+.sw-ram i{position:absolute;top:12px;width:30px;height:66px;border-radius:4px;background:#1C2128;border:2px solid #3B4A55}
+.sw-ram i:nth-child(1){left:30px} .sw-ram i:nth-child(2){left:84px}
+.sw-ram b{position:absolute;left:0;right:0;bottom:12px;text-align:center;font:800 28px/1 JB;color:var(--teal)}
+.sw-trk{position:absolute;left:196px;right:200px;top:146px;height:8px;border-radius:4px;background:repeating-linear-gradient(90deg,var(--gold) 0 14px,transparent 14px 24px);opacity:.6}
+/* chain: warehouse → workbench → workers */
+.ch-row{position:absolute;left:0;width:880px;box-sizing:border-box;border-radius:22px;background:var(--bg2);border:3px solid var(--acc);box-shadow:0 10px 0 rgba(0,0,0,.55);opacity:0}
+.ch-ic{position:absolute;left:24px;top:22px;width:120px;height:120px;border-radius:24px;background:var(--acc);color:#06140F;display:grid;place-items:center}
+.ch-ic svg{width:72px;height:72px}
+.ch-row .nm{position:absolute;left:172px;top:30px;font:900 58px/1 ID;letter-spacing:-.03em;color:var(--tx);white-space:nowrap}
+.ch-row .nm small{display:block;margin-top:12px;font:800 30px JB;letter-spacing:.02em;color:var(--acc)}
+.ch-slot{position:absolute;left:676px;top:30px;width:110px;height:110px;border-radius:18px;border:3px dashed rgba(233,242,234,.25);box-sizing:border-box}
+.ch-box{position:absolute;left:750px;width:92px;height:92px;margin:-46px 0 0 -46px;border-radius:18px;background:var(--amber);color:#1B1405;display:grid;place-items:center;opacity:0;z-index:4;box-shadow:0 8px 0 rgba(0,0,0,.5)}
+.ch-box svg{width:56px;height:56px}
+.ch-lock{position:absolute;left:444px;top:100px;display:flex;align-items:center;gap:8px;padding:6px 14px;border-radius:999px;background:var(--bg0);border:2px solid var(--amber);
+  color:var(--amber);font:800 28px JB;opacity:0;z-index:3}
+.ch-lock svg{width:26px;height:26px}
+.ch-zap{position:absolute;left:836px;top:520px;width:64px;height:64px;margin:-32px 0 0 -32px;color:var(--blue);opacity:0;z-index:5}
+.ch-zap svg{width:64px;height:64px;fill:var(--blue)}
+
+/* part 4 review 1: data streams through the speed bars; a RAM meter in the swap scene */
+.sp-row .dd-fill{background:repeating-linear-gradient(90deg,var(--acc) 0 26px,color-mix(in srgb,var(--acc) 62%,#fff) 26px 34px)}
+.sw-meter{position:absolute;left:24px;right:118px;bottom:26px;height:22px;border-radius:11px;background:var(--bg0);border:2px solid var(--bd2);overflow:hidden}
+.sw-meter i{position:absolute;inset:0;border-radius:11px;background:var(--teal);transform-origin:0 50%;transform:scaleX(0)}
+.sw-pct{position:absolute;right:24px;bottom:20px;font:800 30px/1 JB;color:var(--tx)}

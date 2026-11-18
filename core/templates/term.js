@@ -1,6 +1,6 @@
 /* term: a terminal session. Commands type in character by character, their output prints line by line, and an idle
    prompt with a blinking caret waits at the end (projects/cloud-vs-devops).
-   data: {eyebrow, accent, h1, title?, cwd?, steps:[{cmd: string | [string] (continuation lines), out?:[html]}],
+   data: {eyebrow, accent, h1, title?, cwd?, steps:[{cmd: string | [string] (continuation lines), out?:[html], type?: seconds}],
           badge?:{text, cls}, sub?, foot?}
    `cmd` is plain text (it is typed, so it is escaped, never HTML); `out` lines are HTML and may use the spans
    .ok .er .wn .dm .ky .st .nu .hl. At 24px JetBrains Mono a line holds ~72 characters: split longer commands
@@ -59,7 +59,8 @@ function tmPlay(B, c, p, pre, steps, open, fa0, fb0) {
     const parts = []; let j = i;
     do { parts.push(rows[j]); j++; } while (j < n && rows[j].kind === 'k');
     const full = parts.map(x => x.text), chars = full.join('').length;
-    const len = cl(chars * TM.cps, TM.tmin, TM.tmax);
+    // step.type (seconds) types a command at the pace it is spoken instead of the stock quick burst
+    const len = steps[r.step].type || cl(chars * TM.cps, TM.tmin, TM.tmax);
     const rec = B.at(pre + 'c' + (r.step + 1), fa, fb, 'enter', { len, after: prev, delay: (prev === open ? .35 : (prev.e - prev.s) + .22) });
     const typed = Math.floor(chars * cl(rec.p, 0, 1) + 1e-6);
     let before = 0;

@@ -18,7 +18,6 @@ const { execFileSync } = require('child_process');
 const ROOT = path.resolve(__dirname, '..');
 const CHECK = process.argv.includes('--check');
 const INSTALL = !CHECK && !process.argv.includes('--no-install');
-const SKILL = path.join(ROOT, 'skills', 'new-video');
 const REPO_LINKS = ['.claude/skills', '.agents/skills', '.opencode/skills'];
 /* social-copy lives in the image pipeline (one copy, both pipelines use it). Link it here too when
    the sibling is checked out, so /social-copy works from inside this repo as well. */
@@ -126,7 +125,9 @@ function link(target, from, kind) {
     warn(`${kind} copied instead of linked (${e.code}); re-run npm run setup after editing the skill`);
   }
 }
-const SKILLS = [{ name: 'new-video', dir: SKILL }];
+/* every skill folder in skills/ (new-video, new-thumbnail, ...): a new skill is linked by being added there */
+const SKILLS = fs.readdirSync(path.join(ROOT, 'skills')).filter(n => fs.existsSync(path.join(ROOT, 'skills', n, 'SKILL.md'))).sort()
+  .map(name => ({ name, dir: path.join(ROOT, 'skills', name) }));
 if (fs.existsSync(SIBLING_SKILL)) SKILLS.push({ name: 'social-copy', dir: SIBLING_SKILL });
 else warn('social-copy not linked: ../image-content-pipeline is not checked out');
 for (const s of SKILLS) {
@@ -136,5 +137,5 @@ for (const s of SKILLS) {
 
 console.log('');
 if (failed) { console.log('Something required is missing — fix the lines marked MISSING and run `npm run doctor` again.'); process.exit(1); }
-console.log(CHECK ? 'All good.' : 'Setup complete. Open a new Claude Code session and type /new-video.');
+console.log(CHECK ? 'All good.' : 'Setup complete. Open a new Claude Code session and type /new-video (or /new-thumbnail).');
 })();

@@ -10,7 +10,7 @@ const FLAGS = {
   '--force': ['force', 'b'], '--timed': ['timed', 'b'], '--no-timed': ['noTimed', 'b'], '--preview': ['preview', 'b'], '--resume': ['resume', 'b'], '--no-audio': ['noAudio', 'b'],
   '--var': ['vars', 'list'], '--variant': ['variant', 's'], '--strip': ['strip', 'b'], '--over': ['over', 's'], '--over-end': ['overEnd', 'n'], '--open': ['open', 'b'], '--port': ['port', 'n'],
   // scripts/dual-render.js
-  '--chunk': ['chunk', 'n'], '--only': ['only', 's'], '--limit': ['limit', 'n'], '--source': ['source', 's'], '--reveals': ['reveals', 's'],
+  '--chunk': ['chunk', 'n'], '--only': ['only', 's'], '--limit': ['limit', 'n'], '--source': ['source', 's'], '--reveals': ['reveals', 's'], '--punch': ['punch', 'n'],
 };
 function parseArgs(argv) {
   const o = { slide: [], vars: [], format: 'all', transparent: false, poster: false, keepFrames: false, list: false };

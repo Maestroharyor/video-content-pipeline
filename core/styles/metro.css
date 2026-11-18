@@ -1,0 +1,195 @@
+/* "metro" theme (PROJECT.theme = 'metro'), built for projects/backend-one-click.
+   The video follows one request through a backend, so the deck is a transit map on charcoal: the request is a yellow
+   train dot, every technology is a station, sections are coloured lines (request path blue, money rose, async green,
+   infrastructure violet, delivery amber, watching teal). Stations are white rings on thick lines; cards are dark
+   enamel signs with a coloured line along the top; tickets are cream transit tickets. A 13-stop line strip (the HUD)
+   rides the top-left of every scene so the viewer always knows where the request is.
+   Components: core/styles/trip.css (the pass template) + lanes.css (cast, fx). Version B over/split at the bottom. */
+#stage.theme-metro{--ovs-rgb:16,19,23;--paper:#F6F1E4;--paper2:#ECE5D3;--ink:#1D2027;--ink2:#6A6F7A;--bg2:#1E242C;--bd2:#333B46;
+  --plate:linear-gradient(180deg,#171B21,#101317 70%);--plate-edge:#FFC23D}
+
+/* ================= metro: a transit map on charcoal ================= */
+#stage.theme-metro{
+  --bg0:#101317; --bg1:#171B21; --bd:#2A3039; --tx:#F3F5F8; --tx2:#AEB6C2; --tx3:#727C8B;
+  --blue:#2F80FF; --rose:#FF4D6D; --green:#2FBF71; --amber:#FFC23D; --violet:#9B6BFF; --teal:#22C7C7; --orange:#FF8A2B;
+  background:#101317;
+}
+#stage.theme-metro.transparent{background:transparent}
+#stage.theme-metro .bgfx .grid{opacity:.07}
+#stage.theme-metro .eyebrow{font-family:JB;letter-spacing:.18em;color:var(--tx3)}
+#stage.theme-metro .eyebrow::before{content:"";display:inline-block;width:18px;height:18px;border-radius:50%;border:5px solid var(--acc-c,var(--blue));
+  margin-right:12px;vertical-align:-4px;background:#fff}
+#stage.theme-metro .h1{font-weight:900;letter-spacing:-.03em}
+.lk-metro .lk-it{position:absolute}
+.lk-metro svg.trk{position:absolute;left:0;top:0;overflow:visible}
+.lk-metro svg.trk path{fill:none;stroke-linecap:round;stroke-linejoin:round}
+.lk-metro .line{stroke-width:16}
+.lk-metro .line.b{stroke:var(--blue)} .lk-metro .line.r{stroke:var(--rose)} .lk-metro .line.g{stroke:var(--green)} .lk-metro .line.v{stroke:var(--violet)}
+.lk-metro .line.thin{stroke-width:5}
+.lk-metro .future{stroke:#2F353F;stroke-width:16;stroke-dasharray:2 26}
+/* a station: white ring on the line, label above or below */
+.lk-metro .stn{position:absolute;width:0;height:0}
+.lk-metro .stn .dot{position:absolute;left:-19px;top:-19px;width:38px;height:38px;border-radius:50%;background:#fff;border:8px solid var(--c,var(--blue));box-sizing:border-box}
+.lk-metro .stn.big .dot{left:-27px;top:-27px;width:54px;height:54px;border-width:10px}
+.lk-metro .stn.term .dot{border-radius:12px;left:-24px;top:-24px;width:48px;height:48px}
+.lk-metro .stn .lb{position:absolute;left:0;transform:translateX(-50%);white-space:nowrap;text-align:center}
+.lk-metro .stn .lb b{display:block;font:800 34px ID;color:var(--tx);letter-spacing:-.01em}
+.lk-metro .stn .lb i{display:block;font:500 19px JB;font-style:normal;color:var(--tx3);margin-top:4px}
+.lk-metro .stn .lb.up{bottom:34px} .lk-metro .stn .lb.dn{top:34px}
+.lk-metro .stn .ic{position:absolute;left:-30px;width:60px;height:60px;color:var(--tx2)} .lk-metro .stn .ic svg{width:100%;height:100%}
+/* the transit ticket the lookup prints */
+.lk-metro .tkt{background:#F6F1E4;color:#1D2027;border-radius:14px;padding:18px 24px;font:700 22px JB;box-shadow:0 18px 40px rgba(0,0,0,.45);
+  border-left:10px solid var(--rose)}
+.lk-metro .tkt small{display:block;font:700 15px JB;letter-spacing:.14em;color:#8A8F99;margin-bottom:6px}
+.lk-metro .tkt .ip{font-size:34px;color:#1D2027;min-height:42px}
+.lk-metro .tkt .ip::after{content:"▍";color:var(--rose);margin-left:2px}
+.lk-metro .tkt.typed .ip::after{content:""}
+/* pills, logo tiles, the lock */
+.lk-metro .pill{display:inline-flex;align-items:center;gap:12px;padding:12px 22px;border-radius:40px;background:#1E242C;border:2px solid #333B46;
+  font:700 23px Inter;color:var(--tx);white-space:nowrap}
+.lk-metro .pill svg{width:26px;height:26px;color:var(--amber)}
+.lk-metro .lt{width:120px;height:120px;border-radius:24px;background:#fff;display:flex;align-items:center;justify-content:center;box-shadow:0 14px 30px rgba(0,0,0,.4)}
+.lk-metro .lt img{width:66px;height:66px}
+.lk-metro .lt + .cap{font:700 18px JB;color:var(--tx3);text-align:center;margin-top:10px}
+.lk-metro .lockb{width:84px;height:84px;border-radius:50%;background:var(--amber);color:#1B1F25;display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 0 10px rgba(255,194,61,.18)}
+.lk-metro .lockb svg{width:44px;height:44px}
+.lk-metro .lockb .o{display:none} .lk-metro .on .lockb .c{display:none} .lk-metro .on .lockb .o{display:block}
+.lk-metro .on .lockb{background:var(--green);box-shadow:0 0 0 10px rgba(47,191,113,.18)}
+.lk-metro .note{font:700 21px JB;color:var(--tx2);white-space:nowrap}
+.lk-metro .note b{color:var(--amber)} .lk-metro .on .note b{color:var(--green)}
+.lk-metro .count{font:900 120px ID;color:var(--tx);letter-spacing:-.04em;line-height:1}
+.lk-metro .count em{font-style:normal;color:var(--rose)}
+.lk-metro .count small{display:block;font:700 22px JB;letter-spacing:.12em;color:var(--tx3);margin-top:4px}
+/* the 40 backends */
+.lk-metro .lk-cells i{position:absolute;border-radius:10px;background:#1E242C;border:3px solid #3A424E}
+.lk-metro .lk-cells i.on{background:var(--rose);border-color:#fff}
+/* the DNS video card */
+.lk-metro .vid{background:#1A1F26;border:2px solid #313844;border-radius:18px;padding:12px;box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.lk-metro .vid img.th{display:block;width:100%;border-radius:10px}
+.lk-metro .vid .vt{display:flex;align-items:center;gap:10px;margin-top:10px;font:700 18px Inter;color:var(--tx)}
+.lk-metro .vid .vt img{width:28px;height:28px}
+/* the route strip (the line diagram over a train's doors) */
+.lk-metro .strip{display:flex;align-items:center;gap:0;padding:26px 44px;border-radius:22px;background:#F6F1E4;box-shadow:0 22px 50px rgba(0,0,0,.5)}
+.lk-metro .s{display:flex;flex-direction:column;align-items:center;gap:10px;font:800 30px ID;color:#1D2027;opacity:.35}
+.lk-metro .s.on{opacity:1}
+.lk-metro .s i{width:34px;height:34px;border-radius:50%;background:#fff;border:8px solid var(--blue);box-sizing:border-box}
+.lk-metro .strip .bar{width:220px;height:12px;background:var(--blue);border-radius:6px;margin:0 -6px 44px;opacity:.35}
+.lk-metro .strip .bar.on{opacity:1}
+/* riders: the request, a yellow train dot */
+.lk-metro .lk-rider{position:absolute;width:0;height:0;z-index:5}
+.lk-metro .lk-rider i{position:absolute;left:-15px;top:-15px;width:30px;height:30px;border-radius:50%;background:var(--amber);
+  box-shadow:0 0 0 8px rgba(255,194,61,.25),0 0 30px rgba(255,194,61,.7)}
+.lk-metro .lk-rider span{position:absolute;left:24px;top:-52px;padding:6px 12px;border-radius:8px;background:var(--amber);color:#1B1F25;font:700 17px JB;
+  white-space:nowrap;opacity:0;transition:none}
+.lk-metro .lk-rider.tag span{opacity:1}
+.lk-metro .lk-pulse{position:absolute;width:14px;height:14px;margin:-7px 0 0 -7px;border-radius:50%;background:var(--amber);box-shadow:0 0 14px rgba(255,194,61,.9);z-index:4}
+
+/* ---------- the pass components in metro dress ---------- */
+#stage.theme-metro .dn-st{background:linear-gradient(180deg,rgba(255,255,255,.05),rgba(255,255,255,0) 40%),#181D24;border:2px solid #2F3743;border-top:8px solid var(--sc);border-radius:16px}
+#stage.theme-metro .dn-st .ic{border-radius:22px;background:#fff;color:#1D2027;border:7px solid var(--sc)}
+#stage.theme-metro .dn-st .lg{border-radius:22px;border:6px solid var(--sc);background:#fff}
+#stage.theme-metro .dn-st.hub{box-shadow:0 0 0 6px color-mix(in srgb,var(--sc) 20%,transparent),0 24px 60px rgba(0,0,0,.55),0 0 90px color-mix(in srgb,var(--sc) 28%,transparent)}
+#stage.theme-metro .dn-st.hot{border-color:var(--amber);border-top-color:var(--amber);box-shadow:0 24px 56px rgba(0,0,0,.5),0 0 110px rgba(255,194,61,.35)}
+#stage.theme-metro .dn-tk{border-left:10px solid var(--rose);border-radius:12px;-webkit-mask:none;mask:none}
+#stage.theme-metro .dn-tk .clip{display:none}
+#stage.theme-metro .dn-tk.a{border-left-color:var(--amber);border-top:0} #stage.theme-metro .dn-tk.t{border-left-color:var(--teal);border-top:0}
+#stage.theme-metro .dn-tk.r{border-left-color:var(--rose);border-top:0} #stage.theme-metro .dn-tk.v{border-left-color:var(--violet);border-top:0}
+#stage.theme-metro .dn-tk.g{border-left-color:var(--green);border-top:0} #stage.theme-metro .dn-tk.b{border-left-color:var(--blue);border-top:0}
+#stage.theme-metro .dn-e>path{stroke:#3A424E;stroke-width:12;stroke-linecap:round}
+#stage.theme-metro .dn-e.hot>path{stroke:var(--amber)} #stage.theme-metro .dn-e.api>path,#stage.theme-metro .dn-e.b>path{stroke:var(--blue)}
+#stage.theme-metro .dn-e.ok>path{stroke:var(--green)} #stage.theme-metro .dn-e.rose>path{stroke:var(--rose)} #stage.theme-metro .dn-e.ai>path{stroke:var(--violet)}
+#stage.theme-metro .dn-e.dash>path{stroke-dasharray:2 22}
+#stage.theme-metro .dn-e.thin>path{stroke-width:5}
+#stage.theme-metro .dn-ride span{border-top:0;border-radius:20px;background:#FFC23D;color:#1B1F25;box-shadow:0 0 0 7px rgba(255,194,61,.25),0 0 30px rgba(255,194,61,.6)}
+#stage.theme-metro .dn-ride.r span{background:var(--rose);color:#fff;box-shadow:0 0 0 7px rgba(255,77,109,.25)}
+#stage.theme-metro .dn-ride.g span{background:var(--green);color:#fff;box-shadow:0 0 0 7px rgba(47,191,113,.25)}
+#stage.theme-metro .dn-ride.b span{background:var(--blue);color:#fff;box-shadow:0 0 0 7px rgba(47,128,255,.25)}
+#stage.theme-metro .dn-ride.v span{background:var(--violet);color:#fff;box-shadow:0 0 0 7px rgba(155,107,255,.25)}
+#stage.theme-metro .dn-el{background:#101317;border-color:#333B46}
+#stage.theme-metro .dn-chip{background:#1E242C;border-color:#333B46;border-radius:40px}
+#stage.theme-metro .dn-bd{border-radius:40px}
+#stage.theme-metro .dn-gh{background:rgba(24,29,36,.7);border-color:#3A424E}
+#stage.theme-metro .h1 em::after{display:none}
+
+/* ---------- the HUD (revision 3): a line diagram, top-left ---------- */
+.jr-hud{position:absolute;left:58px;top:30px;z-index:9;display:flex;align-items:center;gap:20px;opacity:0;pointer-events:none}
+.theme-metro .jr-hud{padding:12px 20px 12px 22px;border-radius:40px;background:rgba(14,17,21,.86);border:2px solid #262C35}
+.theme-metro .jr-hud .ln{position:relative;width:228px;height:22px}
+.theme-metro .jr-hud .ln s{position:absolute;top:9px;width:18px;height:4px;background:var(--c);opacity:.22;text-decoration:none}
+.theme-metro .jr-hud .ln s.done{opacity:1}
+.theme-metro .jr-hud .ln i{position:absolute;top:6px;width:10px;height:10px;margin-left:-1px;border-radius:50%;background:#0E1115;border:2px solid var(--c);box-sizing:border-box;opacity:.45}
+.theme-metro .jr-hud .ln i.done{background:var(--c);opacity:1}
+.theme-metro .jr-hud .ln i.on{top:0;width:22px;height:22px;margin-left:-7px;background:#fff;border-width:5px;opacity:1;box-shadow:0 0 0 5px color-mix(in srgb,var(--c) 30%,transparent)}
+.theme-metro .jr-hud .tr{position:absolute;top:6px;width:10px;height:10px;border-radius:50%;background:#FFC23D;box-shadow:0 0 0 4px rgba(255,194,61,.3),0 0 14px rgba(255,194,61,.85);z-index:2}
+.theme-metro .jr-hud .nm{display:flex;flex-direction:column;line-height:1.12}
+.theme-metro .jr-hud .nm em{font:700 13px JB;font-style:normal;letter-spacing:.14em;text-transform:uppercase;color:var(--tx3)}
+.theme-metro .jr-hud .nm b{font:800 21px ID;color:var(--tx);letter-spacing:-.01em}
+.theme-metro .jr-hud .nm u{font:600 13px JB;text-decoration:none;color:var(--tx3)}
+/* the arrival sign, top-right, on a section's first scene */
+.jr-arr{position:absolute;right:58px;top:30px;z-index:9;display:flex;align-items:center;gap:14px;padding:12px 22px 12px 14px;border-radius:40px;
+  background:rgba(14,17,21,.9);border:2px solid color-mix(in srgb,var(--c) 70%,transparent);opacity:0;pointer-events:none}
+.jr-arr i{width:34px;height:34px;border-radius:50%;background:#fff;border:7px solid var(--c);box-sizing:border-box}
+.jr-arr span{display:flex;flex-direction:column;line-height:1.1}
+.jr-arr em{font:700 13px JB;font-style:normal;letter-spacing:.16em;text-transform:uppercase;color:var(--c)}
+.jr-arr b{font:800 22px ID;color:#F3F5F8}
+#stage.transparent .jr-arr{display:none}
+/* version B: the HUD rides along in over windows (above the left column) and in split windows (top of the plate) */
+#stage.transparent .jr-hud{display:none}
+#stage.transparent .slide.ovs .jr-hud,#stage.transparent .slide.split .jr-hud{display:flex}
+#stage.transparent.canvas-horizontal .slide.split .jr-hud{left:calc(960px - 600px / var(--spk,.8));top:calc(540px - 500px / var(--spk,.8))}
+
+.lk-cells{position:absolute} .lk-cells i{position:absolute}
+.lk-it.gx{transform-origin:0 50%}
+.lk-metro .count{white-space:nowrap}
+.lk-metro .line.a{stroke:var(--amber)} .lk-metro .line.t{stroke:var(--teal)} .lk-metro .line.o{stroke:var(--orange)}
+/* ---------- the ground (revision 2): the parcel recipe, faint, in metro dress (kit.js) ----------
+   grain + thin dashed routes at 5% + transit roundels watermarked at 6%; two faint dots drift; nothing bright. */
+.jr-ground{position:absolute;inset:-40px;pointer-events:none}
+.jr-ground.metro .fib{position:absolute;inset:0;opacity:.28;mix-blend-mode:screen;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='3'/><feColorMatrix values='0 0 0 0 .55  0 0 0 0 .6  0 0 0 0 .7  0 0 0 .09 0'/></filter><rect width='300' height='300' filter='url(%23f)'/></svg>")}
+.jr-ground.metro .rt{position:absolute;left:40px;top:40px;width:1920px;height:1080px;opacity:.04}
+.jr-ground.metro .rt path{fill:none;stroke:#C9D3E3;stroke-width:3;stroke-dasharray:14 12;stroke-linecap:round}
+.jr-ground.metro .rd{position:absolute;width:200px;height:200px;margin:-100px 0 0 -100px;opacity:.045}
+.jr-ground.metro .rd i{position:absolute;inset:0;border-radius:50%;border:22px solid var(--c)}
+.jr-ground.metro .rd b{position:absolute;left:-20px;right:-20px;top:76px;height:48px;background:var(--c);display:flex;align-items:center;justify-content:center;
+  font:800 26px JB;letter-spacing:.14em;color:#101317}
+.jr-ground.metro .pk{position:absolute;left:40px;top:40px;width:8px;height:8px;margin:-4px 0 0 -4px;border-radius:50%;background:#C9D3E3;opacity:.14}
+#stage.theme-metro .bgfx .grid{opacity:0}
+#stage.theme-metro .dn-e{color:#3A424E} #stage.theme-metro .dn-e.hot{color:var(--amber)} #stage.theme-metro .dn-e.api,#stage.theme-metro .dn-e.b{color:var(--blue)}
+#stage.theme-metro .dn-e.ok{color:var(--green)} #stage.theme-metro .dn-e.rose{color:var(--rose)} #stage.theme-metro .dn-e.ai{color:var(--violet)}
+/* metro lines are 12px: a bigger head so it reads */
+#stage.theme-metro .dn-e marker{overflow:visible}
+.typed .ip::after{content:""!important}
+/* over the face with a HUD (revision 3, #73): the left column starts under the HUD instead of behind it */
+#stage.transparent.canvas-horizontal .slide.ovs:has(.jr-hud) .eyebrow{top:124px!important}
+#stage.transparent.canvas-horizontal .slide.ovs:has(.jr-hud) .h1{top:162px!important}
+#stage.transparent.canvas-horizontal .slide.ovs:has(.jr-hud) .content{top:360px!important}
+/* the HUD, revision 4 ("the height is too much"): one slim row (line + stop name); "Stop n / 13" sits above the box */
+.theme-metro .jr-hud{padding:8px 18px 8px 20px;gap:16px}
+.theme-metro .jr-hud .nm b{font-size:19px}
+.theme-metro .jr-hud .cap{position:absolute;left:22px;top:-20px;font:700 12px JB;font-style:normal;letter-spacing:.16em;text-transform:uppercase;color:var(--tx3);white-space:nowrap}
+.jr-hud{top:40px}
+/* a train passing as a section opens (revision 4 extra): a band in the line colour with a bright core, left to right */
+.jr-sweep{position:absolute;left:0;top:0;width:420px;height:1080px;z-index:8;opacity:0;pointer-events:none;
+  background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--c) 16%,transparent) 40%,color-mix(in srgb,var(--c) 30%,transparent) 50%,color-mix(in srgb,var(--c) 16%,transparent) 60%,transparent)}
+.jr-sweep i{position:absolute;left:206px;top:0;width:8px;height:100%;background:color-mix(in srgb,var(--c) 70%,#fff);opacity:.5}
+#stage.transparent .jr-sweep{display:none}
+.jr-sweep{display:none!important}   /* revision 5: "a diagonal line going across the whole video": removed */
+/* 9:16 (the social cuts): the cut's hook band owns the top 124px, so the stop HUD and arrival sign stay out */
+#stage.canvas-vertical .jr-hud,#stage.canvas-vertical .jr-arr{display:none!important}
+/* portrait look scenes: station labels beside the dot (lb 'rt' | 'lf'), and type that survives the phone */
+.lk-metro .stn .lb.rt{left:36px;top:50%;transform:translateY(-50%);text-align:left}
+.lk-metro .stn .lb.lf{left:auto;right:36px;top:50%;transform:translateY(-50%);text-align:right}
+.lk-metro .stn.big .lb.rt{left:44px} .lk-metro .stn.big .lb.lf{right:44px}
+#stage.canvas-vertical .lk-metro .stn .lb i{font-size:26px}
+#stage.canvas-vertical .lk-metro .mapstn .lb b{font-size:34px}
+#stage.canvas-vertical .lk-metro .mapstn .lb i{font-size:26px}
+#stage.canvas-vertical .lk-metro .stn.sm .lb b{font-size:30px}
+#stage.canvas-vertical .lk-metro .lk-rider span{font-size:26px;top:-60px}
+#stage.canvas-vertical .lk-metro .note{font-size:28px}
+#stage.canvas-vertical .lk-metro .pill{font-size:28px}
+#stage.canvas-vertical .lk-metro .lt + .cap{font-size:26px}
+#stage.canvas-vertical .lk-metro .tkt small{font-size:22px}
+#stage.canvas-vertical .lk-metro .vid .vt{font-size:26px}
+#stage.canvas-vertical .lk-metro .count small{font-size:28px}

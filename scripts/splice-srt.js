@@ -52,7 +52,7 @@ function main() {
     });
   const out = cues.map((c, i) => `${i + 1}\n${toT(c.a)} --> ${toT(c.z)}\n${c.text}`).join('\n\n') + '\n';
 
-  const dir = path.join(cfg.outputDir, 'final');
+  const dir = cfg.finalDir;
   fs.mkdirSync(dir, { recursive: true });
   for (const name of [cfg.slug, cfg.slug + '-reveal']) {
     const f = path.join(dir, name + '.srt');

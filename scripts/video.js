@@ -7,6 +7,7 @@
  *
  * Flags pre-answer questions (useful without a TTY): --title --slug --canvas vertical|horizontal --res 4k|1440p|2k|1080p --fps 60|30 --audio <file>
  *   --script <file> --captions on|off --accent t|v|g|r|a|b|o --no-claude --yes
+ *   --raw / --edited (is the recording uncut?) and, with --raw, --script <file> or --no-script: the rough cut (Step 1a)
  * Slides are the creative part and are written by Claude (the /new-video skill); everything else is automated here. */
 const fs = require('fs');
 const path = require('path');
@@ -64,12 +65,30 @@ const cueRows = dir => { const f = path.join(dir, 'cue-sheet.md'); if (!exists(f
   const { project } = loadProject(dir);
 
   /* ---- 2. voiceover / script ---- */
+  // a rough cut waiting for approval: the take list is reviewed before anything is cut (house rule)
+  if (!findVo(dir) && exists(path.join(dir, 'source', 'edit.json')) && exists(path.join(dir, 'source', 'takes.md'))) {
+    log(`rough cut pending: review projects/${slug}/source/takes.md (overrides go in source/edit.json), then`);
+    console.log(`  npm run rough-cut -- --project ${slug} --stage cut\n  npm run video -- --project ${slug}`);
+    rl && rl.close(); return;
+  }
   let vo = findVo(dir);
   if (!vo) {
     const p = val('--audio') || await ask('Path to the voiceover recording (wav/m4a/mp3/flac/ogg), empty if you only have text', '');
     if (p) {
       const src = path.resolve(p.replace(/^~/, process.env.HOME || ''));
       if (!exists(src)) { console.error('not found: ' + src); process.exit(1); }
+      /* raw or edited? Raw footage (retakes, false starts, long pauses) is cut against its script first: islands and
+         the take match run now, the cut only after the take list is approved (npm run rough-cut, Step 1a) */
+      const raw = has('--raw') ? 'yes' : has('--edited') ? 'no'
+        : await ask('Is this the raw recording (retakes, false starts, long pauses still in it)?', 'no', ['yes', 'no']);
+      if (raw === 'yes') {
+        const sp = val('--script') || (has('--no-script') ? '' : await ask('Path to the script to cut against (txt, md, rtf, docx, a prompter export); empty to cut without one', ''));
+        log('rough cut: speech islands, transcription and the take match');
+        npm('rough-cut', '--', '--project', slug, '--raw', src, ...(sp ? ['--script', path.resolve(sp.replace(/^~/, process.env.HOME || ''))] : ['--no-script']));
+        log(`review projects/${slug}/source/takes.md, then run: npm run rough-cut -- --project ${slug} --stage cut`);
+        console.log(`  and resume with: npm run video -- --project ${slug}`);
+        rl && rl.close(); return;
+      }
       vo = path.join(dir, 'vo' + path.extname(src).toLowerCase());
       fs.copyFileSync(src, vo); console.log('  copied → ' + path.relative(ROOT, vo));
     }

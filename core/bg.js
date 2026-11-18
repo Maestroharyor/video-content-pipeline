@@ -16,8 +16,11 @@
     const w = 2 * Math.PI * (T || 0);
     const gx = -((1.2 * T) % 90) * drift, gy = -((0.8 * T) % 90) * drift;
     grid.style.transform = `translate(${f2(gx)}px,${f2(gy)}px)`;
-    ga.style.transform = `translate(${f2(28 * Math.cos(w / 47) * drift)}px,${f2(18 * Math.sin(w / 67) * drift)}px) scale(${f2(1 + .03 * Math.sin(w / 53) * drift)})`;
-    gb.style.transform = `translate(${f2(-24 * Math.sin(w / 61) * drift)}px,${f2(22 * Math.cos(w / 43) * drift)}px) scale(${f2(1 + .03 * Math.cos(w / 59) * drift)})`;
+    /* the glow boxes are quarter size, origin 0 0 (base.css): scale x4 last, and the drift's own scale about the full box's
+       centre, which is 200% of the small box from its corner */
+    const glow = (x, y, k) => `translate(${f2(x)}px,${f2(y)}px) translate(200%,200%) scale(${f2(k)}) translate(-200%,-200%) scale(4)`;
+    ga.style.transform = glow(28 * Math.cos(w / 47) * drift, 18 * Math.sin(w / 67) * drift, 1 + .03 * Math.sin(w / 53) * drift);
+    gb.style.transform = glow(-24 * Math.sin(w / 61) * drift, 22 * Math.cos(w / 43) * drift, 1 + .03 * Math.cos(w / 59) * drift);
   };
   window.bgFrame(0);
 })();

@@ -1,0 +1,163 @@
+/* "prep" theme (PROJECT.theme = 'prep'), built for projects/mise-version-manager.
+   mise is named after mise-en-place, so the deck is a prep station seen from above: a dark speckled counter in the
+   plum-black of mise.jdx.dev's own dark scheme (#191619), a walnut cutting board, brushed-steel bowls with masking-tape
+   labels, glass spice jars for the old one-per-language installers, and mise's tin. The accents are the site's: its
+   pink (#ed9fbc, the mise colour, mapped to v) and the herb green it prints TOML strings in (#adce9c, g). Panels get a
+   soft top light and a long warm shadow; no filter: blur() (capture cost). Cast and sticker styles come from
+   lanes.css, which the project links. The station and site templates (core/templates/prep.js) are styled below. */
+#stage.theme-prep{
+  --bg0:#191619; --bg1:#211D21; --bg2:#292329; --bd:#3B323A; --bd2:#544650;
+  --tx:#F6EEF2; --tx2:#C9BBC4; --tx3:#A3949F;
+  --teal:#7FD6C8; --violet:#ED9FBC; --green:#ADCE9C; --rose:#FF7F8E; --amber:#F2B866; --blue:#8EC5FF; --orange:#F59A62;
+  --herb:#ADCE9C; --pink:#ED9FBC; --walnut:#5B3B27; --steel:#C9D0D6; --tape:#EFE3C4;
+  background:#191619;
+}
+#stage.theme-prep.transparent{background:transparent}   /* alpha captures (dual's caption layer, reveals) must stay clear */
+
+/* ---------- ground: a speckled counter, warm light from above ---------- */
+#stage.theme-prep .bgfx .grid{opacity:1;inset:-90px;
+  background-image:
+    radial-gradient(circle at 20% 30%,rgba(237,159,188,.08) 0 2px,transparent 2.5px),
+    radial-gradient(circle at 70% 65%,rgba(255,240,230,.06) 0 1.6px,transparent 2px),
+    radial-gradient(circle at 45% 85%,rgba(173,206,156,.07) 0 2px,transparent 2.5px);
+  background-size:110px 110px,150px 150px,210px 210px}
+#stage.theme-prep .bgfx .glow.a{background:radial-gradient(70% 40% at 50% 30%,rgba(120,70,90,.30),transparent 72%)}
+#stage.theme-prep .bgfx .glow.b{background:radial-gradient(80% 36% at 50% 104%,rgba(173,206,156,.10),transparent 70%)}
+#stage.theme-prep .bgfx .vig{background:radial-gradient(120% 90% at 50% 42%,transparent 52%,rgba(0,0,0,.55))}
+
+/* burned-in captions: the base box wraps at 540px and strands a lone last word on its own line */
+#stage.theme-prep .caps{width:max-content;background:rgba(25,22,25,.9);border:2px solid var(--bd2)}
+#stage.theme-prep .caps span.now{color:var(--pink)}
+
+/* ---------- type ---------- */
+#stage.theme-prep .eyebrow{font:700 30px JB;letter-spacing:.14em}
+#stage.theme-prep .eyebrow::before{content:"";display:inline-block;width:30px;height:8px;margin-right:16px;border-radius:4px;
+  background:currentColor;vertical-align:.2em}
+#stage.theme-prep .h1{letter-spacing:-.035em}
+#stage.theme-prep .badge{border-radius:10px}
+
+/* ---------- surfaces the stock templates use (term, outro) ---------- */
+#stage.theme-prep .tm-win{background:#211D21;border:1.5px solid var(--bd2);border-radius:16px;box-shadow:0 30px 70px rgba(0,0,0,.55),inset 0 1px 0 rgba(255,240,245,.06)}
+#stage.theme-prep .tm-bar{background:#292329;border-bottom:1.5px solid var(--bd)}
+#stage.theme-prep .tm-bar span,#stage.theme-prep .tm-bar em{font-size:28px}
+#stage.theme-prep .tm-l{font-size:30px}   /* phone-readable: the stock 24px reads under the 28px floor */
+#stage.theme-prep .hrow .ht{border:2px solid var(--bd2)}
+#stage.theme-prep .bbox{background:#211D21;border:2px solid var(--bd2)}
+#stage.theme-prep .cst b{font-size:28px}
+#stage.theme-prep .bub{font-size:32px}
+#stage.theme-prep .fx-emoji{filter:drop-shadow(0 12px 14px rgba(0,0,0,.45))}
+
+/* ---------- station: the board ---------- */
+.pr-board{position:absolute;left:0;border-radius:30px;opacity:0;
+  background:
+    linear-gradient(180deg,rgba(255,220,190,.10),rgba(255,220,190,0) 30%),
+    repeating-linear-gradient(92deg,rgba(0,0,0,.10) 0 3px,transparent 3px 19px,rgba(255,210,170,.05) 19px 21px,transparent 21px 47px),
+    linear-gradient(90deg,#5B3B27,#6A4630 40%,#573823 70%,#62412C);
+  box-shadow:0 40px 80px rgba(0,0,0,.6),inset 0 2px 0 rgba(255,220,190,.18),inset 0 -6px 0 rgba(0,0,0,.25)}
+/* a steel bowl: a brushed rim around a darker well; empty = a dashed chalk ring where it will go */
+.pr-bowl{position:absolute;border-radius:50%;
+  background:radial-gradient(circle at 50% 50%,#8C959D 0 58%,#B9C1C8 60%,#E6EBEF 68%,#9DA6AE 76%,#D2D8DD 84%,#7E868D 100%);
+  box-shadow:0 18px 30px rgba(0,0,0,.45),inset 0 3px 6px rgba(255,255,255,.4);transition:none}
+.pr-bowl::before{content:"";position:absolute;inset:22%;border-radius:50%;background:radial-gradient(circle at 40% 35%,#6E777F,#4E565D)}
+.pr-bowl.empty{background:transparent;box-shadow:none;border:4px dashed rgba(255,230,210,.42);box-sizing:border-box}
+.pr-bowl.empty::before{display:none}
+.pr-bowl .fill{position:absolute;inset:24%;border-radius:50%;opacity:0;transform:scale(0);
+  box-shadow:inset 0 -8px 16px rgba(0,0,0,.25),inset 0 6px 10px rgba(255,255,255,.35)}
+.pr-bowl .tape{position:absolute;left:50%;top:100%;margin-top:-26px;display:flex;align-items:center;gap:10px;white-space:nowrap;
+  padding:8px 16px;font:800 30px Inter;color:#2C2428;background:var(--tape);opacity:0;transform-origin:50% 50%;
+  translate:-50% 0;rotate:-3deg;box-shadow:0 6px 10px rgba(0,0,0,.3);
+  clip-path:polygon(2% 0,98% 4%,100% 52%,97% 100%,3% 96%,0 48%)}
+.pr-bowl .tape img{width:38px;height:38px;object-fit:contain}
+/* a spice jar: glass body, a screw lid, a paper label; a strike crosses it out */
+.pr-jar{position:absolute;opacity:0;border-radius:22px 22px 28px 28px;box-sizing:border-box;
+  background:linear-gradient(90deg,rgba(255,255,255,.22),rgba(255,255,255,.06) 30%,rgba(255,255,255,.04) 70%,rgba(255,255,255,.18)),rgba(120,60,40,.35);
+  border:2px solid rgba(255,240,230,.45);box-shadow:0 18px 26px rgba(0,0,0,.45)}
+.pr-jar .lid{position:absolute;left:12px;right:12px;top:-22px;height:34px;border-radius:10px;
+  background:repeating-linear-gradient(90deg,#C88A3E 0 6px,#A86F2C 6px 9px);box-shadow:inset 0 3px 0 rgba(255,230,180,.4)}
+.pr-jar .lb{position:absolute;left:8px;right:8px;top:54px;padding:10px 4px;text-align:center;background:#F7EFE0;border-radius:6px;
+  box-shadow:0 2px 0 rgba(0,0,0,.2)}
+.pr-jar .lb b{display:block;font:800 30px JB;color:#3A2A22;letter-spacing:-.02em}
+.pr-jar .lb i{display:block;font:600 28px Inter;font-style:normal;color:#7A6458}
+.pr-jar .x{position:absolute;left:-16px;right:-16px;top:50%;height:10px;margin-top:-5px;border-radius:5px;background:var(--rose);
+  transform-origin:left center;transform:scaleX(0);box-shadow:0 0 16px rgba(255,127,142,.6)}
+/* mise's tin: dark plum with a pink rim and the chef mark */
+.pr-tin{position:absolute;border-radius:50%;display:grid;place-items:center;opacity:0;z-index:2;
+  background:radial-gradient(circle at 40% 32%,#4A2A3A,#311522 70%);border:10px solid var(--pink);box-sizing:border-box;
+  box-shadow:0 22px 40px rgba(0,0,0,.55),0 0 50px rgba(237,159,188,.35),inset 0 4px 0 rgba(255,220,235,.3)}
+.pr-tin img{width:62%;height:62%;object-fit:contain}
+.pr-os{position:absolute;display:flex;align-items:center;gap:14px;padding:12px 24px;border-radius:999px;translate:-50% 0;z-index:3;
+  font:800 32px Inter;color:var(--tx);background:#211D21;border:2px solid var(--bd2);box-shadow:0 12px 24px rgba(0,0,0,.45);opacity:0;white-space:nowrap}
+.pr-os img{width:44px;height:44px;padding:4px;border-radius:10px;background:#F4EEF1;box-sizing:border-box}
+/* chips above the board */
+.pr-chips{position:absolute;left:0;display:flex;justify-content:center;flex-wrap:wrap;gap:14px}
+.pr-chip{display:inline-flex;align-items:center;gap:12px;padding:14px 24px;border-radius:14px;white-space:nowrap;opacity:0;
+  font:800 32px Inter;color:var(--tx);background:#211D21;border:2px solid var(--acc,var(--pink));box-shadow:0 10px 22px rgba(0,0,0,.4)}
+.pr-chip img{width:40px;height:40px}
+.pr-chip svg{width:36px;height:36px;fill:none;stroke:var(--acc,var(--pink));stroke-width:2.4;stroke-linecap:round;stroke-linejoin:round}
+.pr-chip.tape{color:#2C2428;background:var(--tape);border:0;border-radius:4px;z-index:4}
+/* recipe card: mise.jdx.dev's mise.toml card */
+.pr-card{position:absolute;border-radius:14px;overflow:hidden;opacity:0;background:#211D21;border:1.5px solid #3B323A;
+  box-shadow:0 18px 34px rgba(0,0,0,.5)}
+.pr-card .hd{display:flex;align-items:center;gap:14px;height:56px;padding:0 20px;background:#292329;border-bottom:1.5px solid #3B323A;
+  font:700 28px JB;color:#F1E9ED}
+.pr-card .hd .mn{color:var(--pink)}
+.pr-card .ok{margin-left:auto;width:42px;height:42px;border-radius:50%;display:grid;place-items:center;background:var(--herb);opacity:0}
+.pr-card .ok svg{width:28px;height:28px;fill:none;stroke:#1E2A18;stroke-width:3.2;stroke-linecap:round;stroke-linejoin:round}
+.pr-card .bd{display:flex;flex-wrap:wrap;column-gap:28px;padding:14px 20px;font:600 30px/1.55 JB;color:#F1E9ED}
+.pr-card .bd .sec{flex-basis:100%;color:var(--pink)}
+.pr-card .bd b{font-weight:600}
+.pr-card .bd em{font-style:normal;color:var(--herb)}
+/* rows: a short list on the board */
+.pr-row{position:absolute;display:flex;align-items:center;gap:26px;padding:0 30px;box-sizing:border-box;border-radius:20px;opacity:0;
+  font:800 46px ID;letter-spacing:-.02em;color:#2C2428;background:var(--tape);box-shadow:0 12px 22px rgba(0,0,0,.4)}
+.pr-row .ic{flex:none;width:90px;height:90px;border-radius:18px;display:grid;place-items:center;background:#311522}
+.pr-row .ic svg{width:52px;height:52px;fill:none;stroke:var(--pink);stroke-width:2.2;stroke-linecap:round;stroke-linejoin:round}
+
+/* ---------- site: the real mise.jdx.dev screenshots ---------- */
+.ms-win{position:absolute;opacity:0;border-radius:22px;overflow:hidden;background:#191619;border:2px solid #4A3F48;
+  box-shadow:0 40px 90px rgba(0,0,0,.65)}
+.ms-bar{display:flex;align-items:center;gap:10px;height:72px;padding:0 20px;background:#292329;border-bottom:1.5px solid #3B323A}
+.ms-bar > i{width:16px;height:16px;border-radius:50%;background:#544650}
+.ms-bar .url{flex:1;display:flex;align-items:center;justify-content:center;gap:10px;margin-left:14px;height:46px;border-radius:12px;
+  background:#191619;font:700 28px JB;color:#F1E9ED}
+.ms-bar .url svg,.ms-url svg{width:24px;height:24px;fill:none;stroke:var(--herb);stroke-width:2.4}
+.ms-view{position:relative;overflow:hidden}
+.ms-shot{position:absolute;left:0;top:0;width:100%;background-size:100% auto;background-repeat:no-repeat}
+.ms-card{position:absolute;opacity:0;border-radius:18px;background-size:100% 100%;border:2px solid #4A3F48;
+  box-shadow:0 26px 50px rgba(0,0,0,.6)}
+.ms-card.hero{border-color:var(--pink);box-shadow:0 26px 50px rgba(0,0,0,.6),0 0 0 4px rgba(237,159,188,.22)}
+.ms-url{position:absolute;display:flex;align-items:center;gap:10px;padding:8px 16px;border-radius:10px;background:#211D21;
+  border:1.5px solid #3B323A;font:700 28px JB;color:#F1E9ED}
+
+/* ---------- version B: the card over the face (projects/mise-version-manager/kit.js) ----------
+   Only in a transparent capture (dual's over windows): the slide's own content hides and the .pr-ov card shows over the
+   full-frame face, between the chin (~1000) and the caption band (1340). Opaque, so nothing behind it reads through,
+   and sized to its content, so it never holds empty room for lines still to come. */
+.pr-ov{display:none}
+#stage.transparent .slide.ovs > :not(.pr-ov){visibility:hidden}
+#stage.transparent .slide.ovs .pr-ov{display:block}
+.pr-ov{position:absolute;left:140px;width:800px;box-sizing:border-box;padding:16px 28px 24px;border-radius:22px;opacity:0;
+  background:#191619;border:3px solid var(--pink);box-shadow:0 24px 60px rgba(0,0,0,.6)}
+.pr-ov .sp-hd{display:flex;align-items:center;gap:12px;height:52px}
+.pr-ov .sp-hd img{width:44px;height:44px}
+.pr-ov .sp-hd .eb{font:700 28px JB;letter-spacing:.14em;text-transform:uppercase;color:var(--pink)}
+.pr-ov .sp-h1{margin-top:6px;font:800 64px/1.06 ID;letter-spacing:-.03em;color:var(--tx);opacity:0}
+.pr-ov .sp-h1 em{font-style:normal;color:var(--pink)}
+
+/* the end card is 700 tall (y 960-1660, his call; it runs into the apps' bottom band on purpose): its rows spread
+   down the height instead of leaving an empty block under the link box */
+#stage.transparent .slide.ovs .pr-ov.end{display:flex;flex-direction:column;height:700px;padding:22px 30px 30px}
+.pr-ov .sp-code{margin-top:14px;padding:12px 18px;border-radius:12px;background:#211D21;border:1.5px solid var(--pink);font:600 30px JB;color:#F1E9ED;opacity:0}
+/* the end card (kit.js kind 'end'): the end slide's handle rows and link box, two columns, over the face */
+.en-grid{flex:1;display:grid;grid-template-columns:1fr 1fr;align-content:center;gap:34px 16px;margin-top:10px}
+.en-row{display:flex;align-items:center;gap:14px;min-width:0;opacity:0;transform-origin:0 50%}
+.en-row .ht{flex:none;width:100px;height:100px;border-radius:18px;display:grid;place-items:center;background:#F4EEF1}
+.en-row .ht img{width:60px;height:60px}
+.en-row .ht b{font:800 40px Inter}
+.en-row .hx{display:flex;flex-direction:column;min-width:0}
+.en-row .hx b{font:800 30px ID;letter-spacing:-.02em;color:var(--tx);white-space:nowrap}
+.en-row .hx i{font:500 28px Inter;font-style:normal;color:var(--tx2)}
+.en-box{display:flex;align-items:center;gap:20px;margin-top:10px;padding:26px 24px;border-radius:16px;background:#211D21;border:1.5px solid var(--bd2);opacity:0}
+.en-box img{width:70px;height:70px;padding:6px;border-radius:12px;background:#F4EEF1;box-sizing:border-box}
+.en-box b{display:block;font:800 36px ID;color:var(--tx)}
+.en-box i{display:block;font:600 28px Inter;font-style:normal;color:var(--herb)}

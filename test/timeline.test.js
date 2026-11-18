@@ -184,3 +184,11 @@ test('size budget: the bitrate ceiling keeps a video under maxSize and never sta
   assert.ok(r < 80e6 && (r + 192e3) * 1200 / 8 <= 2e9, 'video + audio fit the budget (' + r + ')');
   assert.strictEqual(bitrateCeiling(1e6, 3600), 1e6, 'floor of 1 Mbps');
 });
+test('size budget: a vertical (social) video never goes above 512 MB, a 16:9 master keeps 2 GB', () => {
+  const { resolve } = require('../renderer/config');
+  assert.strictEqual(resolve({ project: 'template-gallery', canvas: 'horizontal' }).maxSize, 2e9);
+  assert.strictEqual(resolve({ project: 'template-gallery', canvas: 'vertical' }).maxSize, 512e6, 'vertical default');
+  assert.strictEqual(resolve({ project: 'template-gallery', canvas: 'vertical', maxSize: '2G' }).maxSize, 512e6, '--max-size cannot raise it');
+  assert.strictEqual(resolve({ project: 'template-gallery', canvas: 'vertical', maxSize: '300M' }).maxSize, 3e8, 'a smaller budget still applies');
+  assert.strictEqual(resolve({ project: 'kafka-vs-rabbitmq/social' }).maxSize, 512e6, 'a social cut whose project.js says 2G');
+});

@@ -87,6 +87,13 @@ test('over: true keeps the deck on inside the window (mode over), with the same 
   ]);
 });
 
+test('the ramps of an over/split window carry its layout, so they dissolve into it instead of over bare footage', () => {
+  const sp = { x: .5, zoom: 1.1 };
+  const cs = plan(60, 60, [{ at: 20, to: 30, in: .3, out: .3, over: true, split: sp }, { at: 40, to: 50 }], 30, []);
+  const ramps = cs.filter(c => c.mode === 'out' || c.mode === 'in').map(c => [c.t0, c.mode, c.win, c.split]);
+  assert.deepStrictEqual(ramps, [[19.7, 'out', true, sp], [30, 'in', true, sp], [39.55, 'out', false, null], [50, 'in', false, null]]);
+});
+
 test('over and plain reveals mix in one set: each window keeps its own mode', () => {
   const cs = plan(60, 60, [{ at: 0, to: 10, in: 0, out: 0.45, over: true }, { at: 30, to: 40 }], 30, []);
   assert.deepStrictEqual(cs.filter(c => c.mode === 'over' || c.mode === 'none').map(c => [c.t0, c.t1, c.mode]), [[0, 10, 'over'], [30, 40, 'none']]);

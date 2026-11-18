@@ -13,7 +13,7 @@ If `npm run doctor` reports something missing, run `npm run setup` (installs ffm
 
 **Read [references/house-rules.md](references/house-rules.md) before the first question.** It holds the user's standing decisions
 (always ask the outro, 5-6 s outros, title position, unique theme, safe zones, face only on lens contact, preview first, LifeTech
-Facts handles and links) and overrides any default in the step references.
+Facts handles and links, never delete a render without explicit approval) and overrides any default in the step references.
 
 ## Invocation dispatch (must happen first)
 
@@ -32,7 +32,9 @@ Parse the whole invocation before doing anything else. Flags pre-answer the ques
 | `--project` | slug of an existing `projects/<slug>/` | new project |
 | `--format` | `vertical` (1080×1920 stage, Shorts/Reels/TikTok) · `horizontal` (1920×1080 stage, YouTube) | **always asked** unless flagged |
 | `--res` | horizontal: `4k` (3840×2160) · `1440p` · `1080p` — vertical: `2k` (1440×2560) · `1080p` (1080×1920) | **asked**; `4k` horizontal, `2k` vertical |
-| `--audio` | path to the voiceover recording (wav/m4a/mp3/flac/ogg) | asked ("do you have the recording?") |
+| `--audio` | path to the voiceover recording (wav/m4a/mp3/flac/ogg) or talking-head video | asked ("do you have the recording?") |
+| `--raw` | the recording is **uncut** (retakes, false starts, long pauses): Step 1a cuts it against the script first | asked whenever a recording is given |
+| `--no-script` | with `--raw`: cut on the transcript alone (no script to match against) | asked |
 | `--script` | path to a text file (`(m:ss)` markers, SRT/VTT, whisper JSON or prose) | script pasted in chat |
 | `--captions` | `on` · `off` — burned-in word-highlight captions (needs the recording) | `on` for vertical, `off` for horizontal |
 | `--layout` | horizontal only: `top` (heading centred across the top, content in a wide column under it) · `left` (heading column left, content right) | **always asked**; `top` |
@@ -62,6 +64,10 @@ Parse the whole invocation before doing anything else. Flags pre-answer the ques
    itself still being asked, put both resolution lists in this question's options and keep the one that matches.
 3. **Voiceover** — do they have the recording (path) or only text? With a recording the video is timed to it and captions are
    possible; with text only, the timing comes from `(m:ss)` markers or is estimated.
+   **Whenever a recording or video is given (never skipped):** "Is this the raw recording (retakes, false starts, long
+   pauses still in it) or already edited?" If raw: "Paste the script or give its path (txt, md, rtf, docx, a prompter
+   export), or cut without one." Raw footage goes through **Step 1a** before anything else (house rule: never cut before
+   the take list is approved).
 4. **Title position, captions & transition** — horizontal only: where the slide title sits, **top** (default: heading centred
    across the top, content under it) or **left** (heading column left, content right). Never pick it silently; it is
    `--layout` on `npm run new` and `layout` in `project.js`. Then burned-in captions on/off (default on for vertical) and
@@ -75,7 +81,7 @@ Parse the whole invocation before doing anything else. Flags pre-answer the ques
    storyboard shows the slide boundaries, not here. Saved as `PROJECT.splice = {at, head, tail}` and delivered by
    `npm run dual` + `npm run srt`, never by `npm run assemble`.
 6. **Outro & audio bed** (never skipped: ask it on every run, also for overlay decks on talking-head footage and when
-   resuming a project; default suggestion is the full-frame outro + music; **the outro is 5-6 s, never longer**) — reuse the saved brand (handles, link-in-bio box from `core/brand.js`), edit it, or none; and
+   resuming a project; default suggestion is the subscribe overlay with NO music (music only when he asks); **the outro is 5-6 s, never longer**) — reuse the saved brand (handles, link-in-bio box from `core/brand.js`), edit it, or none; and
    the outro's sound: the pop + shimmer bed (`outro.wav`, default) or outro music (`brand.audio:
    'outro-music-tropicorp.wav'`, 9s, CC0). **The outro is 5-6 s whatever the bed:** give the row a 5-6 s window (`npm run timeline -- --tail 5.5`
    when it is the last row); `npm run sfx` trims longer music and fades it out on the outro's last beat, and `npm run timeline`
@@ -117,6 +123,21 @@ The finished video is `projects/<slug>/renders/final/<slug>.mp4` (+ `.srt`); the
 
 ---
 
+## Step 1a — Rough cut (raw footage only)
+
+**Read:** [references/step-1a-rough-cut.md](references/step-1a-rough-cut.md)
+
+```bash
+npm run rough-cut -- --project <slug> --raw <file> --script <file>      # or --no-script: islands + take match, then stops
+npm run rough-cut -- --project <slug> --stage cut [--audio-only]       # only after the user approves source/takes.md
+```
+
+Show the user `source/takes.md` (the "Needs your eye" list first: incomplete takes, fluffed retakes where an earlier take was
+kept, stutters, ad-libs, missing lines). Apply their overrides to `source/edit.json` (`keep` island numbers, `trim`), then cut.
+The cut writes `aroll.mp4` + `vo.wav`; Step 1 transcribes that cut.
+
+**Gate:** the user has approved the take list. Never run `--stage cut` before that.
+
 ## Step 1 — Read the script (or transcribe the audio)
 
 **Read:** [references/step-1-script.md](references/step-1-script.md)
@@ -146,7 +167,7 @@ and the alive kit (`npm run kit -- --project <slug> --character … / --emoji �
 run `npm run timeline -- --project <slug>` so the strips are timed, then `npm run review -- --project <slug>` and **look at every
 poster and every filmstrip** (elements must arrive spread across the line on their beats, not bunched in the first tiles), fix, repeat.
 
-**Gate:** probe reports 0 layout issues and 0 load errors; `npm run timeline -- --project <slug> --check` has 0 errors; every
+**Gate:** `npm run check-code -- --project <slug>` reports 0 FAIL (every snippet on screen comes from a checked file in `code/`, any UNCHECKED file raised with the user); probe reports 0 layout issues and 0 load errors; `npm run timeline -- --project <slug> --check` has 0 errors; every
 poster and strip reviewed; click flows visible mid-motion; with stickers or bursts, `npm run beat-frames` sheet reviewed.
 
 ## Step 4 — Timeline, preview, master, deliver
@@ -206,6 +227,13 @@ audio (on the force-aligned words), lays the talking head over it, then the hook
 
 **Gate:** every span opens and closes on its intended word (`--plan`, then a transcript of the preview at every edit),
 the user watched each best-of preview before `--cut all`, and every file is 1080×1920, 30fps, bt709, AAC, ≤ 140s.
+
+## Step 7 — Thumbnail (when asked)
+
+Run the **`/new-thumbnail`** skill (`skills/new-thumbnail/SKILL.md`): research the topic's shelf and YouTube's current
+specs, propose directions for approval, build them in `projects/<slug>-thumbs`, check every candidate on every screen size
+(`npm run thumb-check`), then `npm run thumb --pick` (one PNG under 2 MB into `deliver/`). Copy the
+pick to `projects/<slug>/assets/yt-thumb.jpg` before Step 6, so the social cuts' end card shows it.
 
 ---
 

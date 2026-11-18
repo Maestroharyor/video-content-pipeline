@@ -1,32 +1,35 @@
 {
  "version": 1,
- "fps": 30,
- "total": 139.911,
+ "fps": 60,
+ "total": 139.778,
  "vo": "renders/social/best-of/source.mp4",
  "xf": {
   "type": "cut",
   "dur": 0
  },
- "motion": 135.911,
+ "motion": 135.778,
  "subset": true,
  "slides": [
   {
    "id": "s990",
    "slug": "990-hook",
    "start": 0,
-   "end": 135.911
+   "end": 135.778
   },
   {
    "id": "s991",
    "slug": "991-endcard",
-   "start": 135.911,
-   "end": 139.911
+   "start": 135.778,
+   "end": 139.778
   }
  ],
  "social": {
   "hook": "Cloud Engineer vs <em>DevOps Engineer</em>",
-  "ytTitle": "Cloud Engineer vs DevOps Engineer: What's the Difference?",
+  "ytTitle": "Cloud Engineer vs DevOps Engineer: Do You Have to Choose?",
   "ytUrl": "youtube.com/@lifetechfacts",
-  "total": 135.911
+  "total": 135.778,
+  "progress": false,
+  "next": null,
+  "labels": []
  }
 }

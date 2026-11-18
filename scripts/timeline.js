@@ -36,7 +36,7 @@ const mss = v => { const m = Math.floor(v / 60), s = (v % 60).toFixed(2); return
   const tl = buildTimeline({ slides, rows, vo, fps: cfg.fps,
     // PROJECT.transition is the deck's own default so a bare `npm run timeline` keeps it; --xf still wins.
     xf: { type: val('--xf') || cfg.transition || 'push', dur: val('--xf-dur') != null ? +val('--xf-dur') : 0.4 },
-    motion: val('--motion') != null ? +val('--motion') : cfg.dur, tail: val('--tail') != null ? +val('--tail') : cfg.dur + cfg.hold,
+    motion: val('--motion') != null ? +val('--motion') : cfg.dur, tail: val('--tail') != null ? +val('--tail') : cfg.tail != null ? cfg.tail : cfg.dur + cfg.hold,
     lead: val('--lead') != null ? +val('--lead') : TL.LEAD,
     voFile: voAudio ? path.relative(cfg.projectDir, voAudio) : null, log: m => { if (!quiet) console.log('  ' + m); }, issues });
   const nBeats = tl.slides.reduce((n, e) => n + Object.keys(e.beats || {}).length, 0);

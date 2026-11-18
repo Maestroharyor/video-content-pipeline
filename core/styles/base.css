@@ -11,7 +11,10 @@ html.transparent,body.transparent{background:transparent}   /* alpha captures: t
 .bgfx{position:absolute;inset:0;z-index:0;pointer-events:none;overflow:hidden}
 .bgfx .grid{position:absolute;inset:-90px;opacity:.16;will-change:transform;
   background-image:linear-gradient(#233049 1px,transparent 1px),linear-gradient(90deg,#233049 1px,transparent 1px);background-size:90px 90px}
-.bgfx .glow{position:absolute;inset:-12%;will-change:transform}
+/* the glows are painted into the ground, never their own layers (no will-change): as two moving composited layers they
+   made Chrome drop the slide's tiles on some 4K frames (undo-git-mistakes master, s12 panels blinking out). Each is drawn
+   at a quarter of its size and scaled x4 (core/bg.js), which looks the same for a soft gradient and paints 1/16 the pixels. */
+.bgfx .glow{position:absolute;left:-12%;top:-12%;width:31%;height:31%;transform-origin:0 0;transform:scale(4)}
 .bgfx .glow.a{background:radial-gradient(60% 46% at 50% 30%,rgba(255,153,0,.08),transparent 70%)}
 .bgfx .glow.b{background:radial-gradient(70% 50% at 50% 100%,rgba(139,92,246,.12),transparent 70%)}
 .bgfx .vig{position:absolute;inset:0;background:radial-gradient(120% 100% at 50% 45%,transparent 58%,rgba(0,0,0,.42))}

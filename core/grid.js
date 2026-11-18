@@ -25,6 +25,12 @@
      readable goes outside it: scripts/probe.js fails any text or logo that does (PROJECT.probe.mobile = false opts a
      deck out, e.g. one never posted to a phone app) */
   if (canvas === 'vertical') G.mobile = { l: 60, r: 940, t: 220, b: 1500 };
+  /* a YouTube thumbnail (PROJECT.thumbs, 16:9): wider players and some feeds crop ~10% off the top and bottom (user,
+     2026-10-22), the duration badge is a fixed pixel size so at sidebar size (168x94) it covers about a fifth of the
+     width and height in the bottom-right, and the hover icons (Watch later, Add to queue) stack in the top-right.
+     scripts/probe.js fails any text or logo outside `box` or inside either corner, and type too small to read small */
+  if (canvas === 'horizontal' && window.PROJECT && window.PROJECT.thumbs)
+    G.thumb = { box: { l: 96, r: 1824, t: 108, b: 972 }, badge: { l: 1530, t: 850 }, hover: { l: 1730, b: 330 }, hookPx: 120, textPx: 44 };
   G.ts = canvas === 'vertical' ? 1 : .9;      // body type scale (headline/eyebrow/foot/sub have their own sizes per grid)
   /* PROJECT.layout (horizontal): 'top' = heading centred across the top on one line, content centred in a wide column
      under it (the new-project default since 2026-10-10); 'left' = the original heading column left, content right.

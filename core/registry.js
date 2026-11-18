@@ -34,7 +34,8 @@
   };
   window.defineSlide = function (def) {
     if (!def.slug) throw new Error('slide needs a slug');
-    if (!def.id) { const m = def.slug.match(/^(\d+)/); def.id = 's' + (m ? m[1].padStart(2, '0') : String(slides.length + 1).padStart(2, '0')); }
+    if (!def.id) { /* a letter suffix (13b-…) is its own slide: an inserted split never renumbers the deck */
+      const m = def.slug.match(/^(\d+[a-z]?)(?![a-z])/); def.id = 's' + (m ? m[1].replace(/^\d+/, d => d.padStart(2, '0')) : String(slides.length + 1).padStart(2, '0')); }
     if (byKey[def.id] || byKey[def.slug]) throw new Error('duplicate slide id/slug: ' + def.id + ' / ' + def.slug);
     /* data.v: what changes when the same deck is rendered on the vertical canvas (a -vertical project symlinking this
        deck's slides): sticker and bubble positions, camera framings. Objects merge one level down, arrays replace, so
@@ -170,7 +171,10 @@
     c.beats = e ? e.beats : null; c.hero = e ? e.hero || null : null; c.exit = c.screen - (e ? e.xfOut || 0 : 0);
     s.frame(u, c);
     FXL().forEach(f => f.frame(c, root));
-    if (c.out > 0) exitTransform(root, o.xfType, c.out);
+    // a slide mid split-wipe (bistro .wiping) holds instead of fading: its exit would fade the plate the wipe is moving, and
+    // the face showed through the panel (reverse-proxy-lb-gateway, preview 7); the next slide still cuts in on time
+    // a slide that ends on a face-window edge (slate .xhold) holds its last frame too: the window cuts, nothing dissolves
+    if (c.out > 0 && !root.classList.contains('wiping') && !root.classList.contains('xhold')) exitTransform(root, o.xfType, c.out);
     if (window.bgFrame) window.bgFrame(c.T);
     if (window.capsFrame) window.capsFrame(c.T);
   }

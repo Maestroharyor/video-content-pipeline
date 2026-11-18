@@ -5,8 +5,12 @@
                                           PROJECT.reveals so the speaker's face shows, then fading back
 
      npm run dual -- --project <slug> [--chunk 20] [--jobs N] [--preset fast] [--only a|b] [--resume]
-                     [--source file] [--captions off] [--reveals <set>] [--preview]
+                     [--source file] [--captions off] [--reveals <set>] [--preview] [--var k=v] [--punch 1.08]
 
+   --var k=v reaches the deck as window.VARS (a variant of the same cut, e.g. --var fx=plus) and its value is carried
+   into the work dir and both output names, and cta.sfx becomes its sfx-<v>.wav (npm run sfx -- --var k=v), so a
+   variant renders beside the main cut instead of over it. --punch 1.08 punches into the footage on every slide's hero
+   beat inside a reveal window (an eased zoom to 1.08 about the face, held ~1.9 s), so the face never sits static.
    --preview is the review draft that comes BEFORE the master: half size at 30fps, minutes instead of hours, and
    unlike `npm run assemble --preview` it still splices the intro and the end screen, so what you watch is the
    shape of the finished video. It writes <slug>-preview.mp4 into its own work dir; the master's name and chunks
@@ -26,6 +30,9 @@
    which would blank the overlay everywhere before the first reveal):
      [at-in, at)  mode 'out'   deck fades to transparent      [at, to) mode 'none'  footage only, no deck at all
      [to, to+out) mode 'in'    deck fades back in             everything else mode 'full'
+   On an over/split window the two ramps fade the deck over that window's own composite, not over bare footage.
+   `push: 1.06` on a reveal pushes slowly into the footage across the window (the face never sits static);
+   `pull: 1.1` is the zoom-out: the window opens pushed in and eases back to 1 over 1.2 s. Both pivot on PROJECT.faceX.
    A reveal with `over: true` keeps the deck on inside [at, to) instead (mode 'over'): captured on alpha and laid over
    the footage at full opacity, for slides that draw only a card (projects/nue-js-runtime). Adding `split: {x, zoom}`
    makes it a side-by-side window: the face third on the left, the deck's own plate on the right two thirds
@@ -46,6 +53,8 @@ const { parseArgs } = require('../renderer/args');
 const { defaultInject, openDeck } = require('../renderer/browser');
 const { defaultJobs } = require('../renderer/pool');
 const { captureTimeline } = require('../renderer/assemble');
+const { run: deliver } = require('../renderer/deliver');
+const { clearPreviews } = require('../renderer/previews');
 const { loadTimeline, validateTimeline } = require('../renderer/timeline');
 const { bitrateCeiling, toYuv } = require('../renderer/video');
 const TL = require('../core/timeline');
@@ -75,7 +84,7 @@ function muteExpr(chunks, a, b) {
 /* every chunk boundary, with reveal ramps kept whole */
 function plan(total, chunk, reveals, fps, forced) {
   // ?? not ||: `out: 0` is how a reveal says "run the footage straight into the splice", and || turned it into .45
-  const spans = reveals.map(r => ({ a: r.at - (r.in ?? .45), b: r.to + (r.out ?? .45), at: r.at, to: r.to, over: !!r.over, split: r.split || null }));
+  const spans = reveals.map(r => ({ a: r.at - (r.in ?? .45), b: r.to + (r.out ?? .45), at: r.at, to: r.to, over: !!r.over, split: r.split || null, push: r.push || null, pull: r.pull || null, wipe: r.split ? !!r.split.wipe : !!r.wipe }));
   spans.sort((x, y) => x.a - y.a);
   spans.forEach((s, i) => { if (i && s.a < spans[i - 1].b) throw new Error(`reveals overlap near ${s.at}s`); });
   const cuts = new Set([0, total]);
@@ -89,8 +98,21 @@ function plan(total, chunk, reveals, fps, forced) {
     const a = bs[i], b = bs[i + 1], mid = (a + b) / 2;
     const s = spans.find(v => mid > v.a && mid < v.b);
     const mode = !s ? 'full' : mid < s.at ? 'out' : mid < s.to ? (s.over ? 'over' : 'none') : 'in';
-    const f0 = Math.round(a * fps), f1 = Math.round(b * fps);
-    if (f1 > f0) out.push({ i: out.length, t0: a, t1: b, f0, f1, n: f1 - f0, mode, split: mode === 'over' && s.split ? s.split : null });
+    /* first frame at or after each edge, the same rule the deck uses to switch slides (T >= start): rounding to the
+       nearest frame put the frame just before a slide boundary into the next window's layout, so the outgoing slide
+       flashed for one frame in the wrong layout (projects/php2shell, after the intro splice) */
+    const fr = t => Math.ceil(t * fps - 1e-6), f0 = fr(a), f1 = fr(b);
+    /* A ramp into or out of an over/split window crossfades the opaque deck with that window's own composite
+       (`win`), not with bare full-frame footage: fading over the plain A-roll flashed the whole talking head with no
+       graphics for the length of the ramp, between a split view and the full deck (ai-concepts, review 3). */
+    const ramp = mode === 'out' || mode === 'in';
+    /* a split ramp that meets an ON window (the face full frame on one side, the split on the other) slides: the face moves
+       to the left third as the deck's panel slides in from the right, or back (postgres-for-everything review 3, item 3) */
+    const near = (x, y) => Math.abs(x - y) < .01;
+    const onAt = v => spans.some(o => o !== s && o.over && !o.split && (near(o.b, v) || near(o.a, v)));
+    const slide = ramp && s && s.split && s.wipe && ((mode === 'out' && onAt(s.a)) || (mode === 'in' && onAt(s.b))) ? mode : null;
+    if (f1 > f0) out.push({ i: out.length, t0: a, t1: b, f0, f1, n: f1 - f0, mode, split: (mode === 'over' || ramp) && s.split ? s.split : null,
+      win: ramp && s.over, wipe: ramp && !!s.wipe, slide, push: s && s.push ? { at: s.at, to: s.to, z: s.push } : null, pull: s && s.pull ? { at: s.at, z: s.pull } : null });
   }
   return out;
 }
@@ -125,6 +147,15 @@ async function main() {
   if (args.captions === 'off') delete inject.CAPTIONS;
   if (inject.CAPTIONS) console.log(`  captions: burning ${inject.CAPTIONS.groups ? inject.CAPTIONS.groups.length : ''} caption group(s) into both masters`);
   const probe = await openDeck(cfg, { inject });
+  /* the split wipe is the default (postgres-for-everything review 3: "the split view transition should be the default in the
+     pipeline"): a split window's ramps move the deck's own plate on and off the face, with no dissolve. Only bistro and the
+     themes built on it (slate, heap, studio, signed, gitgraph) draw that wipe, so other decks keep the dissolve; split.wipe:
+     false opts a window out. */
+  const wipeOK = await probe.page.evaluate(() => !!(window.TEMPLATES && window.TEMPLATES.bistro)).catch(() => false);
+  reveals.forEach(r => { if (r.split && r.split.wipe == null) r.split.wipe = wipeOK; });
+  /* ON windows (over, no split) push instead of dissolving where the theme draws it (slate onPush); wipe: false opts out */
+  const pushOK = await probe.page.evaluate(() => !!(window.TEMPLATES && window.TEMPLATES.slate && window.PROJECT && PROJECT.theme === 'slate')).catch(() => false);
+  reveals.forEach(r => { if (r.over && !r.split && r.wipe == null) r.wipe = pushOK; });
   await probe.browser.close();
   if (probe.errors.length) throw new Error(probe.errors.join('\n'));
   validateTimeline(tl, probe.slides).forEach(w => console.warn('  warn', w));
@@ -133,11 +164,39 @@ async function main() {
      push-exit renders it at plateAlpha x (1-out)^3: the outgoing slide swims up out of the footage and is then
      replaced by the next one. Reveal edges and slide windows are both snapped to voice lines, so they collide
      unless the return is put on the boundary itself. Leaving is fine to overlap: both are on their way out. */
+  /* An edge a few ms off a slide boundary leaves the frames between them in the wrong layout (postgres-for-everything
+     review 3: the hook window ended at 7.600, its next slide started at 7.604, so one frame of the hook's deck version
+     flashed before the cut). Every edge within 50 ms of a boundary must sit on it exactly. */
+  const offEdge = [];
+  reveals.forEach(r => [r.at, r.to, r.at - (r.in ?? .45), r.to + (r.out ?? .45)].forEach(v => L.forEach(e => {
+    const d = Math.abs(v - e.start); if (d > .0005 && d < .05) offEdge.push(`${r3(v)}s is ${Math.round(d * 1000)} ms off ${e.id}'s start (${e.start}s)`);
+  })));
+  if (offEdge.length && !args.force) throw new Error('reveal edges near but not on a slide boundary (a one-frame flash of the wrong layout):\n  ' + offEdge.join('\n  ') + '\n  put them on the boundary, or pass --force');
   reveals.forEach(r => L.forEach(e => {
     if (e.xfOut > 0 && r.to < e.end && r.to + (r.out ?? .45) > e.end - e.xfOut)
       console.warn(`  warn reveal returning at ${r.to}s lands inside ${e.id}'s exit (${r3(e.end - e.xfOut)}-${e.end}s):` +
         ` move it to a slide boundary, or that slide fades up just before it is replaced`);
   }));
+  /* A ramp-in runs from at - in to at. If that stretch reaches back into the slide before the one at `at`, the earlier
+     slide is captured in its over/alpha layout, and a slide with no over rows draws its whole diagram over the face
+     (sessions-vs-jwt review 1: s21's cards floated over the face for the 0.3 s before the subscribe aside). A window
+     that opens on a slide boundary takes in: 0 (the next slide cuts in with the face), or starts a ramp inside its slide. */
+  reveals.forEach(r => {
+    const inn = r.in ?? .45, a = r.at - inn;
+    if (inn <= 0) return;
+    const prev = L.find(e => a < e.end - .001 && e.end <= r.at + .001 && a >= e.start - .001);
+    if (prev) console.warn(`  warn reveal starting at ${r.at}s ramps in from ${r3(a)}s, inside ${prev.id} (ends ${prev.end}s): that slide is drawn over the face. Use in: 0 on the boundary, or start the window ${r3(inn)}s inside its slide`);
+  });
+  /* A window edge a moment away from a slide boundary leaves a sliver of the full deck: the slide shows for half a
+     second between the face and the next slide (ai-concepts, review 4: "it shows a frame for half a second and moves
+     to the next"). Put the edge on the boundary instead, or move it a clear 1.5 s inside. */
+  reveals.forEach(r => {
+    const a = r.at - (r.in ?? .45), b = r.to + (r.out ?? .45);
+    L.forEach(e => {
+      if (b > e.start && e.end - b > .05 && e.end - b < 1.5) console.warn(`  warn reveal ending at ${r3(b)}s leaves ${r3(e.end - b)}s of ${e.id} before the next slide: end it on the boundary (${e.end}s)`);
+      if (a < e.end && a - e.start > .05 && a - e.start < 1.5) console.warn(`  warn reveal starting at ${r3(a)}s shows ${r3(a - e.start)}s of ${e.id} first: start it on the boundary (${e.start}s)`);
+    });
+  });
   const total = r3(TL.total(L));
   const srcDur = probeDur(source);
   if (Math.abs(total - srcDur) > 0.05) console.warn(`  ! deck is ${total}s but the footage is ${r3(srcDur)}s — version B will not line up`);
@@ -148,13 +207,23 @@ async function main() {
      version B inside that window, plus an optional sound effect mixed into BOTH masters at sfxAt (default at), and
      an optional `sting` mixed into version B only at `at` (the clip's own sound, when version A shows no clip
      there). (Version A draws the same thing on a slide, so it needs nothing here). Both need their edges on a
-     chunk boundary. */
+     chunk boundary. cta.also = [{at, to}]: more windows that play the same clip and sting (a mid-video "subscribe"
+     as well as the closing one); the sfx track is one file for the whole video, so it is not repeated. */
   const inProj = f => path.resolve(cfg.projectDir, untilde(f));
   const sp = P.splice || null, cta = P.cta || null;
+  // a cta block without a clip (file + at) only carries the effects track (sfx): no CTA windows (reverse-proxy review 3)
+  const ctaWins = cta && cta.file && cta.at != null ? [cta].concat((cta.also || []).map(w => Object.assign({}, cta, w))) : [];
+  const ctaOf = c => ctaWins.find(w => c.t0 >= w.at && c.t1 <= w.to) || null;
   const forced = [];
   if (sp && sp.at != null) forced.push(r3(sp.at));
-  if (cta) { forced.push(r3(cta.at), r3(cta.to)); }
+  ctaWins.forEach(w => forced.push(r3(w.at), r3(w.to)));
   let chunks = plan(total, args.chunk || 20, reveals, fps, forced);
+  // PROJECT.punch: the project's own default, so the preview and the master punch alike (--punch overrides)
+  if (args.punch == null && P.punch) args.punch = P.punch;
+  /* --punch: the hero beat of every slide that plays inside a reveal window (clear of its ramps) */
+  const punches = !args.punch ? [] : tl.slides.map(s => s.hero && s.beats && s.beats[s.hero] ? s.beats[s.hero][0] : null)
+    .filter(t => t != null && reveals.some(r => r.over && t >= r.at + .8 && t <= r.to - 2.2));
+  if (punches.length) console.log(`  punch: ${punches.length} punch-in(s) to ${args.punch} on hero beats inside the face windows`);
   // --limit N renders only the first N chunks, into <slug>-part.mp4: a cheap end-to-end check before the full run
   const limit = args.limit ? +args.limit : 0;
   if (limit) chunks = chunks.slice(0, limit);
@@ -174,9 +243,10 @@ async function main() {
      and the master's chunk dir, which is exactly what the comment above and at the concat step forbid.
      assemble.js and video.js were never affected: they read the flag from their own args/options. */
   const previewTag = args.preview ? '-preview' : '';
-  const work = path.join(cfg.frameDir, 'dual' + setTag + previewTag);
+  const varTag = Object.values(cfg.vars || {}).map(v => '-' + v).join('');
+  const work = path.join(cfg.frameDir, 'dual' + setTag + varTag + previewTag);
   const dirA = path.join(work, 'A'), dirB = path.join(work, 'B'), frames = path.join(work, 'frames');
-  const framesCaps = path.join(work, 'caps');
+  const framesCaps = path.join(work, 'caps'), framesOv = path.join(work, 'ov');
   const wantCaps = !!inject.CAPTIONS;
   [work, dirA, dirB].forEach(d => fs.mkdirSync(d, { recursive: true }));
   const pad = n => String(n).padStart(4, '0');
@@ -191,7 +261,7 @@ async function main() {
     /* --only b never encodes A outside 'full' chunks, so it must not capture deck frames for them either: a reveal's
        'none' window (a 12-minute screen recording under one placeholder slide) cost ~20 minutes of capture for nothing. */
     const needA = !(args.resume && fs.existsSync(fa)) && (only !== 'b' || c.mode === 'full');
-    const isCta = !!(cta && c.t0 >= cta.at && c.t1 <= cta.to);
+    const isCta = !!ctaOf(c);
     const needB = (c.mode !== 'full' || isCta) && !(args.resume && fs.existsSync(fb));
     if (!needA && !needB) { console.log(`  chunk ${c.i + 1}/${chunks.length} ${c.mode} — cached`); continue; }
 
@@ -223,10 +293,64 @@ async function main() {
       const fit = P.sourceFit === 'contain'
         ? `scale=${W}:${H}:force_original_aspect_ratio=decrease:flags=lanczos,pad=${W}:${H}:(ow-iw)/2:(oh-ih)/2:color=black`
         : `scale=${W}:${H}:force_original_aspect_ratio=increase:flags=lanczos,crop=${W}:${H}`;
-      const bg = `[${c.mode === 'none' ? 0 : 1}:v]${fit},fps=${fps},setpts=PTS-STARTPTS[bg]`;
+      /* reveal `push: 1.06`: a slow push-in on the footage, scale 1 at the window's `at` to `push` at its `to`, held
+         through the return ramp. Written against absolute time (the chunk's start + its output frame), so a window cut
+         into several chunks zooms as one move. zoompan places its crop on whole pixels, so it runs on a 2x upscale:
+         the steps land on half pixels of the output and the move reads smooth instead of shimmering. */
+      /* --punch adds an eased bump per hero beat in or near this chunk (in .18 s, held, out .45 s by 1.9 s after it),
+         pivoting on the face (split.x, or the frame's centre) instead of the frame's centre */
+      const tt = `(${ss}+on/${fps})`;
+      const near = punches.filter(p => p > ss - 2.5 && p < ss + dur + .5);
+      const bump = near.map(p => `min(1,max(0,(${tt}-${r3(p - .12)})/.18))*min(1,max(0,(${r3(p + 1.9)}-${tt})/.45))`).join('+');
+      const zoomF = fx => {
+        const terms = [];
+        if (c.push && c.push.z !== 1) terms.push(`${r3(c.push.z - 1)}*min(1,max(0,(${tt}-${c.push.at})/${r3(c.push.to - c.push.at)}))`);
+        if (bump) terms.push(`${r3(args.punch - 1)}*min(1,${bump})`);
+        /* reveal `pull: 1.1`: the zoom-out. The window opens pushed in to `pull` and eases back to 1 over 1.2 s (ease-out
+           cubic), so a full-camera moment lands as a pull back from the face instead of a static cut */
+        if (c.pull && c.pull.z !== 1) terms.push(`${r3(c.pull.z - 1)}*pow(1-min(1,max(0,(${tt}-${c.pull.at})/1.2)),3)`);
+        if (!terms.length) return '';
+        const xs = fx === .5 ? 'iw/2-iw/zoom/2' : `max(0,min(iw-iw/zoom,iw*${fx}-iw/zoom/2))`;
+        return `scale=${W * 2}:${H * 2}:flags=lanczos,zoompan=z='1+${terms.join('+')}':x='${xs}':y='max(0,min(ih-ih/zoom,ih*.42-ih/zoom/2))':d=1:s=${W}x${H}:fps=${fps},setsar=1`;
+      };
+      const zp0 = zoomF((c.push || c.pull) && !bump ? (P.faceX || .5) : (c.split && c.split.x) || P.faceX || .5), zp = zp0 ? ',' + zp0 : '';
+      const bg = `[${c.mode === 'none' ? 0 : 1}:v]${fit},fps=${fps},setpts=PTS-STARTPTS${zp}[bg]`;
       const tail = `format=yuv420p,setparams=colorspace=bt709:color_primaries=bt709:color_trc=bt709:range=tv[v]`;
-      const onCta = cta && c.t0 >= cta.at && c.t1 <= cta.to;
-      if (onCta && c.mode !== 'none') throw new Error(`cta window ${cta.at}-${cta.to}s overlaps a deck chunk (mode ${c.mode}); it must sit inside a reveal`);
+      /* `split: {x, zoom}`: a side-by-side window. The footage is cropped to a third of the frame around the face
+         (x = the face's centre as a fraction of the width) and laid on the left third; the rest is a flat plate
+         colour, never more footage, or any gap in the deck's plate shows a second copy of the speaker. The deck
+         draws the right two thirds. Without split the base is the full-frame footage (`bg`). Source is input 1.
+         `split.plate` (an ffmpeg colour) sets that plate: a window edge snapped to the frame grid can leave one frame
+         where the deck draws no panel yet, and it should show the deck's own ground, not near-black (projects/php2shell). */
+      /* `split: {top, y, zoom}` (vertical decks): the face fills the top `top` fraction of the frame, cropped from the
+         footage starting `y` (a fraction of the height) down, and the deck draws its own opaque panel below it
+         (projects/mise-version-manager). */
+      const winBase = sp => {
+        if (!sp) return { base: bg, hold: 0 };
+        if (sp.top) {
+          const fh = Math.round(H * sp.top / 2) * 2, z = sp.zoom || 1;
+          const cw = Math.round(W / z / 2) * 2, chh = Math.round(fh / z / 2) * 2;
+          const cx = Math.round((W - cw) / 2), cy = Math.max(0, Math.min(H - chh, Math.round(H * (sp.y || 0))));
+          return { hold: 0, base: `[1:v]${fit},fps=${fps},setpts=PTS-STARTPTS,crop=${cw}:${chh}:${cx}:${cy},scale=${W}:${fh}:flags=lanczos,` +
+            `pad=${W}:${H}:0:0:color=0x191619[bg]` };
+        }
+        const third = Math.round(W / 3 / 2) * 2;
+        const cw = Math.round(third / (sp.zoom || 1) / 2) * 2, chh = Math.round(H / (sp.zoom || 1) / 2) * 2;
+        const cx = Math.max(0, Math.min(W - cw, Math.round(W * sp.x - cw / 2))), cy = Math.max(0, Math.min(H - chh, Math.round(H * (sp.y || 0))));
+        /* split.clean: footage before this second is unusable (a transition baked into the edit), so the face panel
+           holds the first clean frame until then instead of showing it; the deck's timing is untouched. */
+        const hold = sp.clean > ss ? r3(Math.min(sp.clean - ss, dur)) : 0;
+        /* split.freeze: the mirror of clean. From this second the footage is unusable (the recording fades to black into
+           the place the intro is spliced), so the face panel holds the last clean frame to the window's end
+           (reverse-proxy-lb-gateway, review 6: "a black bar on the left for a second or two" before the intro) */
+        const fz = sp.freeze != null && sp.freeze < ss + dur ? r3(sp.freeze - ss) : null;
+        if (fz != null && fz <= 0) throw new Error(`split.freeze ${sp.freeze}s is at or before this chunk's start (${ss}s): no clean frame to hold`);
+        const freeze = fz != null ? `trim=end=${fz},setpts=PTS-STARTPTS,tpad=stop_duration=${r3(dur - fz + 1 / fps)}:stop_mode=clone,` : '';
+        return { hold, base: `[1:v]${fit},fps=${fps},setpts=PTS-STARTPTS,${hold ? `tpad=start_duration=${hold}:start_mode=clone,` : ''}${freeze}${zp0 ? zp0 + ',' : ''}` +
+          `crop=${cw}:${chh}:${cx}:${cy},scale=${third}:${H}:flags=lanczos,pad=${W}:${H}:0:0:color=${sp.plate || '0x050913'}[bg]` };
+      };
+      const onCta = ctaOf(c);
+      if (onCta && c.mode !== 'none') throw new Error(`cta window ${onCta.at}-${onCta.to}s overlaps a deck chunk (mode ${c.mode}); it must sit inside a reveal`);
       /* The caption layer goes on last, at full opacity. It is the branch's final input, so its index is just
          however many inputs came before it. capsOver() closes the graph: without captions the branch's last
          filter runs straight into `tail`; with them it is labelled, and the captions are overlaid on it. */
@@ -235,7 +359,7 @@ async function main() {
         : `,${tail}`;
       if (onCta) {
         // footage, then the transparent CTA clip on top, seeked to this chunk's offset into it
-        run(['-ss', String(ss), '-t', String(dur), '-i', source, '-ss', String(r3((c.f0 - Math.round(cta.at * fps)) / fps)), '-t', String(dur), '-i', inProj(cta.file), ...capSeq,
+        run(['-ss', String(ss), '-t', String(dur), '-i', source, '-ss', String(r3((c.f0 - Math.ceil(onCta.at * fps - 1e-6)) / fps)), '-t', String(dur), '-i', inProj(onCta.file), ...capSeq,
           '-filter_complex', `${bg};[1:v]scale=${W}:${H}:flags=lanczos,setpts=PTS-STARTPTS[ct];[bg][ct]overlay=0:0:format=auto:eof_action=pass` + capsOver(2),
           '-map', '[v]', '-frames:v', String(c.n), ...x264, fb]);
       } else if (c.mode === 'over') {
@@ -244,22 +368,34 @@ async function main() {
            footage (a card), so the rest of the frame is the A-roll. A's opaque frames are replaced by this capture. */
         fs.rmSync(frames, { recursive: true, force: true });
         await captureTimeline(cfg, L, { dir: frames, jobs: args.jobs || defaultJobs(), inject, from: c.t0, to: c.t1, transparent: true });
-        /* `split: {x, zoom}`: a side-by-side window. The footage is cropped to a third of the frame around the face
-           (x = the face's centre as a fraction of the width) and laid on the left third; the rest is a flat plate
-           colour, never more footage, or any gap in the deck's plate shows a second copy of the speaker. The deck
-           draws the right two thirds. */
-        const sp = c.split, third = Math.round(W / 3 / 2) * 2;
-        const cw = sp && Math.round(third / (sp.zoom || 1) / 2) * 2, chh = sp && Math.round(H / (sp.zoom || 1) / 2) * 2;
-        const cx = sp && Math.max(0, Math.min(W - cw, Math.round(W * sp.x - cw / 2))), cy = sp && Math.max(0, Math.min(H - chh, Math.round(H * (sp.y || 0))));
-        /* split.clean: footage before this second is unusable (a transition baked into the edit), so the face panel
-           holds the first clean frame until then instead of showing it; the deck's timing is untouched. */
-        const hold = sp && sp.clean > ss ? r3(Math.min(sp.clean - ss, dur)) : 0;
-        const base = sp
-          ? `[1:v]${fit},fps=${fps},setpts=PTS-STARTPTS,${hold ? `tpad=start_duration=${hold}:start_mode=clone,` : ''}` +
-            `crop=${cw}:${chh}:${cx}:${cy},scale=${third}:${H}:flags=lanczos,pad=${W}:${H}:0:0:color=0x050913[bg]`
-          : bg;
+        const { base, hold } = winBase(c.split);
         run(['-reinit_filter', '0', ...seq, '-ss', String(hold ? r3(ss + hold) : ss), '-t', String(dur), '-i', source,
           '-filter_complex', `${base};[0:v]${toYuv(cfg, 'yuva444p')}[fg];[bg][fg]overlay=0:0:format=auto:eof_action=pass,${tail}`,
+          '-map', '[v]', '-frames:v', String(c.n), ...x264, fb]);
+      } else if (c.win) {
+        /* the ramp of an over/split window: the window's composite (its alpha capture on the face, or on the split's
+           face third + plate) underneath, the opaque deck fading over it, so the cut between layouts is one dissolve */
+        fs.rmSync(framesOv, { recursive: true, force: true });
+        await captureTimeline(cfg, L, { dir: framesOv, jobs: args.jobs || defaultJobs(), inject, from: c.t0, to: c.t1, transparent: true });
+        let { base, hold } = winBase(c.split);
+        if (c.slide) {
+          /* the face slides between full frame and the split's third: the footage is laid at x = -shift x E(t), E the same
+             ease-in-out the deck's panel uses (slate splitWipe), so face and panel move as one. Needs split.zoom 1. */
+          const third = Math.round(W / 3 / 2) * 2, shift = Math.round(W * c.split.x - third / 2), off = r3(c.f0 / fps - c.t0);
+          const p = `min(1,max(0,(t+${off})/${r3(c.t1 - c.t0)}))`, e = `if(lt(${p},.5),4*pow(${p},3),1-pow(-2*${p}+2,3)/2)`;
+          const E = c.slide === 'out' ? e : `(1-${e})`;
+          base = `color=c=${c.split.plate || '0x050913'}:s=${W}x${H}:r=${fps}:d=${dur}[cv];[1:v]${fit},fps=${fps},setpts=PTS-STARTPTS[ft];` +
+            `[cv][ft]overlay=x='-${shift}*${E}':y=0:eval=frame:shortest=1[bg]`;
+          hold = 0;
+        }
+        /* split.wipe: the deck's own capture already moves between the layouts (its plate grows over the face or shrinks
+           off it, core/templates/bistro.js), so the ramp is that capture on the face third with no dissolve over it.
+           A dissolve drew both layouts at half strength, and an editor read as see-through (reverse-proxy-lb-gateway, review 6). */
+        const fade = c.wipe ? null : c.mode === 'out' ? `fade=t=out:st=0:d=${dur}:alpha=1` : `fade=t=in:st=0:d=${dur}:alpha=1`;
+        const ovSeq = ['-framerate', String(fps), '-start_number', String(c.f0), '-i', path.join(framesOv, '%05d.png')];
+        run(['-reinit_filter', '0', ...seq, '-ss', String(hold ? r3(ss + hold) : ss), '-t', String(dur), '-i', source, ...ovSeq, ...capSeq,
+          '-filter_complex', `${base};[2:v]${toYuv(cfg, 'yuva444p')}[ov];[bg][ov]overlay=0:0:format=auto:eof_action=pass` + (fade
+            ? `[wb];[0:v]${toYuv(cfg, 'yuva444p')},${fade}[fg];[wb][fg]overlay=0:0:format=auto:eof_action=pass` : '') + capsOver(3),
           '-map', '[v]', '-frames:v', String(c.n), ...x264, fb]);
       } else if (c.mode === 'none') {
         run(['-ss', String(ss), '-t', String(dur), '-i', source, ...capSeq,
@@ -272,14 +408,18 @@ async function main() {
           '-map', '[v]', '-frames:v', String(c.n), ...x264, fb]);
       }
     }
-    if (c.mode === 'full' && !(cta && c.t0 >= cta.at && c.t1 <= cta.to) && only !== 'a') fs.copyFileSync(fa, fb);   // opaque deck: B is A
+    if (c.mode === 'full' && !ctaOf(c) && only !== 'a') fs.copyFileSync(fa, fb);   // opaque deck: B is A
     fs.rmSync(frames, { recursive: true, force: true });
     fs.rmSync(framesCaps, { recursive: true, force: true });
+    fs.rmSync(framesOv, { recursive: true, force: true });
     const done = c.i + 1, el = (Date.now() - t0) / 1000;
     console.log(`  chunk ${done}/${chunks.length} ${c.mode} ${c.t0}-${c.t1}s (${c.n}f) — ${el.toFixed(0)}s elapsed, eta ${(el / done * (chunks.length - done)).toFixed(0)}s`);
   }
 
-  const outDir = path.join(cfg.outputDir, 'final');
+  /* previews never land beside the master: every draft of the video (each look, each cut) goes to the one
+     renders/previews/ folder, named by cfg.outName so variants sit side by side without colliding */
+  const outDir = args.preview ? cfg.previewDir : cfg.finalDir;
+  const base = args.preview ? cfg.outName : cfg.slug;
   fs.mkdirSync(outDir, { recursive: true });
   /* Splicing. The chunks and the two LifeTech Facts clips are all h264 High/5.2, 3840x2160, yuv420p, 60/1, bt709,
      so the video side stream-copies through the concat demuxer. Audio does not: the clips carry 48k AAC while the
@@ -301,7 +441,7 @@ async function main() {
      here calls assembleMp4, so slide `audio` beds never reach these masters — and the CTA slide must not declare
      one anyway, because renderer/timeline.js drops every beat on a slide that has one. The per-part audio step
      below already re-encodes, so mixing costs nothing extra, and both masters get it from the same file. */
-  const sfx = !partial && cta && cta.sfx ? inProj(cta.sfx) : null;
+  const sfx = !partial && cta && cta.sfx ? inProj(varTag ? cta.sfx.replace(/(\.\w+)$/, varTag + '$1') : cta.sfx) : null;
   if (sfx && !fs.existsSync(sfx)) throw new Error('cta.sfx not found: ' + sfx);
   const sfxAt = sfx ? r3(cta.sfxAt != null ? cta.sfxAt : cta.at) : null;
   const sfxGain = cta && cta.gain != null ? cta.gain : 1;
@@ -315,8 +455,8 @@ async function main() {
 
   /* previewTag in the filename too: --preview is a review draft, and a draft must never occupy the master's name.
      Without it the half-size pass writes renders/final/<slug>.mp4 and the deliverable looks finished at 960x540. */
-  for (const [tag, dir, name] of [['A', dirA, cfg.slug + previewTag + (partial ? '-part' : '')],
-    ['B', dirB, cfg.slug + '-reveal' + setTag + previewTag + (partial ? '-part' : '')]]) {
+  for (const [tag, dir, name] of [['A', dirA, base + varTag + previewTag + (partial ? '-part' : '')],
+    ['B', dirB, base + '-reveal' + setTag + varTag + previewTag + (partial ? '-part' : '')]]) {
     if (only && only !== tag.toLowerCase()) continue;
     const groups = cutAt == null ? [chunks] : [chunks.filter(c => c.t1 <= cutAt), chunks.filter(c => c.t0 >= cutAt)];
     if (groups.some(g => !g.length)) throw new Error(`splice.at ${cutAt}s is not a chunk boundary`);
@@ -336,22 +476,22 @@ async function main() {
       const vo = `[1:a]atrim=${a}:${b},asetpts=PTS-STARTPTS,aformat=channel_layouts=stereo,apad=whole_dur=${r3(b - a)}`;
       // duration=first keeps the part exactly as long as it was, so the frame-exact concat is untouched
       const mute = tag === 'B' ? muteExpr(g, a, b) : null;
-      const onSting = tag === 'B' && sting != null && cta.at >= a && cta.at < b;
+      const stings = tag === 'B' && sting != null ? ctaWins.filter(w => w.at >= a && w.at < b) : [];
       const mixIn = ['[vo]'], chains = [vo + '[vo]'];
       if (onSfx) {
         chains.push(`[2:a]atrim=start=${sfxSkip},asetpts=PTS-STARTPTS,aresample=${aRate},aformat=channel_layouts=stereo,volume=${sfxGain},adelay=${sfxDelay}:all=1` +
           `${mute ? `,volume=0:enable='${mute}'` : ''}[sx]`);
         mixIn.push('[sx]');
       }
-      if (onSting) {
-        chains.push(`[${onSfx ? 3 : 2}:a]aresample=${aRate},aformat=channel_layouts=stereo,volume=${stingGain},adelay=${Math.round((cta.at - a) * 1000)}:all=1[st]`);
-        mixIn.push('[st]');
-      }
+      stings.forEach((w, k) => {
+        chains.push(`[${(onSfx ? 3 : 2) + k}:a]aresample=${aRate},aformat=channel_layouts=stereo,volume=${stingGain},adelay=${Math.round((w.at - a) * 1000)}:all=1[st${k}]`);
+        mixIn.push(`[st${k}]`);
+      });
       const af = mixIn.length > 1 ? `${chains.join(';')};${mixIn.join('')}amix=inputs=${mixIn.length}:duration=first:normalize=0[a]` : `${vo}[a]`;
-      run(['-i', silent, '-i', source, ...(onSfx ? ['-i', sfx] : []), ...(onSting ? ['-i', sting] : []), '-filter_complex', af,
+      run(['-i', silent, '-i', source, ...(onSfx ? ['-i', sfx] : []), ...stings.flatMap(() => ['-i', sting]), '-filter_complex', af,
         '-map', '0:v:0', '-map', '[a]', '-c:v', 'copy', '-c:a', 'aac', '-b:a', '192k', '-ar', String(aRate), part]);
       if (onSfx) console.log(`  + ${path.basename(sfx)} mixed at ${sfxAt}s (part ${tag}-${gi}, gain ${sfxGain}${mute ? ', muted under the face' : ''})`);
-      if (onSting) console.log(`  + ${path.basename(sting)} mixed at ${cta.at}s (part B-${gi}, gain ${stingGain})`);
+      stings.forEach(w => console.log(`  + ${path.basename(sting)} mixed at ${w.at}s (part B-${gi}, gain ${stingGain})`));
       fs.rmSync(silent, { force: true });
       parts.push(part); scratch.push(part);
       if (gi === 0 && cutAt != null && head) parts.push(head);
@@ -365,7 +505,11 @@ async function main() {
     const MB = (fs.statSync(out).size / 1e6).toFixed(0);
     console.log(`done ${tag} → ${path.relative(cfg.root, out)}  ${MB} MB  ${r3(probeDur(out))}s${parts.length > 1 ? ` (${parts.length} parts)` : ''}`);
   }
+  /* a finished master clears every preview of the project (renderer/previews.js: "Whenever you render 4k, delete all
+     previews"), its own draft and chunk cache included */
+  if (!args.preview && !partial) clearPreviews(cfg);
   console.log(`total ${((Date.now() - t0) / 1000 / 60).toFixed(1)} min`);
+  if (!args.preview && !partial) deliver(cfg.projectDir);
 }
 if (require.main === module) main().catch(e => { console.error(e.message || e); process.exit(1); });
 module.exports = { plan, muteExpr };

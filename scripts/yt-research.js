@@ -11,8 +11,12 @@
    what the channel's own audience normally gives it, which is the closest proxy to CTR available without
    the owner's Studio analytics. This is a proxy, not CTR: impressions and the algorithm are in it too.
 
-   usage: node scripts/yt-research.js --out <dir> [--top 60] [--only scrape|download|measure] [--limit N]
-          [--queries "a,b"] [--channels "@x,@y"]   (default: the lists below, written for the storage video)  */
+   A third set, `topic`, is what a viewer of THIS video sees next to it: the biggest search results for the video's
+   own queries by views/day, any age (a story two weeks old is all the shelf there is). It goes to topic/, topic.txt
+   (rank, id, views/day, channel | title) and topic-480.png: the sheet to read what the topic's shelf already owns.
+   usage: node scripts/yt-research.js --out <dir> --queries "a,b" [--channels "@x,@y"] [--top 60] [--topic 24]
+          [--only scrape|download|measure] [--limit N] [--min-age 21]
+          --queries is required: every video has its own shelf (the old defaults were the storage video's) */
 const fs = require('fs');
 const path = require('path');
 const { execFileSync } = require('child_process');
@@ -21,16 +25,14 @@ const { launchBrowser } = require('../renderer/browser');
 const ROOT = path.resolve(__dirname, '..');
 
 /* The niche: every query is a topic this video actually covers, so the sample is the shelf it will sit on. */
-const QUERIES = ['localstorage', 'indexeddb', 'where do apps store data', 'sqlite mobile app',
-  'android datastore room database', 'ios keychain userdefaults', 'electron tauri storage',
-  'browser storage limits', 'offline first app', 'cookies vs localstorage'];
+const QUERIES = null;   // per video, from its title and cue sheet (skills/new-thumbnail, Step 1)
 
 /* The channels the user pointed at, plus the neighbours they compete with, plus their own back catalogue. */
 const CHANNELS = ['@CoreDumpped', '@Fireship', '@t3dotgg', '@ThePrimeTimeagen', '@WebDevSimplified',
   '@codewithmosh', '@lifetechfacts'];
 
 const args = (argv => {
-  const o = { out: null, top: 60, only: null, limit: 0, minAge: 21, queries: QUERIES, channels: CHANNELS };
+  const o = { out: null, top: 60, topic: 24, only: null, limit: 0, minAge: 21, queries: QUERIES, channels: CHANNELS };
   for (let i = 0; i < argv.length; i++) {
     const a = argv[i];
     if (a === '--out') o.out = path.resolve(argv[++i]);
@@ -38,11 +40,13 @@ const args = (argv => {
     else if (a === '--only') o.only = argv[++i];
     else if (a === '--limit') o.limit = +argv[++i];
     else if (a === '--min-age') o.minAge = +argv[++i];
+    else if (a === '--topic') o.topic = +argv[++i];
     else if (a === '--queries') o.queries = argv[++i].split(',').map(x => x.trim()).filter(Boolean);
     else if (a === '--channels') o.channels = argv[++i].split(',').map(x => x.trim()).filter(Boolean);
     else throw new Error('unknown flag ' + a);
   }
   if (!o.out) throw new Error('--out <dir> is required');
+  if (!o.queries || !o.queries.length) throw new Error('--queries "a,b" is required: the searches a viewer of this video would type');
   return o;
 })(process.argv.slice(2));
 
@@ -401,8 +405,18 @@ function sheet(rows, file, tileW, cols) {
     }
     db.sets[set.key] = set.rows.map(r => r.id);
   }
+  // the topic's own shelf: search results only, ranked by views/day, no age floor
+  const topic = db.rows.filter(r => (r.sources || [r.source]).some(x => String(x).startsWith('search:')))
+    .sort((a, b) => b.viewsPerDay - a.viewsPerDay).slice(0, args.topic);
+  const tdir = path.join(OUT, 'topic');
+  if (run('download')) download(topic, tdir, topic.length);
+  topic.forEach(r => { const f = path.join(tdir, r.id + '.jpg'); if (fs.existsSync(f)) r.file = f; });
+  fs.writeFileSync(path.join(OUT, 'topic.txt'), topic.map((r, i) => `${String(i + 1).padStart(2, '0')} ${r.id} ${r.viewsPerDay}/day ${r.channel} | ${r.title}`).join('\n') + '\n');
+  if (run('measure')) sheet(topic, 'topic-480.png', 480, 6);
+  db.sets.topic = topic.map(r => r.id);
   fs.writeFileSync(DATA, JSON.stringify(db, null, 2));
   const band = s => { const o = s.rows.map(r => r.outlier); return `${Math.min(...o).toFixed(2)}x – ${Math.max(...o).toFixed(2)}x`; };
   console.log(`\nwinners  ${sets[0].rows.length} thumbnails, ${band(sets[0])}`);
   console.log(`control  ${sets[1].rows.length} thumbnails, ${band(sets[1])}`);
+  console.log(`topic    ${topic.length} search results, ${topic.length ? topic[topic.length - 1].viewsPerDay + ' – ' + topic[0].viewsPerDay + ' views/day' : 'none'}  → topic.txt, topic-480.png`);
 })().catch(e => { console.error(e.message); process.exit(1); });
