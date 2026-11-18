@@ -87,6 +87,26 @@ npm run kit -- --project <slug> --emoji "rocket, thinking face, party popper"
 npm run sfx -- --project <slug>          # after every npm run timeline: assets/sfx.wav from the beats
 ```
 
+## Code the video shows: `npm run check-code`
+
+Every snippet on screen comes from a complete file in `projects/<slug>/code/`, checked with the real tool, and the slides
+read `code.js` (window.CODE), never retyped lines. `npm run check-code -- --project <slug>` must end with 0 FAIL; UNCHECKED
+and STUB files fail the run until `--allow-unchecked`, and each one is raised with the user.
+
+- **SQL is run, not parsed.** Each `.sql` file gets a fresh database on a real Postgres: a scratch `initdb` cluster of the
+  local Postgres (TCP on 127.0.0.1, removed afterwards) for plain SQL and contrib extensions; the official Docker images for
+  extensions (`pgvector/pgvector:0.8.7-pg18`, `ghcr.io/pgmq/pg18-pgmq:v1.13.1`; containers `--rm`, stopped at exit). pg_cron
+  has no approved image: it runs on the local cluster against a stub with the README's exact `cron.schedule` signatures
+  (the stub runs the scheduled command once) and reports STUB. Without Docker, pgmq also runs on a stub (STUB) and a
+  pgvector file is UNCHECKED.
+- **What a file needs lives in `code/_check.json`, never in the shown file** (every shown line is on screen): `setup`
+  (files like `_setup.sql` with the tables and sample rows), `extensions`, `params` (typed values for `$1..$n`, run as
+  PREPARE/EXECUTE), `expect` (rows a statement must return) and `capture` (with `--capture`, a statement's real psql output
+  → `code/<name>.txt` for a Terminal slide; never written from a stub). Files starting with `_` are never shown.
+  `--verbose` prints every statement's output.
+- Output a slide shows as a Terminal (query results, EXPLAIN, a multi-session demo) is captured from a real run into a
+  `code/*.txt`, never typed by hand.
+
 ## Check loop
 
 ```bash

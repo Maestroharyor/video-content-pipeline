@@ -100,6 +100,14 @@ step references. Each says what to do and why it was decided, so an edge case ca
 - **Social cuts open on the face** when the master does, with the hook's slides laid over it as motion graphics, for about
   the first 10 s, so the networks' automatic cover pick is the face. `npm run social-cut` does this from
   `PROJECT.reveals` (cuts.json `"reveals"`, `"openFace"`). Check the first frame of each preview.
+- **A best-of is self-contained.** Never one item of a numbered series (a lone "Fix 3" with the tracker's 1-2 done and 4
+  "?") or a line that calls back to cut material: the whole series or none (sessions-vs-jwt, 2026-11-15: "Remove the fix
+  part as its cut and some parts arent making sense"). On the portrait slides, drop what the cut never sets up (analogy
+  tags, a fixes tracker) with `data.v.pos[id].drop: true`.
+- **Measure every span edge before a social preview.** The aligner can end a word early when the next one follows with no
+  pause, and the cut drops a final "s" (sessions-vs-jwt: "Usually in redis gets cut off. The 's' isnt pronounced").
+  Check 2.5 kHz+ energy 40 ms either side of each edge; if the kept side is loud, fix that word's times in words.json
+  to the measured audio and end the span in the gap. Whisper on the preview does not catch it.
 
 ## Footage and face
 
@@ -223,6 +231,16 @@ step references. Each says what to do and why it was decided, so an edge case ca
 - **The overlay stays clear of the face and every row has an icon** (review 3: "All overlays should have icons", "overlap
   with my face"). The over column is about 520 px from the left edge, heading ~50 px, rows ~26 px and wrapping inside it;
   nothing is added to the right of a row. An icon tile is a filled colour with the icon dark on it.
+- **Raw footage is always asked about, and never cut before the take list is approved** (user, 2026-11-11: "whenever I
+  supply a raw video that is uncut, prompt me whether to cut it, and I provide the script so it cuts according to that").
+  Every recording handed over gets the question raw or edited; raw goes through `npm run rough-cut` against the script
+  (or `--no-script`), the user reviews `source/takes.md` (last complete take of each line by default, doubtful ones
+  flagged), and only then `--stage cut` (Step 1a).
+- **A cut raw take flows: no pause inside a sentence, no repeated word** (undo-git-mistakes, 2026-11-11: "Pauses in
+  between sentences or sentences that should flow without pause. Fix ... Remove all repeated words"). Mid-sentence joins
+  0.12 s (`edit.json` → `joins`, classified against the script, never whisper's punctuation), sentence joins 0.2-0.3 s
+  (`maxGap` 0.3), sections 0.6 s. Whisper drops a repeated phrase inside one island, so a slow island is checked at its
+  quiet dips (each side transcribed with no padding) and cut only at a real dip, never at whisper's word times.
 - **An extra beat in the voice comes from the raw take, or not at all** (review 4: "Don't just pause and insert empty frame.
   Check the original video, there should be space to cut"). First measure the raw silence at that join (source/islands.json,
   edl.json); if the take has the room, widen the gap in the edit. Only when he asks for it anyway and the face is on screen,
@@ -254,7 +272,8 @@ step references. Each says what to do and why it was decided, so an edge case ca
 - **Every code example is real and checked, and shown in a real UI** (reverse-proxy-lb-gateway, 2026-11-11: "ensure all the
   code examples and snippets are correct and use real UI mockups where possible"). The complete files a video shows live in
   `projects/<slug>/code/`; `npm run check-code -- --project <slug>` checks each with the real tool (`node --check`,
-  `nginx -t` in a scratch prefix, `caddy validate`, `bash -n`, JSON.parse) and writes `code.js` (window.CODE). Slides read
+  `nginx -t` in a scratch prefix, `caddy validate`, `bash -n`, JSON.parse, and every `.sql` file run statement by statement
+  on a real Postgres, see step-3-build.md) and writes `code.js` (window.CODE). Slides read
   `CODE[file]` or an excerpt of it with the file's own line numbers (`start`), never retyped lines, and a stage of a file
   that changes on screen (a header added, a method swapped) is its own checked file. The run must report 0 FAIL; an
   UNCHECKED file (no checker on this machine) is raised with the user, never passed silently. Claims about defaults
@@ -283,6 +302,9 @@ step references. Each says what to do and why it was decided, so an edge case ca
 - **Preview before the full render.** Render the preview, hand over the path, wait for approval, then start the master.
   With a splice: `npm run dual -- --project <slug> --only a --preview --source <vo>`; without:
   `npm run assemble -- --project <slug> --preview`.
+  **This covers vertical social cuts too:** every new cut renders `npm run social-cut -- … --cut <name> --preview` first,
+  and the full cut waits for his approval of that preview (user, 2026-11-15, how-llms-are-trained best-of rendered
+  straight to final: "Never render full version until preview is approved").
   **Every preview of a video lands in ONE folder, `projects/<slug>/renders/previews/`**, every look/variant and every cut
   side by side, named `<slug>-<variant>[-reveal]-preview.mp4` (renderer/config.js `previewDir`; dual and assemble both write
   there). Never per-variant `renders/<variant>/final/` for a draft (user, 2026-10-27: "All previews should always be in the
@@ -321,6 +343,8 @@ step references. Each says what to do and why it was decided, so an edge case ca
   - Every Backend Technology Explained in One Click (backend-one-click), https://youtu.be/i8RKMpUtCBc
   - Web Rendering Patterns: All You Need To Know, https://youtu.be/JB2wRNqKZFE
   - The PHP Bug That Made Governments Go Offline (PHP2Shell), https://youtu.be/aLFcdcoWBdI
+  - Client - Server Authentication: Authentication Methods Explained (With Pros & Cons), https://youtu.be/k-Be8fVJ3G8 (older upload, no project in this repo; the watch-next for any auth video)
+  - JWT vs Session Authentication: Logging Out Doesn't Log You Out (sessions-vs-jwt), https://youtu.be/QRLxsBZJ1nI (thumbnail: 07-row v9, Session OR JWT)
 - **Never delete renders without asking** (user, 2026-11-04: "Why did you delete the directions and other variants?
   Always ask for approval"). Candidates, variants, directions, drafts and any render the user has not named for
   deletion stay on disk until the user approves that exact deletion in their own words. A pick, an "ok", or an offer
@@ -364,3 +388,211 @@ step references. Each says what to do and why it was decided, so an edge case ca
   count nor density alone decides it. What has fixed it every time is a shorter, broader list saved again (worst-week: 6).
   Start with one chapter per 60-90 s and one per named topic. Check a live video with curl: `DESCRIPTION_CHAPTERS` on the watch
   page means it was accepted; `MARKER_TYPE_TIMESTAMPS`, or no marker at all, means it was not.
+
+## undo-git-mistakes, review 1 (2026-11-12)
+
+- **A fresh made-up name per video.** josh was reverse-proxy's; "Dont use josh. Use another name". Set `PROJECT.prompt`
+  (bistro and gitgraph terminals read it) and use the same name for any scripted repo's author and remote owner.
+- **Code is readable before the slide leaves.** "Whenever we're dealing with code, at least the user should be able to see
+  it briefly before it just transitions." The last typed command and its output get ~2 s on screen before the exit; when
+  the voice moves on sooner, `npm run pauses` inserts a hold in the silence before the next slide's first word, then the
+  cue sheet, splice and reveals are mapped into paused time (renderer/pauses.js `shiftTime`).
+- **Gaze wins over slide boundaries.** A face window ends (fade done) a second before his lens run ends and starts inside
+  the run, even when that leaves part of a slide full frame; never stretch a window to a boundary past the run ("We should
+  not have this frame where I changed my gaze"). dual's sliver warnings are then expected; only a ramp inside a slide's own
+  exit must still be moved.
+- **The probe catches item overlap, card padding and clipped text** ("Add to the pipeline. There should be no overlap and
+  overflow"): `OVERLAP item a × b` (scene items crossing without one holding the other), `TIGHT … from its card edge`
+  (10 px inside any filled or bordered item, gradients included) and `CLIP` (text a box cuts off). All must be 0.
+- **Graphs name their commits.** Story commits carry their letter (A, B, C, D) beside the ring so viewers can follow; a
+  reset leaves the commit as a dashed ghost (unreachable, not deleted) so the reflog can bring it back.
+- **The ground stays out of the text.** Theme marks and lanes live in the margins outside the content box, at ~5%.
+- **Status letters are explained where they appear** (lines from M / D / A / U to their meaning), and named UIs (Chrome's
+  History page) are rebuilt from a live capture, not from memory.
+- **Every subscribe bar clicks on its word and sounds**: start the tour SUB.CLICK (2.98 s) before "subscribe"
+  (`over.sub.lead`, item `t0`) and place the channel sting there (sfx cues).
+
+## undo-git-mistakes, review 2 (2026-11-12)
+
+- **A sound needs something on screen.** Key clicks over the face with nothing typing ("there is a typing sound … without
+  showing anything") are wrong: an over window whose slide types gets a small Terminal in the overlay column
+  (`over.term`, bistro), typing on the same beats as the deck.
+- **App code is TypeScript, and real-sized** ("use TypeScript … the real life function, slightly bigger, more complex"):
+  `.ts` files, VS Code's TS icon and TypeScript mode, a function with types and branches, not a three-line stub.
+  check-code parses `.ts` with Node's own TypeScript parser (syntax, not types).
+- **An analogy that tags a recurring panel tags it every time**, quietly (outline, 16 px mono), once it is taught; a tag
+  on some scenes and not others "feels orphaned". Taught solid on its own slide, quiet everywhere after.
+- **No slide shows for under a second at a face window's edge** ("this frame only shows for a split second"): pin the
+  neighbouring slide boundary to the window edge (cue sheet `=m:ss`, xf cut), run a window that reaches a splice into it
+  (out 0), and end the outro with the footage (`PROJECT.tail`).
+- **A pause can also cut** (`[at, -seconds]` in PROJECT.pauses removes that much silence; review 4 halved the gap before "So, which one" this way).
+- **A reading hold sits in the quietest 10 ms of its silence**, measured on the unpaused voice, never a fixed offset
+  before the next aligned word: aligned starts run late, and a hold placed 0.03 s early cut the "S" off "So". A word the
+  aligner straddles across a hold moves after it (renderer/pauses.js shiftWord).
+- **The probe checks text laid on a panel and Terminal room**: `TIGHT … from the edge of the panel under it` (a commit or
+  chip on a panel keeps 10 px) and `TERM` (a Terminal's last row keeps 14 px above its bottom; nothing cut).
+- **A choice with modes shows the modes, aligned** (26: `git reset` then `--soft` `--mixed` `--hard` as equal chips, each
+  lit on its word with what it does under it), and each answer enters on its own command word.
+- **Mention the general form, not only the default** (stash: pop / apply / drop `stash@{n}`, not just the last stash).
+- **The ground is a quiet picture of the subject**, not empty: for Git, coloured lanes with branches and breathing commit
+  rings in the margins, soft colour pools behind; still never behind a word.
+
+## undo-git-mistakes, review 5 (2026-11-13)
+
+- **Every typing animation clicks.** "Whenever we have typing animation, there should always be sound effects": the VS Code
+  typing on s23 was silent because the hand-kept `sfx.keys` map only listed terminal commands. Key clicks come from the
+  typing measured on the page (bistro's `typeRows` records `window.PL_TYPED`, redline `RL_TYPED`; a project `typed.js`
+  writes `typed.json`, `sfx.typed` reads it). With `typed` set, `keys` only marks typing beats as silent.
+- **File icons are Material Icon Theme's** ("CSS icon is wrong. Also use material icons for ts, css, md etc everywhere"):
+  the VS Code explorer, tab, breadcrumb and the gitgraph file chips all draw `bistro.js MI` (MIT, assets/SOURCES.md).
+- **An over window ends on a cut.** A 0.3 s return dissolve laid the next slide's heading over the face, and the slide's
+  own 0.4 s push exit took the overlay off early, leaving a bare face ("Should end in 4:28 but I can still see still
+  frame"). The window ends with `out: 0` and the next slide enters with `xf: 'cut'`, so the overlay holds to the frame
+  the deck cuts back in. Split windows keep their wipe.
+- **Check every rough-cut join for a clipped word.** A take that ended on half of "in" was joined to a retake starting
+  "in your current folder" ("sound like two in in but one is half"). Fixed with a pause cut (`[72.1, -0.15]`); at the cut
+  stage, look at the energy across each join, since whisper hides a half word inside its neighbour.
+- **Terminal output keeps Git's own layout.** `modified:   payment.ts` is tab-indented under "Changes not staged for
+  commit:"; a filtered excerpt keeps that header line so the indent reads as Git's, not as a stray space.
+- **Notes on an approved master go straight to 4K** ("You should have fixed the 4k directly"); the preview round is for a
+  first master or a change he has not seen. **A finished master deletes every preview** of the project ("Whenever you render
+  4k, delete all previews"): renderer/previews.js, called by dual and assemble.
+- **Captures cannot half-paint.** On long 4K runs Chrome dropped slide 12's panels and terminal on many frames (2:47-2:50,
+  the same frames every run). Cause: the ground's two glows were their own moving composited layers (`will-change`);
+  base.css now paints them into the ground (drawn quarter size, scaled x4: identical look). Never give a full-frame moving
+  background element `will-change`. After every master, scan the frame-to-frame difference for single-frame drop-outs
+  before handing it over; a fresh page at the bad second renders clean, so test by starting the capture at the chunk start.
+
+## what-makes-laptop-faster-4, review 1 (2026-11-12)
+
+- **Face cards sit at the bottom** ("Should be towards the bottom"), their foot at y 1320 just above the caption band,
+  replacing part 3's top card. kit.js `over.foot` (default 1320); `over.top` only when he asks for it.
+  **Part 5 (2026-11-17) flipped it back: "This should be at the top"** (`over.top: 220`, clear of his face in this
+  framing). The latest note wins; state the card position at the storyboard gate so he can flip it before the preview.
+- **Motion graphics from the first frame.** A hook that opens on the face carries its card from frame 0 ("No motion
+  graphics first few frames"), with an icon row that ticks along with the words (`over.ill` items, `st` badges on beats).
+  Every over card carries an animated icon row, not text alone.
+- **Captions need `npm run captions` before `npm run dual`.** Without captions.json dual renders no captions and says
+  nothing ("Whys there no captions"). Run it after every transcript or timeline change, and check a frame for them.
+- **Long holds keep moving.** Bars stream data at their own speed, meters track what fills them; the user asked for
+  "more illustrations and animations" on a deck that held still after its bars filled.
+
+
+## sessions-vs-jwt, review 1 (2026-11-14)
+
+- **Typing is done before the line is explained** ("We didn't finish typing before the explanation already passed. Maybe
+  we type faster"). bistro's typeRows treats every `hl` beat that lights a row of a typing block as a deadline, like
+  `by`, and types up to 160 chars/s to meet it. When even that is too fast, start the block on an earlier word or split
+  it; check a frame at each highlight beat.
+- **A curiosity gap: never name an item before the voice does** ("Don't reveal all at once ... show question marks or
+  something"). Trackers, agendas and lists show the items still to come as numbered "?" placeholders (signed `trk`
+  shows fixes after `lit` as "?"), and the current one is named on its own word, not from the slide's first frame.
+- **No Nigerian names** ("I don't want to use Nigerian names solely or at all if possible"): sample users, terminal
+  prompts, guest lists and characters' labels use neutral made-up names (Leo, Mia, Sam, Nora …), a fresh one per video.
+- **Say "or the database", show the database**: when the voice names two stores, both are drawn.
+- **A face window never ramps in from the previous slide.** A ramp-in that reaches back into the slide before draws
+  that slide's whole layout over the face (s21's cards floated over his face). Windows that open on a boundary use
+  `in: 0`; `npm run dual` warns about any ramp that crosses a boundary.
+- **Phones and apps are real mockups**: an iPhone shows a real app screen (nav bar, list rows, tab bar), never a bare
+  white screen with one card. Over-the-face channel rows carry the LF mark and the channel screenshot, never an empty
+  icon tile.
+- **A JWT example carries a real payload object** (a `user` object with id, name, role), signed by the library the
+  code uses (jsonwebtoken here), decoded on the live jwt.io.
+
+## sessions-vs-jwt, review 2 (2026-11-14)
+- The YouTube channel screenshot is captured fresh for every video (Puppeteer, youtube.com/@lifetechfacts), never copied from an older project.
+- A face window over an aside runs to its slide's end boundary: ending it a second or two early turns the rest of the slide into full-frame graphics.
+- The tagline slide before the outro shows the subscribe bar too (over.sub {at, lead} on the outro's clock); the channel sting starts with the first slide that shows the bar, never under an earlier slide (sub-cue skip in build-sting).
+- "Real UI" means real images too: app mockups (product lists, avatars, feeds) use openly licensed photos (npm run photos, cropped), never drawn shapes for the content.
+
+## how-llms-are-trained, review 1 (2026-11-14)
+
+- **The slide after a splice starts on the splice.** A slide whose first word comes a few frames after `splice.at` left
+  the previous slide on screen for those frames right after the intro ("Right after the intro there is a frame of this
+  for a split second"). Pin the next row to the splice (`=m:ss` = `splice.at`) and give it `xf: 'cut'`.
+- **The deck ends exactly with the footage.** A deck even 0.05 s longer than the A-roll renders its last frames as a
+  full-frame chunk after the last face window, a flash of the outro slide before the end screen ("We have this frame
+  show up too before the outro"). Set `vo.json` duration to the footage length and `tail` so the last row ends there;
+  `npm run dual` must not list a `full` chunk after the last over window.
+- **The subscribe bar only on the slide that says "subscribe".** Not on the tagline slide before it ("Remove in this slide
+  since the next slide is for it"); that slide starts the tour mid-way (`t0`) so the click still lands on the word.
+- **Analogies drawn as real UIs.** A group-chat analogy is a real messaging app on an accurate iPhone (header, avatars,
+  bubbles with names and times, a swipe-reply quote), a chat with a model is a real chat app window (sidebar, model picker,
+  thread, input box): "Group chat design is wrong", "Make them closer to a real UI".
+- **Real things, not icons.** Named hardware gets real photos (GPUs: openly licensed photos, credited), named sources get
+  their live page (the dataset page, the paper on arXiv, the vendor's announcement): "Include real images of gpus",
+  "include screenshot of common crawl website".
+- **Compositions centred, text padded.** A row of chips or cards sits centred in the frame, and card text keeps its
+  padding (the probe's TIGHT misses text that wraps against the card edge when the card is narrow: check posters).
+- **A progress tracker on long explainers** (studio `PROJECT.stages`): the current stage named top right, done stages
+  filled, later ones "?"; hidden on slides that draw the road map and over the face.
+- **A window that ends in a pause ends before the look-away** (how-llms-are-trained review 2: "a frame right before 'in
+  the next 10 minutes' where I stopped looking at the camera"). He often drops his eyes to the prompter in the silence
+  before a new line, so a window that runs to the next word's start shows that glance. End it at the last frame he is
+  still on the lens inside the pause (gaze score at 0.125 s steps; 10 fps eye sheet), and pin the next slide there with a cut.
+- **Name the method in full when the script names it** (review 2: "DPO isn't showing the full meaning"): an acronym gets
+  its expansion on screen, and the line's contrast (what it does without) is drawn, e.g. the reward model struck out.
+
+## sessions-vs-jwt, review 4 (2026-11-14)
+- Named websites are rebuilt as the whole page in HTML inside the Chrome window (header, title, every panel), scrolled like a real visit (signed item.pscroll), never cropped screenshots; a paste swaps the page state at once, like the site.
+- File icons: every JS flavour (.js, .mjs, .cjs) gets the Material JS icon. Demo code is named app.js with "type": "module" (viewers know .js; .mjs reads as a mistake).
+- Talking-head voice: run the full DeepFilterNet clean (--atten 100 --expand) even on a mixed edit; he still hears the room at -52 dB.
+  **Superseded 2026-11-17 (what-makes-laptop-faster-5): "Dont use full strength".** One pass, `--atten 24`, no `--expand`,
+  then highpass 80 Hz + loudnorm -14 LUFS. Full strength only if he says it is still noisy.
+- Punch-in zooms on hero words (dual --punch) only when asked: he found them unnecessary.
+- **Strikethroughs draw left to right** (review 3: "All the strikethroughs should animate from left to right like a normal
+  strike through animation"). A strike is a stroke drawn from its left edge on its word (studio `data-sk="<beat>"`,
+  .35 s), through the middle of the text, never a bar that slides or fades in, and never printed already struck.
+
+## sessions-vs-jwt, review 5 (2026-11-15)
+- **The outro is the tagline frame, in both masters** ("we still have this frame. Remove"). Review 3 asked for the outro to reuse the tagline frame; that was done for B (the overlay) but A still cut to a new "See you in the next one" scene. In A the outro slide repeats the tagline slide exactly (eyebrow, heading and items already up: data.headPre + item pre) and only the subscribe bar joins. Check A and B separately for every frame-continuity note.
+- The subscribe bar's notification menu opens upward by default; when text sits right above a deck bar, move it beside the bell (cafe item menuAt {x, y}, bar-local units) so it never covers the line. The cursor follows it.
+
+## postgres-for-everything, review 1 (2026-11-17)
+- **The script's shot markers decide the face windows** ("You didn't follow the script for face windows"). When the script
+  carries `[SHOT: ON CAMERA]` / `[SHOT: SPLIT]` / `[SHOT: FULL ANIMATION]` (each holds until the next), anchor every marker on
+  the first words after it in vo.json (projects/postgres-for-everything/source/shots.js) and make those the windows: ON CAMERA
+  = the full face with at most a small tag, SPLIT = face beside the animation (an overlay beside him in the hook), FULL = deck.
+  The gaze model is only for scripts without markers.
+- **Dark mode by default** ("I prefer dark mode"): look directions are dark unless he asks for light.
+- **No split-second frames at a face edge, no dissolves between face and deck**: a 0.3 s crossfade ghosted the slide's heading
+  and the corner tracker over his face, and a hook slide showed full frame for 1.2 s after its window. Windows open and close
+  with a cut on a slide boundary.
+- **Every code example and every fact is correct, checked in the pipeline**: SQL runs on a real Postgres (scratch cluster;
+  extensions through their official Docker images), not just a syntax pass; facts against their primary source.
+- **Channel screenshots never show view counts or upload dates.**
+- **Braandly on screen = braandly.com + a real capture of the site.**
+- **Grade the A-roll** before the first preview: his studio reads too blue ("the aroll is too blueish").
+- **Phones are accurate iPhone mockups** with real app icons in the dock, never coloured placeholder squares; a queue
+  metaphor shows a queue (several tickets on the rail before and after the one being pinned); a "workers pick" demo shows
+  each pick as a visible move from the worker to the row.
+- **A closing checklist can carry accurate items the voice doesn't name**, to fill its columns.
+
+## postgres-for-everything, review 2 (2026-11-17)
+- **Script shots, then a gaze check.** Every ON/SPLIT window from the script gets its frames looked at; where he is not
+  looking at the lens it turns FULL (s12, s25, s35 here). A window that must end mid-slide gets its own slide boundary: a
+  letter-suffixed slug (`13b-…`, `40b-…`) is its own slide id (core/registry.js, renderer/timeline.js), so nothing renumbers.
+  Seed timeline.json from the cue sheet (the project's source/tl-seed.js) before `npm run timeline` when slides are added.
+- **The hook can be full motion graphics** when he asks; the overlay-beside-the-face hook is the default, not a must.
+- **Grade by measurement.** A colour-temperature filter left the white wall lavender ("you didn't adjust the bluish hue").
+  Neutralise a measured white patch with per-channel gains (colorchannelmixer) and show a before/after still.
+- **No key clicks where the typing is hidden.** Typed rows inside ON / overlay windows are dropped (the project's typed.js);
+  a SPLIT shows the slide, so its typing keeps its clicks.
+- **Overview lists hide what is coming** ("Don't show the extensions names. Should make them curious"): "?" rows until each
+  item is said, built-in features included.
+- **Product results carry real product photos** (openly licensed, looked at before use), never grey placeholder squares.
+- **Transformations keep the source visible** (running → run, runs → run): the reader must see both ends to connect them.
+- **Graph edges stop at node edges**, never inside a translucent circle; captions never sit on a chart's line or axis.
+- **Rebuilt sites are checked against the capture icon by icon** ("the dropdown icons are off" on braandly.com).
+- **Code:** check-code runs pgvector on a local Postgres install that ships it (Postgres.app) when Docker is unreachable.
+
+## postgres-for-everything, review 3 (2026-11-18)
+- His review times are preview times: footage + the intro's length after the splice. Convert before moving anything.
+- Face-window ends are cut on the last frame he is on the lens: eye-sheet the last ~1.4 s of every window and pin the next slide there.
+- Split windows wipe, and the wipe is the pipeline default ("the split view transition should be the default in the pipeline"): 0.4 s, inside the split's own first/last slide. ON windows push ("still no transition from overlay to full motion graphics"): the deck slides off the face and back over it, 0.4 s, never a dissolve. Where an end is trimmed for a look-away, the push finishes by that frame. A split that meets an ON window, or a window at a splice, cuts.
+- Slides push between each other ("we don't have any transitions in between views anymore?"): `xf: 'cut'` only at the intro splice or a deliberate same-picture continuity cut. Face-window edges cut by themselves (slate xhold).
+- Reveal edges are written from timeline.json slide starts, exactly: `npm run dual` refuses edges 1-50 ms off a boundary (a one-frame flash of the wrong layout).
+- A slide that opens on a cut from the face shows its eyebrow and headline from its first frame (slate: automatic).
+- JSON on screen is pretty-printed: one key per line, closing braces on their own lines.
+- Rulers / spectra show three zones when the script is "does a lot / needs a specialist / breaks": green, amber, red.
+- The channel page shows the newest upload first, including one going live the same day (title from its project.js, duration from its master).

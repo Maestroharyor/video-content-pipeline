@@ -32,7 +32,9 @@ Parse the whole invocation before doing anything else. Flags pre-answer the ques
 | `--project` | slug of an existing `projects/<slug>/` | new project |
 | `--format` | `vertical` (1080×1920 stage, Shorts/Reels/TikTok) · `horizontal` (1920×1080 stage, YouTube) | **always asked** unless flagged |
 | `--res` | horizontal: `4k` (3840×2160) · `1440p` · `1080p` — vertical: `2k` (1440×2560) · `1080p` (1080×1920) | **asked**; `4k` horizontal, `2k` vertical |
-| `--audio` | path to the voiceover recording (wav/m4a/mp3/flac/ogg) | asked ("do you have the recording?") |
+| `--audio` | path to the voiceover recording (wav/m4a/mp3/flac/ogg) or talking-head video | asked ("do you have the recording?") |
+| `--raw` | the recording is **uncut** (retakes, false starts, long pauses): Step 1a cuts it against the script first | asked whenever a recording is given |
+| `--no-script` | with `--raw`: cut on the transcript alone (no script to match against) | asked |
 | `--script` | path to a text file (`(m:ss)` markers, SRT/VTT, whisper JSON or prose) | script pasted in chat |
 | `--captions` | `on` · `off` — burned-in word-highlight captions (needs the recording) | `on` for vertical, `off` for horizontal |
 | `--layout` | horizontal only: `top` (heading centred across the top, content in a wide column under it) · `left` (heading column left, content right) | **always asked**; `top` |
@@ -62,6 +64,10 @@ Parse the whole invocation before doing anything else. Flags pre-answer the ques
    itself still being asked, put both resolution lists in this question's options and keep the one that matches.
 3. **Voiceover** — do they have the recording (path) or only text? With a recording the video is timed to it and captions are
    possible; with text only, the timing comes from `(m:ss)` markers or is estimated.
+   **Whenever a recording or video is given (never skipped):** "Is this the raw recording (retakes, false starts, long
+   pauses still in it) or already edited?" If raw: "Paste the script or give its path (txt, md, rtf, docx, a prompter
+   export), or cut without one." Raw footage goes through **Step 1a** before anything else (house rule: never cut before
+   the take list is approved).
 4. **Title position, captions & transition** — horizontal only: where the slide title sits, **top** (default: heading centred
    across the top, content under it) or **left** (heading column left, content right). Never pick it silently; it is
    `--layout` on `npm run new` and `layout` in `project.js`. Then burned-in captions on/off (default on for vertical) and
@@ -116,6 +122,21 @@ The finished video is `projects/<slug>/renders/final/<slug>.mp4` (+ `.srt`); the
 `renders/contact-sheet.png`; the storyboard is `cue-sheet.md`, the timing `timeline.json`.
 
 ---
+
+## Step 1a — Rough cut (raw footage only)
+
+**Read:** [references/step-1a-rough-cut.md](references/step-1a-rough-cut.md)
+
+```bash
+npm run rough-cut -- --project <slug> --raw <file> --script <file>      # or --no-script: islands + take match, then stops
+npm run rough-cut -- --project <slug> --stage cut [--audio-only]       # only after the user approves source/takes.md
+```
+
+Show the user `source/takes.md` (the "Needs your eye" list first: incomplete takes, fluffed retakes where an earlier take was
+kept, stutters, ad-libs, missing lines). Apply their overrides to `source/edit.json` (`keep` island numbers, `trim`), then cut.
+The cut writes `aroll.mp4` + `vo.wav`; Step 1 transcribes that cut.
+
+**Gate:** the user has approved the take list. Never run `--stage cut` before that.
 
 ## Step 1 — Read the script (or transcribe the audio)
 
