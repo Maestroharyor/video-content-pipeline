@@ -16,6 +16,7 @@
 | assets/audio/outro-music-tropicorp.wav | https://freesound.org/people/code_box/sounds/561190/ ("Tropicorp Advertisement" by code_box, via Openverse) | CC0 1.0 public domain dedication, verified on the Freesound page 2026-10-02: commercial use allowed, no attribution required. First 9s of the HQ preview, loudnorm -11 LUFS / -1 dBTP (to match the uploaded shorts' endings), 0.4s fade in, 1.5s fade out. Outro music option: PROJECT.brand.audio = 'outro-music-tropicorp.wav' |
 | assets/logos/aws/*.svg | https://aws.amazon.com/architecture/icons/ | AWS Architecture Icons, fetched on demand by projects that list them (project.js → assets.aws); see each project's SOURCES.md |
 | assets/logos/brands/*.svg (others) | https://simpleicons.org | simple-icons marks fetched on demand by projects (project.js → assets.brands) |
+| core/templates/bistro.js `MI` (inline SVG) | https://github.com/material-extensions/vscode-material-icon-theme/tree/ced21b9b5241c1efa502a8c46ec7363a690a7058/icons (typescript, javascript, css, markdown, json, console, nginx .svg) | Material Icon Theme, MIT (Copyright (c) 2025 Material Extensions), fetched 2026-11-13. File-type icons in the VS Code mock and the gitgraph file chips; paths copied unchanged, only the xmlns attribute dropped. |
 
 AWS Architecture Icons are provided by Amazon Web Services under the terms on the icons page (use to depict AWS architecture; do not alter the marks).
 Brand marks from simple-icons are trademarks of their respective owners.
