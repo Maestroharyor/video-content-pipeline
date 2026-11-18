@@ -33,6 +33,7 @@
    keys     PROJECT.sfx.keys = {'<slide prefix>': {<beat>: <chars>}}: a prompt typing itself (pass cc kind, `parts`) gets
             recorded key clicks from its beat for min(2, chars/18) s, the same pace the slide types at (user, same day:
             "typing sound effect here"); those beats make no other sound.
+            With PROJECT.sfx.typed as well, keys only silences those beats: the clicks come from typed.json.
    PROJECT.sfx = { noRise: [slug prefixes], tick: [slug prefixes], type: [slug prefixes], noType: [slug prefixes: c<n> there is a card, so it pops], thump: [{slide, beat}], outroBed: bool, extra: [cue…] } tunes them;
    `extra` cues are appended as written ({s, t, v, …}, see build-sting.js for the sounds). Levels are low on purpose:
    sound on reveals, not on every sentence. */
@@ -163,7 +164,9 @@ TL.slides.forEach((s, i) => {
   if (i > 0 && !has(S.noRise, s.slug)) cues.push({ s: 'rise', t: r3(s.start - .3), d: .32, f: 2600, v: S.palette === 'pop' || S.palette === 'rich' ? .55 : .3 });
   Object.entries(s.beats || {}).forEach(([n, [a]]) => {
     const t = r3(a - LEAD);
-    if (keys && keys[1][n] != null) { cues.push(...keyCues(a, keys[1][n])); return; }
+    /* with sfx.typed the clicks come from the measured typing (typed.json), so a keys entry only marks the beat as a
+       typing start that makes no other sound; clicking it here as well would double the run (undo-git review 5) */
+    if (keys && keys[1][n] != null) { if (!S.typed) cues.push(...keyCues(a, keys[1][n])); return; }
     /* key clicks are opt-in (user rule, 2026-10-19): only on slides listed in PROJECT.sfx.type, where a terminal command
        really types. A prompt being typed, a card or a chip pops like every other point. */
     if (has(S.type, s.slug) && !has(S.noType, s.slug) && /^(c|tc|w\dc|l|p\dl|w\dl)\d+$/.test(n)) cues.push({ s: 'type', t, d: .7, v: .8 });

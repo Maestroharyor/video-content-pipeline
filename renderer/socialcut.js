@@ -120,14 +120,22 @@ function clampOvers(at, to, faceWins) {
    from the cue sheet against the cut's words inside that window, so every element enters on its word in the cut; a
    beat whose words were cut falls back to the template's fraction schedule. Returns { tl, issues }. */
 function cutTimeline({ tl, rows, laid, words, total, minKeep = 1 }) {
+  /* a sliver dropped at the head of a span hands its time to the next slide in the same span, so the slide the span is
+     about takes over on the join (undo-git-mistakes best-of: 1.2 s of "stash pop" opened "So, which one do you…";
+     without the hand-over the previous span's slide would hold across the edit instead) */
   const kept = [];
+  let carry = null;
   for (const sl of tl.slides) {
-    let a = null, len = 0;
-    for (const s of laid) {
+    let a = null, len = 0, si = -1;
+    laid.forEach((s, k) => {
       const x = Math.max(sl.start, s.from), y = Math.min(sl.end, s.to);
-      if (y > x) { a = a == null ? s.at + x - s.from : a; len += y - x; }
-    }
-    if (len >= minKeep) kept.push({ sl, a });
+      if (y > x) { if (a == null) { a = s.at + x - s.from; si = k; } len += y - x; }
+    });
+    if (a == null) continue;
+    if (len < minKeep) { if (!carry) carry = { a, si }; continue; }
+    if (carry && carry.si === si && carry.a < a) a = carry.a;
+    carry = null;
+    kept.push({ sl, a });
   }
   if (!kept.length) throw new Error('the cut keeps no slide');
   const issues = [], rowOf = {};

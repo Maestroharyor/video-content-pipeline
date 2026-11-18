@@ -104,7 +104,9 @@ test('cutTimeline tiles the kept slides over the cut and re-anchors their beats 
   const laid = SC.layout([{ from: 2, to: 9.5 }, { from: 19.8, to: 26 }, { from: 35, to: 40 }]);
   const words = [{ w: 'kept', s: 9, e: 9.3 }, { w: 'word', s: 9.3, e: 9.6 }];
   const { tl: out, issues } = SC.cutTimeline({ tl, rows, laid, words, total: 18.7 });
-  assert.deepStrictEqual(out.slides.map(e => [e.id, e.start, e.end]), [['s01', 0, 7.7], ['s03', 7.7, 13.7], ['s04', 13.7, 18.7]]);
+  // s02's 0.2s sliver at the head of the second span is dropped and hands its time to s03, so s03 takes over on the
+  // join (7.5) instead of s01 holding past the edit
+  assert.deepStrictEqual(out.slides.map(e => [e.id, e.start, e.end]), [['s01', 0, 7.5], ['s03', 7.5, 13.7], ['s04', 13.7, 18.7]]);
   assert.deepStrictEqual(out.slides[1].beats, { k1: [8.9, 9.6] });   // 0.1s lead, found in the cut words
   assert.strictEqual(out.slides[1].hero, 'k1');
   assert.ok(issues.some(t => /k2 "gone" not found/.test(t)));         // its words were cut: fraction fallback

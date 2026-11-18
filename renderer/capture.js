@@ -15,7 +15,7 @@ async function captureSlide(page, slide, cfg, opts = {}) {
       const local = f / cfg.fps;
       await page.evaluate((id, u, o) => window.setFrame(id, u, o), slide.id, Math.min(1, local / tm.motion), { T: tm.start + local, local, motion: tm.motion, screen: tm.screen });
     } else await page.evaluate((id, t) => window.setFrame(id, t), slide.id, f / (n - 1));
-    await stage.screenshot({ path: path.join(dir, String(f).padStart(4, '0') + '.png'), omitBackground: !!opts.transparent, optimizeForSpeed: true });
+    await stage.screenshot({ path: path.join(dir, String(f).padStart(4, '0') + '.png'), omitBackground: !!opts.transparent, optimizeForSpeed: true, captureBeyondViewport: false });   // see renderer/assemble.js
     if (opts.onFrame) opts.onFrame(f + 1, n);
   }
   return { dir, frames: n };

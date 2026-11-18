@@ -1,299 +1,428 @@
-/* studio: a polished screen recording (projects/react-to-solid). A dark wallpaper with the two frameworks' colours in
-   it, real macOS windows on top (VS Code Dark Modern + Dark+ tokens, Chrome light with DevTools docked, a terminal),
-   one smooth pointer with click ripples, and the camera zooming onto what changes, the way Screen Studio films a
-   desktop. Signals are drawn as live wires: a line from the value to the one node it drives, a pulse when it fires.
-   Grounds are scoped to .theme-studio WITHOUT #stage, so #stage.transparent (the face-window alpha captures) stays
-   transparent (house rule: theme backgrounds break alpha captures). Link after base.css and lanes.css (cast/fx). */
-
-.theme-studio{--blue:#5B9DFF;--teal:#2DD4BF;--green:#3DDC84;--rose:#FF6B81;--amber:#FFB547;--violet:#A78BFA;
-  --react:#61DAFB;--solid:#4F88C6;--tx:#F5F7FB;--tx2:#C4CCDA;--tx3:#94A0B4;
-  --vs-bg:#1F1F1F;--vs-side:#181818;--vs-bd:#2B2B2B;--vs-tx:#CCCCCC;--vs-ln:#6E7681;--vs-blue:#0078D4}
-#stage.theme-studio:not(.transparent){background:#0A0F1C}
-.theme-studio .bgfx{background:
-  radial-gradient(900px 640px at 12% 18%,rgba(79,136,198,.42),transparent 70%),
-  radial-gradient(820px 620px at 90% 82%,rgba(97,218,251,.20),transparent 70%),
-  radial-gradient(1200px 800px at 55% 120%,rgba(120,80,220,.22),transparent 70%),
-  linear-gradient(160deg,#0B1222 0%,#0A0F1C 55%,#0C0B1E 100%)}
-.theme-studio .bgfx .grid{background-image:radial-gradient(rgba(255,255,255,.05) 1px,transparent 1.4px);background-size:28px 28px;opacity:.6}
-.theme-studio .bgfx .vig{background:radial-gradient(120% 90% at 50% 45%,transparent 60%,rgba(0,0,0,.45))}
+/* "studio" theme (PROJECT.theme = 'studio'), built for projects/how-llms-are-trained (How LLMs Are Trained).
+   The video's analogy is a mixing desk with billions of knobs, so the deck is drawn as studio hardware: a charcoal,
+   brushed-metal ground, panels with screws and silk-screened labels, knobs with an amber pointer, LED meters that run
+   green → amber → red, and amber as the desk's lamp colour. Sections keep their role colours: data green, tokens blue,
+   pre-training and attention violet, RLHF amber, failures red. Code and pages sit in accurate app windows (VS Code Dark
+   Modern, Chrome) from bistro.css, which the project links.
+   The shared section below is signed.css's theme-scoped bistro skin renamed to .theme-studio; the Studio palette and
+   pieces follow it. Linked after cafe.css, lanes.css (cast + fx: theme trap 3) and bistro.css. */
+#stage.theme-studio{
+  --bg0:#090D18; --bg1:#121829; --bg2:#182036; --bd:rgba(255,255,255,.09); --bd2:rgba(255,255,255,.18);
+  --tx:#F3F5FA; --tx2:#AEB8CD; --tx3:#7C88A1;
+  --amber:#FFB547; --rose:#FF6B57; --blue:#4DB5FF; --green:#34D399; --teal:#2DD4BF; --violet:#A78BFA; --orange:#FF8A3D;
+  --glass:linear-gradient(180deg,rgba(28,36,60,.92),rgba(16,22,40,.94));
+  background:#090D18;
+}
+#stage.theme-studio.transparent{background:transparent}   /* alpha captures must stay clear (theme trap 1) */
+.theme-studio .bgfx .grid{inset:-60px;opacity:1;background:radial-gradient(rgba(255,255,255,.07) 1.2px,transparent 1.4px) 0 0/36px 36px;
+  -webkit-mask:radial-gradient(90% 80% at 50% 45%,#000 40%,transparent 90%);mask:radial-gradient(90% 80% at 50% 45%,#000 40%,transparent 90%)}
+.theme-studio .bgfx .glow.a{background:radial-gradient(60% 45% at 50% 110%,rgba(255,170,90,.16),transparent 70%)}
+.theme-studio .bgfx .glow.b{background:radial-gradient(55% 40% at 12% -5%,rgba(77,120,255,.16),transparent 70%)}
+.theme-studio .bgfx .vig{background:radial-gradient(120% 100% at 50% 45%,transparent 55%,rgba(0,0,0,.6))}
 #stage.theme-studio.transparent .bgfx{display:none}
-.theme-studio .h1{color:var(--tx);text-shadow:0 2px 24px rgba(0,0,0,.35)}
-.theme-studio .eyebrow{letter-spacing:.18em}
-/* new-theme trap 2: the caption box shrink-fits without this */
-.theme-studio .caps{width:max-content}
 
-.k-cam{position:absolute;inset:0}
-.st-abs{position:absolute}
+/* heading: a dot + mono eyebrow, white headline, the key phrase in the role colour with its underline */
+#stage.theme-studio .eyebrow{font:700 var(--eb-size) JB;letter-spacing:.2em;text-transform:uppercase;color:var(--acc,var(--rose))}
+#stage.theme-studio .eyebrow::before{content:"";display:inline-block;vertical-align:.12em;margin-right:16px;width:12px;height:12px;border-radius:50%;background:currentColor;box-shadow:0 0 14px currentColor}
+#stage.theme-studio .eyebrow.b{color:var(--blue)} #stage.theme-studio .eyebrow.g{color:var(--green)} #stage.theme-studio .eyebrow.a{color:var(--amber)}
+#stage.theme-studio .eyebrow.t{color:var(--teal)} #stage.theme-studio .eyebrow.v{color:var(--violet)} #stage.theme-studio .eyebrow.r{color:var(--rose)}
+#stage.theme-studio .h1{color:var(--tx);letter-spacing:-.03em}
+#stage.theme-studio .sub{color:var(--tx2)}
+#stage.theme-studio .caps{width:max-content}   /* theme trap 2 */
 
-/* ---------- a macOS window (shared frame) ---------- */
-.st-win{position:absolute;border-radius:12px;overflow:hidden;box-shadow:0 30px 80px rgba(0,0,0,.55),0 0 0 1px rgba(255,255,255,.08),0 0 0 .5px rgba(0,0,0,.6);opacity:0}
-.st-dots{display:flex;gap:8px;align-items:center}
-.st-dots i{width:12px;height:12px;border-radius:50%;background:#FF5F57;box-shadow:inset 0 0 0 .5px rgba(0,0,0,.25)}
-.st-dots i:nth-child(2){background:#FEBC2E}.st-dots i:nth-child(3){background:#28C840}
+/* ---------- edges: lit paths with arrowheads ---------- */
+.theme-studio .cf-edge{stroke:rgba(255,255,255,.35);stroke-width:4;filter:drop-shadow(0 0 6px rgba(255,255,255,.18))}
+.theme-studio .cf-edges marker path{fill:rgba(255,255,255,.6)}
+.theme-studio .cf-edge.r{stroke:var(--rose);filter:drop-shadow(0 0 8px rgba(255,107,87,.6))} .theme-studio .cf-edge.b,.theme-studio .cf-edge.hot{stroke:var(--blue);filter:drop-shadow(0 0 8px rgba(77,181,255,.6))}
+.theme-studio .cf-edge.g,.theme-studio .cf-edge.ok{stroke:var(--green);filter:drop-shadow(0 0 8px rgba(52,211,153,.6))} .theme-studio .cf-edge.a{stroke:var(--amber);filter:drop-shadow(0 0 8px rgba(255,181,71,.6))}
+.theme-studio .cf-edge.t{stroke:var(--teal);filter:drop-shadow(0 0 8px rgba(45,212,191,.6))} .theme-studio .cf-edge.mute{stroke:rgba(255,255,255,.22);filter:none}
+.theme-studio .cf-edge.bad{stroke:var(--rose)}
+.theme-studio .cf-edge.strike{stroke:#FF4D4D;stroke-width:9}
+.theme-studio .cf-edge.thick{stroke-width:6}
 
-/* ---------- VS Code, Dark Modern ---------- */
-.st-vsc{background:var(--vs-bg);display:flex;flex-direction:column;font-family:Inter,sans-serif}
-.st-vsc .vt{height:38px;flex:none;background:var(--vs-side);border-bottom:1px solid var(--vs-bd);display:flex;align-items:center;padding:0 14px;gap:14px;position:relative}
-.st-vsc .vt .cc{position:absolute;left:50%;translate:-50% 0;width:42%;height:24px;border-radius:6px;background:#2A2A2A;border:1px solid #3C3C3C;color:#9D9D9D;font:500 13px Inter;display:flex;align-items:center;justify-content:center;gap:8px}
-.st-vsc .vt .cc svg{width:13px;height:13px;fill:none;stroke:#9D9D9D;stroke-width:2}
-.st-vsc .vt .nv{color:#7E7E7E;font:500 15px Inter;margin-left:8px}
-.st-vsc .vm{flex:1;display:flex;min-height:0}
-.st-vsc .ab{width:48px;flex:none;background:var(--vs-side);border-right:1px solid var(--vs-bd);display:flex;flex-direction:column;align-items:center;padding-top:10px;gap:20px}
-.st-vsc .ab span{width:24px;height:24px;opacity:.45;position:relative}
-.st-vsc .ab span.on{opacity:1}
-.st-vsc .ab span.on::before{content:'';position:absolute;left:-12px;top:-4px;bottom:-4px;width:2px;background:var(--vs-blue)}
-.st-vsc .ab svg{width:24px;height:24px;fill:none;stroke:#D7D7D7;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
-.st-vsc .ea{flex:1;display:flex;flex-direction:column;min-width:0}
-.st-vsc .tabs{height:36px;flex:none;background:var(--vs-side);display:flex;border-bottom:1px solid var(--vs-bd)}
-.st-vsc .tab{display:flex;align-items:center;gap:7px;padding:0 14px;font:400 14px Inter;color:#9D9D9D;border-right:1px solid var(--vs-bd);white-space:nowrap}
-.st-vsc .tab.on{background:var(--vs-bg);color:#FFFFFF;box-shadow:inset 0 1px 0 var(--vs-blue);margin-bottom:-1px}
-.st-vsc .tab .x{font-style:normal;color:#8B8B8B;font-size:15px;margin-left:6px}
-.st-vsc .tab .dot{width:8px;height:8px;border-radius:50%;background:#CCCCCC;margin-left:6px}
-.st-vsc .fi{width:16px;height:16px;flex:none}
-.st-vsc .bc{height:26px;flex:none;display:flex;align-items:center;gap:6px;padding:0 16px;font:400 13px Inter;color:#A9A9A9}
-.st-vsc .bc b{font-weight:400;color:#6E6E6E}
-.st-vsc .view{flex:1;position:relative;overflow:hidden}
-.st-vsc .src{position:absolute;left:0;right:0;top:4px}
-.st-vsc .ln{font-variant-ligatures:none;font-feature-settings:"calt" 0;display:flex;font:400 var(--cfs,20px)/var(--clh,30px) JB;color:var(--vs-tx);white-space:pre;position:relative}
-.st-vsc .ln .g{width:var(--gut,56px);flex:none;text-align:right;padding-right:22px;color:var(--vs-ln);box-sizing:border-box}
-.st-vsc .ln.cur .g{color:#CCCCCC}
-.st-vsc .ln .t{flex:1;min-width:0;position:relative}
-.st-vsc .ln .hlb{position:absolute;left:0;right:0;top:0;bottom:0;background:rgba(255,213,79,.0);pointer-events:none;border-left:3px solid transparent}
-.st-vsc .ln.typing .t::after,.st-vsc .ln.caret .t::after{content:'';display:inline-block;width:2px;height:1.1em;background:#AEAFAD;vertical-align:-.18em;margin-left:1px}
-.st-vsc .ln.blink .t::after{opacity:0}
-.st-vsc .mm{position:absolute;right:14px;top:6px;width:64px;display:flex;flex-direction:column;gap:2px;opacity:.55}
-.st-vsc .mm i{display:block;height:2px;background:#6B7A8F;border-radius:1px}
-.st-vsc .sbar{height:24px;flex:none;background:var(--vs-side);border-top:1px solid var(--vs-bd);display:flex;align-items:center;gap:16px;padding-right:12px;font:400 12.5px Inter;color:#C5C5C5}
-.st-vsc .sbar .rm{background:var(--vs-blue);height:100%;width:34px;display:flex;align-items:center;justify-content:center}
-.st-vsc .sbar .rm svg{width:14px;height:14px;fill:none;stroke:#fff;stroke-width:2.2}
-.st-vsc .sbar .sp{flex:1}
-/* Dark+ tokens (classes from core/templates/redline.js rlHl) */
-.st-vsc .k,.st-pane .k{color:#569CD6}.st-vsc .kc,.st-pane .kc{color:#C586C0}.st-vsc .s,.st-pane .s{color:#CE9178}
-.st-vsc .fn,.st-pane .fn{color:#DCDCAA}.st-vsc .at,.st-pane .at{color:#9CDCFE}.st-vsc .ty,.st-pane .ty{color:#4EC9B0}
-.st-vsc .tg,.st-pane .tg{color:#569CD6}.st-vsc .pu,.st-pane .pu{color:#808080}.st-vsc .n,.st-pane .n{color:#B5CEA8}
-.st-vsc .c,.st-pane .c{color:#6A9955}.st-vsc .tc,.st-pane .tc{color:#4EC9B0}.st-vsc .pr,.st-pane .pr{color:#9CDCFE}
-/* a token being swapped (morph) and a token glowing as "the change" */
-.st-mo{display:inline-grid;vertical-align:top;position:relative}
-.st-mo > span{grid-area:1/1;white-space:pre}
-.st-glow{border-radius:4px;box-shadow:0 0 0 2px rgba(91,157,255,var(--g,0)),0 0 18px rgba(91,157,255,calc(var(--g,0) * .7));background:rgba(91,157,255,calc(var(--g,0) * .16))}
-.st-glow.ok{box-shadow:0 0 0 2px rgba(61,220,132,var(--g,0)),0 0 18px rgba(61,220,132,calc(var(--g,0) * .7));background:rgba(61,220,132,calc(var(--g,0) * .16))}
-.st-glow.bad{box-shadow:0 0 0 2px rgba(255,107,129,var(--g,0)),0 0 18px rgba(255,107,129,calc(var(--g,0) * .7));background:rgba(255,107,129,calc(var(--g,0) * .18))}
-.st-gone{position:relative}
-.st-gone::after{content:'';position:absolute;left:-2px;right:-2px;top:52%;height:3px;background:#FF6B81;border-radius:2px;transform-origin:0 50%;transform:scaleX(var(--x,0))}
+/* ---------- dark glass cards with a role-colour bar ---------- */
+.theme-studio .cf-card{background:var(--glass);color:var(--tx);border:1.5px solid var(--bd);border-radius:18px;box-shadow:0 24px 60px rgba(0,0,0,.45),inset 0 4px 0 var(--cbar,rgba(255,255,255,.14))}
+.theme-studio .cf-card b{font:800 32px ID;color:var(--tx)} .theme-studio .cf-card small{font:600 22px Inter;color:var(--tx2)}
+.theme-studio .cf-card .ic{color:var(--cbar,var(--tx));width:64px;height:64px}
+.theme-studio .cf-card .mk{width:84px;height:84px;background:#fff;border-radius:18px} .theme-studio .cf-card .mk img{max-width:56px;max-height:56px}
+.theme-studio .cf-card .ph{width:84px;height:84px;max-height:84px;flex:none;object-fit:contain;border-radius:14px;background:#fff;padding:8px;box-sizing:border-box}
+.theme-studio .cf-card .wh{width:120px;height:120px;filter:drop-shadow(2px 0 0 #E9EEF8) drop-shadow(-2px 0 0 #E9EEF8) drop-shadow(0 2px 0 #E9EEF8) drop-shadow(0 -2px 0 #E9EEF8)}
+.theme-studio .cf-card .tg{background:rgba(255,255,255,.1);color:var(--tx);border:1px solid var(--bd2)}
+.theme-studio .cf-card.r{--cbar:var(--rose)} .theme-studio .cf-card.b{--cbar:var(--blue)} .theme-studio .cf-card.g{--cbar:var(--green)}
+.theme-studio .cf-card.a{--cbar:var(--amber)} .theme-studio .cf-card.t{--cbar:var(--teal)} .theme-studio .cf-card.v{--cbar:var(--violet)}
+.theme-studio .cf-card.hot{outline:3px solid var(--cbar,var(--blue));outline-offset:4px;box-shadow:0 0 40px rgba(77,181,255,.35),0 24px 60px rgba(0,0,0,.45),inset 0 4px 0 var(--cbar,var(--blue))}
+.theme-studio .cf-card.okc{outline:3px solid var(--green);outline-offset:4px;box-shadow:0 0 40px rgba(52,211,153,.35),0 24px 60px rgba(0,0,0,.45)}
+.theme-studio .cf-card.red{background:linear-gradient(180deg,rgba(80,24,24,.95),rgba(50,16,20,.95));--cbar:#FF4D4D} .theme-studio .cf-card.red b{color:#FFB4A8}
+.theme-studio .cf-card.idle{filter:grayscale(1);opacity:.35}
+.theme-studio .cf-card.left{gap:24px}
+/* brand marks on white tiles (logos readable on dark: house rule) */
+.theme-studio .cf-logo .mk{background:#fff;border:0;border-radius:24px;box-shadow:0 0 0 1px rgba(255,255,255,.2),0 20px 50px rgba(0,0,0,.5)}
+.theme-studio .cf-logo b{color:var(--tx);font:800 28px ID}
+.theme-studio .cf-logo.hot .mk{box-shadow:0 0 0 4px var(--acc,var(--rose)),0 0 40px var(--acc,var(--rose))}
+.theme-studio .cf-logo.idle{filter:grayscale(1);opacity:.35}
+/* characters (DiceBear Notionists, black line art): never colour-inverted (review 2); a light sticker outline keeps the
+   silhouette readable on the dark ground */
+.theme-studio .cf-who img{filter:drop-shadow(2px 0 0 #E9EEF8) drop-shadow(-2px 0 0 #E9EEF8) drop-shadow(0 2px 0 #E9EEF8) drop-shadow(0 -2px 0 #E9EEF8)}
+.theme-studio .cf-who .nm{font:700 20px JB;letter-spacing:.06em;color:var(--tx);background:rgba(18,24,41,.95);border:1px solid var(--bd2);border-radius:8px;padding:6px 14px;bottom:-34px}
+.theme-studio .cf-who.idle{opacity:.35}
+/* chips, stamps, text, tickets, bubbles */
+.theme-studio .cf-chip{background:rgba(18,24,41,.92);border:1.5px solid var(--bd2);color:var(--tx);border-radius:999px;font:700 24px Inter;padding:10px 22px}
+.theme-studio .cf-chip.mono{font:700 22px JB}
+.theme-studio .cf-chip img{background:#fff;border-radius:8px}
+.theme-studio .cf-chip svg{stroke:currentColor}
+.theme-studio .cf-chip.r{border-color:var(--rose);color:#FFC2B8} .theme-studio .cf-chip.b{border-color:var(--blue);color:#BEE3FF}
+.theme-studio .cf-chip.g{border-color:var(--green);color:#B6F2DA} .theme-studio .cf-chip.a{border-color:var(--amber);color:#FFE2B3}
+.theme-studio .cf-chip.t{border-color:var(--teal);color:#B4F5EC} .theme-studio .cf-chip.v{border-color:var(--violet);color:#DDD3FF}
+.theme-studio .cf-chip.fill-r{background:var(--rose);border-color:var(--rose);color:#1A0A07} .theme-studio .cf-chip.fill-b{background:var(--blue);border-color:var(--blue);color:#06182A}
+.theme-studio .cf-chip.fill-g{background:var(--green);border-color:var(--green);color:#04201A} .theme-studio .cf-chip.fill-a{background:var(--amber);border-color:var(--amber);color:#241600}
+.theme-studio .cf-chip.fill-t{background:var(--teal);border-color:var(--teal);color:#04201D}
+.theme-studio .cf-chip.x{text-decoration:line-through;text-decoration-thickness:4px;opacity:.45}
+.theme-studio .cf-stamp{color:var(--rose);border-color:var(--rose);background:rgba(9,13,24,.88);font:900 38px ID;box-shadow:0 0 30px rgba(255,107,87,.35)}
+.theme-studio .cf-stamp.b{color:var(--blue);border-color:var(--blue);box-shadow:0 0 30px rgba(77,181,255,.35)} .theme-studio .cf-stamp.g{color:var(--green);border-color:var(--green);box-shadow:0 0 30px rgba(52,211,153,.35)}
+.theme-studio .cf-stamp.a{color:var(--amber);border-color:var(--amber)} .theme-studio .cf-stamp.t{color:var(--teal);border-color:var(--teal)}
+.theme-studio .cf-txt{color:var(--tx)} .theme-studio .cf-txt.mono{font:700 24px JB;color:var(--tx2)}
+.theme-studio .cf-txt.lbl{font:700 20px JB;letter-spacing:.16em;text-transform:uppercase;color:var(--tx3);white-space:nowrap}
+.theme-studio .cf-txt.big{color:var(--tx)} .theme-studio .cf-txt .n{margin-right:.2em}
+.theme-studio .cf-txt.r{color:var(--rose)} .theme-studio .cf-txt.b{color:var(--blue)} .theme-studio .cf-txt.g{color:var(--green)} .theme-studio .cf-txt.a{color:var(--amber)} .theme-studio .cf-txt.t{color:var(--teal)}
+.theme-studio .cf-txt.hand{font:700 40px Caveat;color:var(--tx2)}
+.theme-studio .cf-tile{background:#F6F1E3;color:#1B1408;border-radius:6px;box-shadow:0 14px 30px rgba(0,0,0,.5)}
+.theme-studio .cf-tile b{font:700 22px JB} .theme-studio .cf-tile small{font:600 18px JB;color:#5E5442}
+.theme-studio .cf-tile.r{border-top:6px solid var(--rose)} .theme-studio .cf-tile.b{border-top:6px solid var(--blue)} .theme-studio .cf-tile.g{border-top:6px solid var(--green)}
+.theme-studio .cf-tile.a{border-top:6px solid var(--amber)} .theme-studio .cf-tile.red{background:#FFD9D2;border-top:6px solid #E5483A}
+.theme-studio .cf-tile.dark{background:rgba(18,24,41,.95);color:var(--tx);border:1px solid var(--bd2)} .theme-studio .cf-tile.dark small{color:var(--tx2)}
+.theme-studio .cf-tile.ghost{background:transparent;border:2px dashed var(--tx3);box-shadow:none;color:var(--tx3)}
+.theme-studio .cf-bubble{background:#F6F1E3;color:#1B1408;font:700 26px Inter}
+.theme-studio .cf-bubble::after{background:#F6F1E3}
+.theme-studio .cf-bar{background:rgba(255,255,255,.07);border-radius:12px 12px 0 0} .theme-studio .cf-bar i{background:var(--blue);box-shadow:0 0 24px rgba(77,181,255,.5)} .theme-studio .cf-bar b{color:var(--tx2)}
+.theme-studio .cf-bar.g i{background:var(--green);box-shadow:0 0 24px rgba(52,211,153,.5)} .theme-studio .cf-bar.r i{background:var(--rose);box-shadow:0 0 24px rgba(255,107,87,.5)}
 
-/* a compact editor pane (cheat sheet, quick-fire, differences): tab + code, no chrome */
-.st-pane{position:absolute;background:var(--vs-bg);border-radius:12px;overflow:hidden;box-shadow:0 24px 60px rgba(0,0,0,.5),0 0 0 1px rgba(255,255,255,.08);opacity:0}
-.st-pane .ph{height:40px;background:var(--vs-side);display:flex;align-items:center;gap:10px;padding:0 14px;border-bottom:1px solid var(--vs-bd)}
-.st-pane .ph .tab{display:flex;align-items:center;gap:8px;font:500 15px Inter;color:#FFFFFF;height:40px;padding:0 10px;box-shadow:inset 0 -2px 0 var(--pc,#61DAFB);background:var(--vs-bg)}
-.st-pane .ph img{width:18px;height:18px}
-.st-pane .ph .who{margin-left:auto;font:700 13px Inter;letter-spacing:.14em;text-transform:uppercase;color:var(--pc,#61DAFB)}
-.st-pane .pc{padding:16px 20px 18px 0}
-.st-pane .ln .t{white-space:pre-wrap;overflow-wrap:anywhere}
-.st-pane .ln{font-variant-ligatures:none;font-feature-settings:"calt" 0;display:flex;font:400 var(--cfs,22px)/var(--clh,33px) JB;color:var(--vs-tx);white-space:pre}
-.st-pane .ln .g{width:46px;flex:none;text-align:right;padding-right:18px;color:var(--vs-ln);box-sizing:border-box}
-.st-pane .ln.typing .t::after{content:'';display:inline-block;width:2px;height:1.05em;background:#AEAFAD;vertical-align:-.16em;margin-left:1px}
-.st-pane.react{--pc:#61DAFB}.st-pane.solid{--pc:#7DB4F0}
-.st-pane .who i{font-style:normal}.st-pane.solid .wr,.st-pane:not(.solid) .ws{display:none}
-.st-arrow{position:absolute;height:6px;border-radius:3px;background:linear-gradient(90deg,#61DAFB,#7DB4F0);transform-origin:0 50%;opacity:0}
-.st-arrow::after{content:'';position:absolute;right:-4px;top:50%;width:18px;height:18px;border-top:6px solid #7DB4F0;border-right:6px solid #7DB4F0;border-radius:2px;transform:translateY(-50%) rotate(45deg)}
+/* ---------- the illustration, packets, flips ---------- */
+.theme-studio .bs-svg{z-index:1} .theme-studio .bs-svg svg{width:100%;height:100%;overflow:visible}
+.theme-studio .bs-svg [data-part]{transition:none}
+.theme-studio .bs-svg .lit{filter:drop-shadow(0 0 14px var(--lc,#FFD27A)) brightness(1.25)}
+.theme-studio .bs-svg .lit.r{--lc:#FF6B57} .theme-studio .bs-svg .lit.b{--lc:#4DB5FF} .theme-studio .bs-svg .lit.g{--lc:#34D399} .theme-studio .bs-svg .lit.a{--lc:#FFB547}
+.theme-studio .bs-svg .dim{opacity:.35}
+/* a request is an arrow drawing itself along a straight path, the head at the tip (revision 3: no dots on curves) */
+.theme-studio .bs-arw{z-index:9;overflow:visible;--pc:var(--rose)}
+.theme-studio .bs-arw .aw{position:absolute;left:0;top:0;overflow:visible}
+.theme-studio .bs-arw .tr{fill:none;stroke:var(--pc);stroke-width:6;stroke-linecap:round;stroke-linejoin:round;filter:drop-shadow(0 0 8px var(--pc))}
+.theme-studio .bs-arw .hd{fill:var(--pc);filter:drop-shadow(0 0 10px var(--pc))}
+.theme-studio .bs-arw.b{--pc:var(--blue)} .theme-studio .bs-arw.g{--pc:var(--green)} .theme-studio .bs-arw.a{--pc:var(--amber)} .theme-studio .bs-arw.w{--pc:#E9EEF8} .theme-studio .bs-arw.t{--pc:var(--teal)}
+.theme-studio .bs-arw .lb{position:absolute;font:700 20px JB;color:var(--tx);white-space:nowrap;background:rgba(18,24,41,.95);border:1px solid var(--bd2);border-radius:8px;padding:7px 14px}
+.theme-studio .bs-flip{perspective:1600px;z-index:3}
+.theme-studio .bs-flip .fl{position:absolute;inset:0;transform-style:preserve-3d}
+.theme-studio .bs-flip .fa,.theme-studio .bs-flip .fb{position:absolute;inset:0;backface-visibility:hidden;-webkit-backface-visibility:hidden;border-radius:20px;background:var(--glass);
+  border:1.5px solid var(--bd);box-shadow:0 24px 60px rgba(0,0,0,.45);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;text-align:center}
+.theme-studio .bs-flip .fb{transform:rotateY(180deg)}
+.theme-studio .bs-flip .fa{box-shadow:0 24px 60px rgba(0,0,0,.45),inset 0 5px 0 var(--amber)} .theme-studio .bs-flip .fb{box-shadow:0 24px 60px rgba(0,0,0,.45),inset 0 5px 0 var(--rose)}
+.theme-studio .bs-flip b{font:900 44px ID;color:var(--tx)} .theme-studio .bs-flip small{font:600 24px Inter;color:var(--tx2)}
+.theme-studio .bs-flip .k{font:700 20px JB;letter-spacing:.16em;text-transform:uppercase}
+.theme-studio .bs-flip .fa .k{color:var(--amber)} .theme-studio .bs-flip .fb .k{color:var(--rose)}
+.theme-studio .bs-flip svg{width:64px;height:64px;fill:none;stroke:var(--tx);stroke-width:1.7}
 
-/* ---------- Chrome (light) + DevTools ---------- */
-.st-chrome{background:#FFFFFF;display:flex;flex-direction:column;font-family:Inter,sans-serif;color:#1F1F1F}
-.st-chrome .ts{height:42px;flex:none;background:#DFE3EA;display:flex;align-items:flex-end;padding:0 10px 0 12px;gap:6px}
-.st-chrome .ts .st-dots{height:42px;margin-right:12px}
-.st-chrome .ctab{height:34px;min-width:200px;max-width:250px;background:#FFFFFF;border-radius:10px 10px 0 0;display:flex;align-items:center;gap:8px;padding:0 12px;font:500 13px Inter;color:#1F1F1F;position:relative}
-.st-chrome .ctab .fav{width:16px;height:16px;flex:none;border-radius:3px}
-.st-chrome .ctab .tt{flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-.st-chrome .ctab .tt.chg{color:#0B57D0}
-.st-chrome .ctab .x{font-style:normal;color:#5F6368;font-size:14px}
-.st-chrome .ts .plus{font:300 22px Inter;color:#5F6368;margin:0 0 6px 6px}
-.st-chrome .tb{height:44px;flex:none;display:flex;align-items:center;gap:14px;padding:0 12px;border-bottom:1px solid #E3E3E3}
-.st-chrome .tb .nb{font:400 18px Inter;color:#5F6368;width:18px;text-align:center}
-.st-chrome .tb .omni{flex:1;height:32px;border-radius:16px;background:#EDF0F4;display:flex;align-items:center;gap:10px;padding:0 14px;font:400 14.5px Inter;color:#1F1F1F}
-.st-chrome .tb .omni svg{flex:none;width:14px;height:14px;fill:none;stroke:#5F6368;stroke-width:2}
-.st-chrome .tb .omni .host{color:#5F6368}
-.st-chrome .tb .pf{width:24px;height:24px;border-radius:50%;background:linear-gradient(135deg,#7DB4F0,#2C4F7C)}
-.st-chrome .pg{flex:1;position:relative;overflow:hidden;background:#FFFFFF}
-.st-chrome .dv{flex:none;border-top:1px solid #CBCDD1;background:#FFFFFF;display:flex;flex-direction:column;min-height:0}
-.st-chrome .dv .dt{height:30px;flex:none;display:flex;align-items:stretch;background:#F3F3F3;border-bottom:1px solid #CBCDD1;font:500 12.5px Inter;color:#474747}
-.st-chrome .dv .dt span{display:flex;align-items:center;padding:0 12px}
-.st-chrome .dv .dt span.on{color:#1A73E8;box-shadow:inset 0 -2px 0 #1A73E8;background:#FFFFFF}
-.st-chrome .dv .dt .ins{width:30px;padding:0;justify-content:center}
-.st-chrome .dv .dt .ins svg{width:15px;height:15px;fill:none;stroke:#5F6368;stroke-width:2}
-.st-chrome .dv .cb{height:28px;flex:none;display:flex;align-items:center;gap:10px;padding:0 10px;border-bottom:1px solid #E5E5E5;font:400 12.5px Inter;color:#5F6368}
-.st-chrome .dv .cb .flt{flex:1;height:20px;border:1px solid #DADCE0;border-radius:4px;padding:0 8px;display:flex;align-items:center;color:#9AA0A6}
-.st-chrome .dv .rows{flex:1;overflow:hidden;position:relative}
-.st-chrome .dv .cr{display:flex;align-items:center;gap:10px;padding:0 12px 0 22px;height:32px;border-bottom:1px solid #F0F0F0;font:400 16px JB;color:#1F1F1F}
-.st-chrome .dv .cr .rc{min-width:20px;height:20px;padding:0 7px;border-radius:10px;background:#5F6368;color:#FFFFFF;font:700 12px Inter;display:inline-flex;align-items:center;justify-content:center;box-sizing:border-box}
-.st-chrome .dv .cr .rc.hot{background:#D93025}
-.st-chrome .dv .cr .src{margin-left:auto;font:400 13px Inter;color:#5F6368;text-decoration:underline;text-decoration-color:#BDC1C6}
-.st-chrome .dv .cr.in{color:#1A73E8}
-.st-chrome .dv .cr.in::before{content:'›';position:absolute;left:8px;color:#1A73E8;font-weight:700}
-.st-chrome .dv .cr{position:relative}
-/* Elements panel */
-.st-chrome .dv .el{padding:8px 0 0 14px;font:400 16px/26px JB;color:#881280}
-.st-chrome .dv .el div{white-space:pre;position:relative}
-.st-chrome .dv .el .an{color:#994500}.st-chrome .dv .el .av{color:#1A1AA6}.st-chrome .dv .el .tx{color:#1F1F1F}
-.st-chrome .dv .el .fl{position:absolute;inset:0 0 0 -6px;border-radius:2px;background:rgba(200,80,220,var(--f,0))}
+/* ---------- VS Code, Dark Modern chrome + Dark+ tokens ---------- */
+.theme-studio .bs-vscw,.theme-studio .bs-termw,.theme-studio .bs-chromew,.theme-studio .bs-awsw{z-index:4}
+.theme-studio .bs-awsw .awsbox{position:absolute;left:0;top:0}
+.theme-studio .bs-awsw .aws{position:relative;box-shadow:0 30px 80px rgba(0,0,0,.6)}
 
-/* ---------- the task app (the page inside Chrome) ---------- */
-.st-app{position:absolute;inset:0;padding:30px 40px;font-family:Inter,sans-serif;color:#1B1F24;box-sizing:border-box}
-.st-app h1{margin:0 0 6px;font:800 34px/1.15 Inter;letter-spacing:-.02em}
-.st-app .cnt{margin:0 0 18px;font:500 18px Inter;color:#57606A;position:relative;display:inline-block}
-.st-app .cnt b{color:#1B1F24;font-weight:800;display:inline-block}
-.st-app .row{display:flex;gap:10px;margin-bottom:16px}
-.st-app .inp{flex:1;height:44px;border:1.5px solid #D0D7DE;border-radius:10px;padding:0 14px;display:flex;align-items:center;font:400 18px Inter;color:#1B1F24;position:relative;background:#fff}
-.st-app .inp.focus{border-color:#4F88C6;box-shadow:0 0 0 3px rgba(79,136,198,.22)}
-.st-app .inp .ph{color:#8C959F}
-.st-app .inp .car{display:inline-block;width:1.5px;height:22px;background:#1B1F24;margin-left:1px}
-.st-app .btn{height:44px;padding:0 18px;border-radius:10px;background:#1F6FEB;color:#fff;font:600 17px Inter;display:flex;align-items:center}
-.st-app.solid .btn{background:#2C4F7C}
-.st-app ul{list-style:none;margin:0;padding:0;display:flex;flex-direction:column;gap:8px}
-.st-app li{height:48px;border:1px solid #E1E4E8;border-radius:10px;display:flex;align-items:center;gap:12px;padding:0 14px;font:500 18px Inter;position:relative;background:#fff}
-.st-app li .cbx{width:22px;height:22px;border-radius:6px;border:2px solid #8C959F;display:flex;align-items:center;justify-content:center;box-sizing:border-box;flex:none}
-.st-app li .cbx.on{background:#1F6FEB;border-color:#1F6FEB}
-.st-app.solid li .cbx.on{background:#2C4F7C;border-color:#2C4F7C}
-.st-app li .cbx svg{width:15px;height:15px;fill:none;stroke:#fff;stroke-width:3.4;stroke-linecap:round;stroke-linejoin:round;opacity:0}
-.st-app li .cbx.on svg{opacity:1}
-.st-app li.dn .lt{color:#8C959F;text-decoration:line-through}
-/* React DevTools "highlight updates when components render" */
-.st-hl{position:absolute;border:3px solid #37D67A;border-radius:6px;pointer-events:none;opacity:0;box-shadow:0 0 0 1px rgba(55,214,122,.35),0 0 24px rgba(55,214,122,.35)}
-.st-hl.hot{border-color:#FFB547;box-shadow:0 0 24px rgba(255,181,71,.4)}
-/* a single fine-grained update: a small blue ring on exactly that node */
-.st-ping{position:absolute;border:2.5px solid #4F88C6;border-radius:6px;pointer-events:none;opacity:0;box-shadow:0 0 18px rgba(79,136,198,.55)}
+/* ---------- over the face: the left of the frame darkens, the points stack down it (backend-one-click) ---------- */
+.theme-studio .bs-ov{position:absolute;inset:0;display:none;z-index:30;pointer-events:none}
+/* the fade stays on the text column (revision 3: "limit overlay to there") */
+.theme-studio .bs-ov .shade{position:absolute;inset:0;background:linear-gradient(90deg,rgba(6,9,18,.9) 0%,rgba(6,9,18,.76) 24%,rgba(6,9,18,.3) 38%,rgba(6,9,18,0) 48%)}
+.theme-studio .bs-ov .row .sd{width:96px;height:96px;margin-left:6px;filter:drop-shadow(2px 0 0 #E9EEF8) drop-shadow(-2px 0 0 #E9EEF8) drop-shadow(0 2px 0 #E9EEF8) drop-shadow(0 -2px 0 #E9EEF8)}
+.theme-studio .bs-ov .row .shot{display:block;width:520px;border-radius:14px;overflow:hidden;border:1px solid rgba(255,255,255,.18);box-shadow:0 30px 70px rgba(0,0,0,.6)}
+.theme-studio .bs-ov .row .shot img{display:block;width:100%;height:auto;padding:0;background:none;border-radius:0;box-shadow:none}
+.theme-studio .bs-ov .col{position:absolute;left:64px;top:90px;width:520px;display:flex;flex-direction:column;gap:14px}
+.theme-studio .bs-ov .eb{font:700 22px JB;letter-spacing:.2em;text-transform:uppercase;color:var(--acc,var(--rose));display:flex;align-items:center;gap:12px}
+.theme-studio .bs-ov .eb::before{content:"";width:11px;height:11px;border-radius:50%;background:currentColor;box-shadow:0 0 12px currentColor}
+.theme-studio .bs-ov .hd{font:900 50px ID;letter-spacing:-.03em;line-height:1.04;color:#fff;text-shadow:0 4px 30px rgba(0,0,0,.6)}
+.theme-studio .bs-ov .hd em{font-style:normal;color:var(--acc,var(--rose))}
+.theme-studio .bs-ov .rows{display:flex;flex-direction:column;gap:14px;margin-top:22px}
+.theme-studio .bs-ov .row{display:flex;align-items:center;gap:18px;align-self:flex-start;max-width:520px;font:600 26px Inter;line-height:1.25;color:#E9EEF8;opacity:0;--rc:var(--acc,var(--rose));
+  text-shadow:0 2px 18px rgba(0,0,0,.7)}
+.theme-studio .bs-ov .row img{width:56px;height:56px;flex:none;background:#fff;border-radius:14px;padding:8px;box-sizing:border-box;box-shadow:0 8px 24px rgba(0,0,0,.4)}
+.theme-studio .bs-ov .row .ic{width:56px;height:56px;flex:none;display:grid;place-items:center;border-radius:14px;color:#0B0F1C!important;background:var(--rc);box-shadow:0 0 0 1px rgba(255,255,255,.15),0 8px 26px color-mix(in srgb,var(--rc) 40%,transparent)} .theme-studio .bs-ov .row .ic svg{width:30px!important;height:30px!important} .theme-studio .bs-ov .row .ic svg{width:100%;height:100%;fill:none;stroke:currentColor;stroke-width:2}
+.theme-studio .bs-ov .row code{font:700 25px JB;color:#fff;background:rgba(255,255,255,.1);padding:2px 10px;border-radius:6px}
+.theme-studio .bs-ov .row b{color:var(--rc);font-weight:800}
+.theme-studio .bs-ov .row.r{--rc:var(--rose)} .theme-studio .bs-ov .row.r .ic,.theme-studio .bs-ov .row.r b{color:var(--rose)}
+.theme-studio .bs-ov .row.b{--rc:var(--blue)} .theme-studio .bs-ov .row.b .ic,.theme-studio .bs-ov .row.b b{color:var(--blue)}
+.theme-studio .bs-ov .row.g{--rc:var(--green)} .theme-studio .bs-ov .row.g .ic,.theme-studio .bs-ov .row.g b{color:var(--green)}
+.theme-studio .bs-ov .row.a{--rc:var(--amber)} .theme-studio .bs-ov .row.a .ic,.theme-studio .bs-ov .row.a b{color:var(--amber)}
+#stage.theme-studio.transparent .slide.ovs .bs-ov{display:block}
+#stage.theme-studio.transparent .slide.ovs > :not(.bs-ov){visibility:hidden}
 
-/* ---------- pointer ---------- */
-.st-cur{position:absolute;left:0;top:0;width:30px;height:30px;z-index:50;pointer-events:none;opacity:0;filter:drop-shadow(0 3px 5px rgba(0,0,0,.35))}
-.st-cur svg{width:30px;height:30px;overflow:visible}
-.st-rip{position:absolute;width:52px;height:52px;margin:-26px 0 0 -26px;border-radius:50%;border:3px solid rgba(91,157,255,.9);background:rgba(91,157,255,.18);z-index:49;pointer-events:none;opacity:0}
+/* illustration type and the characters inside it (DiceBear line art, never inverted: a light sticker outline) */
+.theme-studio .bs-svg .lb{font:700 18px JB;letter-spacing:.16em}
+.theme-studio .bs-svg .sg{font:800 22px ID;letter-spacing:.22em;fill:#FFE2D8}
+.theme-studio .bs-svg .mn{font:800 20px JB;letter-spacing:.2em;fill:#BEE3FF}
+.theme-studio .bs-svg .cs{font:800 19px JB;letter-spacing:.12em;fill:#E9EEF8}
+.theme-studio .bs-svg .av{filter:drop-shadow(2px 0 0 #E9EEF8) drop-shadow(-2px 0 0 #E9EEF8) drop-shadow(0 2px 0 #E9EEF8) drop-shadow(0 -2px 0 #E9EEF8)}
+.theme-studio .bs-svg g.lit,.theme-studio .bs-svg image.lit{filter:drop-shadow(0 0 18px var(--lc,#FFD27A)) brightness(1.3)}
+.theme-studio .bs-svg image.lit{filter:drop-shadow(2px 0 0 #E9EEF8) drop-shadow(-2px 0 0 #E9EEF8) drop-shadow(0 2px 0 #E9EEF8) drop-shadow(0 -2px 0 #E9EEF8) drop-shadow(0 0 14px var(--lc,#FFD27A))}
 
-/* ---------- wires, signals, cards, chips ---------- */
-.st-wires{position:absolute;left:0;top:0;width:1920px;height:1080px;overflow:visible;pointer-events:none;z-index:20}
-.st-wires path{fill:none;stroke-width:4;stroke-linecap:round}
-.st-wires .w{stroke:#5B9DFF;filter:drop-shadow(0 0 6px rgba(91,157,255,.6))}
-.st-wires .w.ok{stroke:#3DDC84;filter:drop-shadow(0 0 6px rgba(61,220,132,.6))}
-.st-wires .w.dead{stroke:#6B7280;stroke-dasharray:10 10;filter:none}
-.st-wires .w.react{stroke:#61DAFB;filter:drop-shadow(0 0 6px rgba(97,218,251,.6))}
-.st-wires .ah{fill:#5B9DFF;stroke:none;filter:drop-shadow(0 0 6px rgba(91,157,255,.6))}
-.st-wires .ah.ok{fill:#3DDC84;filter:drop-shadow(0 0 6px rgba(61,220,132,.6))}.st-wires .ah.react{fill:#61DAFB}.st-wires .ah.dead{fill:#6B7280;filter:none}
-.st-wires circle{fill:#FFFFFF;filter:drop-shadow(0 0 10px #5B9DFF) drop-shadow(0 0 4px #5B9DFF)}
-.st-sig{position:absolute;display:flex;align-items:center;gap:12px;padding:12px 18px;border-radius:14px;background:rgba(16,24,42,.92);border:1.5px solid rgba(91,157,255,.55);box-shadow:0 14px 40px rgba(0,0,0,.45),0 0 calc(var(--g,0) * 30px) rgba(91,157,255,calc(var(--g,0) * .8));opacity:0;z-index:21}
-.st-sig .ic{width:30px;height:30px;border-radius:8px;background:linear-gradient(135deg,#7DB4F0,#2C4F7C);display:flex;align-items:center;justify-content:center;font:800 17px JB;color:#fff}
-.st-sig .nm{font:700 22px JB;color:#F5F7FB}
-.st-sig .vl{font:500 20px JB;color:#CE9178;min-width:20px}
-.st-sig.memo{border-color:rgba(61,220,132,.6)}.st-sig.memo .ic{background:linear-gradient(135deg,#3DDC84,#1E7A4C)}
-.st-sig.eff{border-color:rgba(255,181,71,.6)}.st-sig.eff .ic{background:linear-gradient(135deg,#FFB547,#B86E00)}
-.st-sig.react{border-color:rgba(97,218,251,.6)}.st-sig.react .ic{background:linear-gradient(135deg,#61DAFB,#087EA4);color:#0A0F1C}
-.st-sig.frozen{border-color:rgba(148,160,180,.6);filter:grayscale(1)}
-.st-card{position:absolute;padding:22px 26px;border-radius:18px;background:rgba(14,20,36,.9);border:1px solid rgba(255,255,255,.12);box-shadow:0 24px 60px rgba(0,0,0,.5);color:var(--tx);opacity:0;backdrop-filter:blur(6px);box-sizing:border-box}
-.st-card h3{margin:0 0 10px;font:800 30px/1.15 ID;letter-spacing:-.01em}
-.st-card p{margin:0;font:500 22px/1.4 Inter;color:var(--tx2)}
-.st-card code,.st-chip code,.st-tag code{font-family:JB;font-weight:400}
-.st-chip{position:absolute;display:inline-flex;align-items:center;gap:10px;padding:10px 18px;border-radius:999px;background:rgba(14,20,36,.9);border:1.5px solid rgba(255,255,255,.18);font:700 22px Inter;color:var(--tx);white-space:nowrap;opacity:0;box-shadow:0 10px 30px rgba(0,0,0,.4)}
-.st-chip img{width:26px;height:26px}
-.st-chip.b{border-color:rgba(91,157,255,.7)}.st-chip.g{border-color:rgba(61,220,132,.7)}.st-chip.r{border-color:rgba(255,107,129,.75)}.st-chip.a{border-color:rgba(255,181,71,.75)}
-.st-chip .ok{color:#3DDC84}.st-chip .no{color:#FF6B81}
-.st-tag{position:absolute;padding:8px 14px;border-radius:10px;font:700 20px Inter;white-space:nowrap;opacity:0;color:#0A0F1C;background:#5B9DFF;box-shadow:0 8px 24px rgba(0,0,0,.35)}
-.st-tag.g{background:#3DDC84}.st-tag.r{background:#FF6B81}.st-tag.a{background:#FFB547}.st-tag.n{background:#E5E9F0}
-.st-logo{position:absolute;opacity:0;filter:drop-shadow(0 18px 40px rgba(0,0,0,.45))}
-.st-logo img{width:100%;height:100%;display:block}
-.st-big{position:absolute;font:900 120px/1 ID;letter-spacing:-.03em;color:var(--tx);opacity:0;white-space:nowrap}
-.st-big.r{color:#FF6B81}.st-big.g{color:#3DDC84}.st-big.b{color:#5B9DFF}
-.st-x{position:absolute;width:76px;height:76px;border-radius:50%;background:#FF6B81;display:flex;align-items:center;justify-content:center;opacity:0;box-shadow:0 0 30px rgba(255,107,129,.6);z-index:30}
-.st-x svg{width:40px;height:40px;fill:none;stroke:#fff;stroke-width:6;stroke-linecap:round}
-.st-x.ok{background:#3DDC84;box-shadow:0 0 30px rgba(61,220,132,.6)}
-.st-lock{position:absolute;opacity:0;z-index:30;filter:drop-shadow(0 10px 24px rgba(0,0,0,.5))}
-.st-lock svg{width:100%;height:100%;fill:#1B2333;stroke:#FFB547;stroke-width:1.6}
-.st-scan{position:absolute;height:4px;background:linear-gradient(90deg,transparent,#FFB547,transparent);opacity:0;z-index:25;box-shadow:0 0 16px #FFB547}
-.st-tracker{position:absolute;display:flex;gap:8px;align-items:center;padding:10px 14px;border-radius:14px;background:rgba(14,20,36,.88);border:1px solid rgba(255,255,255,.14);opacity:0}
-.st-tracker i{width:34px;height:34px;border-radius:9px;display:flex;align-items:center;justify-content:center;font:800 17px JB;font-style:normal;color:var(--tx3);background:rgba(255,255,255,.06)}
-.st-tracker i.done{color:#0A0F1C;background:#5B9DFF}
-.st-tracker i.now{color:#0A0F1C;background:#FFFFFF;box-shadow:0 0 0 2px #5B9DFF,0 0 18px rgba(91,157,255,.7)}
-.st-tracker b{font:700 16px Inter;letter-spacing:.14em;text-transform:uppercase;color:var(--tx2);margin-right:6px}
-.st-flow{position:absolute;display:flex;align-items:center;gap:14px}
-.st-node{padding:16px 20px;border-radius:14px;background:rgba(14,20,36,.92);border:1.5px solid rgba(255,255,255,.16);font:700 22px Inter;color:var(--tx);white-space:nowrap;opacity:0;box-shadow:0 12px 30px rgba(0,0,0,.4)}
-.st-node.react{border-color:rgba(97,218,251,.6)}.st-node.solid{border-color:rgba(125,180,240,.75)}
-.st-node.hot{background:rgba(97,218,251,.16)}
-.st-node code{font-family:JB;font-weight:400;color:#9CDCFE}
-.st-ar{width:40px;height:4px;border-radius:2px;background:rgba(255,255,255,.45);position:relative;transform-origin:0 50%;opacity:0}
-.st-ar::after{content:'';position:absolute;right:-2px;top:50%;width:12px;height:12px;border-top:4px solid rgba(255,255,255,.6);border-right:4px solid rgba(255,255,255,.6);transform:translateY(-50%) rotate(45deg)}
-.st-lane{position:absolute;padding:20px 26px;border-radius:20px;background:rgba(10,15,28,.6);border:1px solid rgba(255,255,255,.1);opacity:0}
-.st-lane h4{margin:0 0 16px;display:flex;align-items:center;gap:12px;font:800 28px ID;color:var(--tx)}
-.st-lane h4 img{width:36px;height:36px}
-.st-num{font:900 52px/1 ID;color:var(--tx)}
-.st-bar{position:absolute;height:64px;border-radius:12px;transform-origin:0 50%;display:flex;align-items:center;padding:0 18px;box-sizing:border-box;font:800 28px ID;color:#0A0F1C;white-space:nowrap}
-/* a desktop mini app (big table / live dashboard / editor) for "where it matters" */
-.st-mini{position:absolute;background:#FFFFFF;border-radius:12px;overflow:hidden;opacity:0;box-shadow:0 24px 60px rgba(0,0,0,.5)}
-.st-mini .mh{height:34px;background:#F3F4F6;display:flex;align-items:center;gap:10px;padding:0 12px;font:600 14px Inter;color:#374151;border-bottom:1px solid #E5E7EB}
-.st-mini .cells{display:grid;gap:1px;background:#E5E7EB;padding:1px}
-.st-mini .cells i{background:#FFFFFF;height:var(--ch,26px);font:500 17px JB;font-style:normal;color:#374151;display:flex;align-items:center;justify-content:flex-end;padding-right:8px}
-.st-mini .cells i.f{background:rgba(79,136,198,.35)}
-.st-fade{opacity:0}
+/* parts that appear on a word (RESTO/HALL o.hide): hidden until a lit entry gives them `shown` */
+.theme-studio .bs-svg .hp{opacity:0} .theme-studio .bs-svg .hp.shown{opacity:1}
+.theme-studio .bs-svg g.hp.shown,.theme-studio .bs-svg image.hp.shown{filter:drop-shadow(2px 0 0 #E9EEF8) drop-shadow(-2px 0 0 #E9EEF8) drop-shadow(0 2px 0 #E9EEF8) drop-shadow(0 -2px 0 #E9EEF8)}
 
-/* ---------- face windows (transparent capture only, npm run dual) ---------- */
-#stage.transparent.canvas-horizontal .slide.ovs::before{content:'';position:absolute;left:0;top:0;width:820px;height:1080px;z-index:0;
-  background:linear-gradient(90deg,rgba(10,15,28,.94),rgba(10,15,28,.86) 72%,rgba(10,15,28,0))}
-#stage.transparent.canvas-horizontal .slide.ovs .eyebrow{left:60px!important;top:70px!important;translate:none!important;width:auto!important;text-align:left!important}
-#stage.transparent.canvas-horizontal .slide.ovs .h1{left:60px!important;top:122px!important;width:600px!important;text-align:left!important;font-size:58px!important;line-height:1.08}
-#stage.transparent.canvas-horizontal .slide.ovs .k-cam{transform:none!important}
-#stage.transparent.canvas-horizontal .slide.ovs .k-cam *:not([data-o]):not([data-o] *){visibility:hidden}
-#stage.transparent.canvas-horizontal .slide.ovs [data-o]{visibility:visible;left:var(--ox)!important;top:var(--oy)!important;scale:var(--os,1);transform-origin:0 0}
-#stage.transparent.canvas-horizontal .slide.ovs [data-o][style*="--ow"]{width:var(--ow)!important}
-#stage.transparent.canvas-horizontal .slide.ovs .fx-emoji{display:none}
-#stage.transparent.canvas-horizontal .slide.split .h1{width:max-content!important;max-width:none!important;translate:-50% 0;text-align:center}
-#stage.transparent.canvas-horizontal .slide.split .eyebrow{width:max-content!important;translate:-50% 0}
-#stage.transparent.canvas-horizontal .slide.split .k-cam{transform:none!important}
-#stage.transparent.canvas-horizontal .slide.split .st-cur,#stage.transparent.canvas-horizontal .slide.split .st-rip{display:none}
-.k-gr{position:absolute;z-index:-1;pointer-events:none;display:none}
-.theme-studio .k-gr{background:radial-gradient(70% 60% at 20% 20%,rgba(79,136,198,.42),transparent 70%),radial-gradient(60% 60% at 90% 85%,rgba(97,218,251,.18),transparent 70%),linear-gradient(160deg,#0B1222,#0A0F1C)}
+/* the ground: grain, faint routes with creeping arrows, the story's objects watermarked and drifting (installGround) */
+.theme-studio .bs-ground{position:absolute;inset:0;pointer-events:none}
+.theme-studio .bs-ground .grain{position:absolute;inset:0;opacity:.35;mix-blend-mode:screen;
+  background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='f'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' seed='5'/><feColorMatrix values='0 0 0 0 .55  0 0 0 0 .6  0 0 0 0 .75  0 0 0 .08 0'/></filter><rect width='300' height='300' filter='url(%23f)'/></svg>")}
+.theme-studio .bs-ground .rt{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.theme-studio .bs-ground .rt path.rp{fill:none;stroke:#9FB0D6;stroke-width:2.5;stroke-dasharray:12 12;opacity:.07}
+.theme-studio .bs-ground .rt path.ah{fill:#9FB0D6;stroke:none;opacity:.16}
+.theme-studio .bs-ground .wm{position:absolute;fill:none;stroke:#B9C6E4;stroke-width:1.1;stroke-linecap:round;stroke-linejoin:round;opacity:.05}
 
-/* ---------- a terminal (macOS Terminal, dark) ---------- */
-.st-term{background:#1E1E1E;display:flex;flex-direction:column}
-.st-term .tt{height:34px;flex:none;background:#2D2D2D;display:flex;align-items:center;gap:14px;padding:0 14px;font:500 14px Inter;color:#B5B5B5;border-bottom:1px solid #111}
-.st-term .tt > span:last-child{position:absolute;left:50%;translate:-50% 0}
-.st-term .tb{padding:18px 24px;font:400 26px/1.6 JB;color:#E6E6E6;white-space:pre}
-.st-term .pr{color:#5FD7FF}.st-term .cm{color:#87D787}.st-term .ok{color:#3DDC84}.st-term .nx{color:#FFB547}
+/* split (version B side by side): the slide shrinks into the right two thirds on its own plate; dual-render lays the face
+   crop on the left third. The plate's left edge lands on x 640 after the scale. Opaque captures (version A) ignore this.
+   Review 6 (the editor read as see-through while split and full crossfaded): a split window's ramp is a wipe, not a
+   dissolve. bistro.js eases --spk 1 -> .8 and --spx 0 -> 320px over the ramp, so the plate grows over the face from the
+   left edge (x 0) to x 640 or shrinks back; the plate and its ground are placed so their left edge is always at 2 x spx. */
+#stage.theme-studio.transparent.canvas-horizontal .slide.split{scale:var(--spk,.8);translate:var(--spx,320px) 0;transform-origin:50% 50%}
+#stage.theme-studio.transparent.canvas-horizontal .slide.split .fx-emoji{display:none}
+#stage.theme-studio.transparent.canvas-horizontal .slide.split::before{content:"";position:absolute;left:calc(960px - (960px - var(--spx,320px)) / var(--spk,.8));top:-400px;width:2600px;height:1900px;z-index:-2;
+  background:radial-gradient(55% 40% at 30% 0%,rgba(77,120,255,.14),transparent 70%),radial-gradient(60% 45% at 60% 110%,rgba(255,170,90,.12),transparent 70%),#090D18;
+  box-shadow:-6px 0 0 var(--rose),-40px 0 80px rgba(0,0,0,.55)}
 
-/* ---------- follow-along aids (preview review 1: "explain the code better so users can follow along") ---------- */
-/* a VS Code hover widget pointing at the token it explains */
-.st-note{position:absolute;max-width:520px;background:#252526;border:1px solid #454545;border-radius:6px;box-shadow:0 10px 30px rgba(0,0,0,.55);opacity:0;z-index:40;font-family:Inter,sans-serif}
-.st-note .nt{padding:8px 12px;border-bottom:1px solid #3C3C3C;font:400 18px JB;color:#9CDCFE;white-space:pre}
-.st-note .nb{padding:10px 12px;font:500 19px/1.4 Inter;color:#CCCCCC}
-.st-note .nb b{color:#FFFFFF}.st-note .nb code{font-family:JB;color:#DCDCAA}
-.st-note::before{content:'';position:absolute;width:14px;height:14px;background:#252526;border:1px solid #454545;transform:rotate(45deg)}
-.st-note.up::before{left:22px;top:-8px;border-right:none;border-bottom:none}
-.st-note.down::before{left:22px;bottom:-8px;border-left:none;border-top:none}
-.st-note.left::before{left:-8px;top:18px;border-right:none;border-top:none}
-/* diff gutter: React lines red with −, Solid lines green with + (VS Code's diff editor) */
-.st-pane.diff-del .ln{background:rgba(255,80,80,.10)}.st-pane.diff-add .ln{background:rgba(60,200,120,.05)}
-.st-pane.diff-del .ln .g::after{content:'−';color:#FF6B81;margin-left:10px}.st-pane.diff-add .ln .g::after{content:'+';color:#3DDC84;margin-left:10px}
-.st-pane.diff-del .ln .g,.st-pane.diff-add .ln .g{width:64px}
-/* the conversion tracker */
-.st-steps{position:absolute;display:flex;align-items:center;gap:6px;padding:9px 14px;border-radius:14px;background:rgba(14,20,36,.9);border:1px solid rgba(255,255,255,.14);opacity:0;z-index:30}
-.st-steps b{font:700 16px Inter;letter-spacing:.12em;text-transform:uppercase;color:#C4CCDA;margin-right:6px}
-.st-steps i{width:34px;height:34px;padding:6px;box-sizing:border-box;border-radius:9px;display:flex;align-items:center;justify-content:center;font:800 17px JB;font-style:normal;color:#94A0B4;background:rgba(255,255,255,.06)}
-.st-steps i.done{color:#0A0F1C;background:#3DDC84}.st-steps i.now{color:#0A0F1C;background:#FFFFFF;box-shadow:0 0 0 2px #5B9DFF,0 0 16px rgba(91,157,255,.7)}
-.st-steps span{margin-left:8px;font:700 18px JB;color:#F5F7FB}
-/* the veiled second app in the hook */
-.st-veil{position:absolute;inset:0;background:rgba(10,15,28,.55);backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px);display:flex;align-items:center;justify-content:center;z-index:5}
-.st-veil b{font:900 220px/1 ID;color:#F5F7FB;text-shadow:0 0 60px rgba(91,157,255,.8)}
+/* section tracker (cafe .cf-sec): dots for each part, the current one named and lit in its colour, done ones filled */
+#stage.theme-studio .cf-sec{left:56px;top:40px;gap:8px;padding:9px 16px;border-radius:999px;background:rgba(18,24,41,.88);border:1px solid var(--bd2);font:700 19px Inter;color:var(--tx)}
+#stage.theme-studio .cf-sec span{gap:8px} #stage.theme-studio .cf-sec i{width:10px;height:10px;background:rgba(255,255,255,.22)}
+#stage.theme-studio .cf-sec span:nth-child(1){--sc:var(--amber)} #stage.theme-studio .cf-sec span:nth-child(2){--sc:var(--rose)}
+#stage.theme-studio .cf-sec span:nth-child(3){--sc:var(--blue)} #stage.theme-studio .cf-sec span:nth-child(4){--sc:var(--green)} #stage.theme-studio .cf-sec span:nth-child(5){--sc:var(--violet)}
+#stage.theme-studio .cf-sec span.done i{background:var(--sc);opacity:.55}
+#stage.theme-studio .cf-sec span.on i{background:var(--sc);box-shadow:0 0 10px var(--sc)} #stage.theme-studio .cf-sec span.on{color:var(--sc)}
+/* a new part opens: a soft band of light in the slide's colour crosses the frame once */
+.theme-studio .bs-sweep{position:absolute;left:0;top:0;width:60%;height:100%;z-index:40;pointer-events:none;opacity:0;
+  background:linear-gradient(90deg,transparent,color-mix(in srgb,var(--acc,var(--rose)) 10%,transparent) 35%,color-mix(in srgb,var(--acc,var(--rose)) 22%,transparent) 50%,color-mix(in srgb,var(--acc,var(--rose)) 10%,transparent) 65%,transparent)}
+#stage.theme-studio.transparent .slide.ovs .bs-sweep{display:none}
 
-/* ---------- 9:16 face windows (the social cuts, projects/react-to-solid/kit.js ovCard) ----------
-   In a vertical transparent capture the scene hides and one compact solid card shows, low on the frame between the
-   speaker's chin and the captions (the bun/fastapi standard: eyebrow + headline, nothing else). */
-.rs-ov{display:none}
-#stage.transparent.canvas-vertical .slide.ovc > :not(.rs-ov){visibility:hidden}
-#stage.transparent.canvas-vertical .slide.ovc .rs-ov{display:flex}
-.rs-ov{position:absolute;left:60px;top:1250px;width:880px;box-sizing:border-box;flex-direction:column;gap:10px;padding:28px 34px;
-  border-radius:18px;opacity:0;background:rgba(10,15,28,.96);border:1px solid rgba(91,157,255,.32);box-shadow:0 18px 50px rgba(0,0,0,.45)}
-.rs-ov .eb{font:700 28px JB;letter-spacing:.14em;text-transform:uppercase;color:var(--blue)}
-.rs-ov b{font:800 62px/1.08 ID;letter-spacing:-.03em;color:var(--tx)}
-.rs-ov b em{font-style:normal;color:var(--blue)}
-#stage.canvas-vertical .st-vsc .mm{display:none}   /* 9:16: the minimap would hold width the code needs */
-/* a flow drawn top to bottom on 9:16 (VX in a slide): the arrows turn to point down */
-.st-flow.vcol{flex-direction:column;align-items:flex-start;gap:12px}
-.st-flow.vcol .st-ar{rotate:90deg;margin:0 0 30px 30px}
-#stage.canvas-vertical .st-node{font-size:28px}
-#stage.canvas-vertical .st-pane.vwrap .t{white-space:pre-wrap;overflow-wrap:anywhere}   /* data.v.wrap: long code lines wrap in the phone column */
-#stage.canvas-vertical .st-vsc .ln .t,#stage.canvas-vertical .st-pane .ln .t{white-space:pre-wrap;overflow-wrap:anywhere}   /* 9:16: every editor is the column wide, long lines wrap */
-#stage.canvas-vertical .vfitw,#stage.canvas-vertical .vfitw *{white-space:normal!important;flex-wrap:wrap}   /* 9:16: a piece lifted to 28 px wraps inside the column */
+.theme-studio .bs-ov .sbw{position:relative;width:518px;height:66px;margin-top:26px}
+.theme-studio .bs-ov .sbw .sub-cta{position:absolute;opacity:1}
+
+/* the split plate's own ground (the stage ground is off in overlay captures): only inside a split capture, under the slide.
+   Both the plate (-2) and its ground (-1) sit below the slide's content: at z 0 the ground came after the content and
+   was painted over it, its routes and marks showing through an empty editor (review 7, "the background still shows inside
+   the code editor"). The slide is a stacking context (scale), so negative z stays inside it. */
+.theme-studio .bs-sg{display:none}
+#stage.theme-studio.transparent.canvas-horizontal .slide.split .bs-sg{display:block;position:absolute;left:calc(960px - (960px - var(--spx,320px)) / var(--spk,.8));
+  top:calc(540px - 540px / var(--spk,.8));width:calc(1920px / var(--spk,.8));height:calc(1080px / var(--spk,.8));z-index:-1}
+
+/* in a split the tracker sits inside the panel (the slide's left edge lands under the face at the .8 scale) */
+#stage.theme-studio.transparent.canvas-horizontal .slide.split .cf-sec{left:calc(56px + 164px * var(--spq,1))}
+
+/* ---------- 9:16 (the social cuts, projects/reverse-proxy-lb-gateway/social) ---------- */
+/* the tracker sat at y 40, under the apps' top bar: phones cover the top 220px */
+#stage.theme-studio.canvas-vertical .cf-sec{display:none}
+/* over the face on a phone: the heading high over the wall, the points low over the shirt (ending above the captions at
+   1560), the face between them left clear; the shade darkens only the two bands the text sits in */
+.theme-studio.canvas-vertical .bs-ov .shade{background:linear-gradient(180deg,rgba(6,9,18,.88) 0%,rgba(6,9,18,.6) 26%,rgba(6,9,18,0) 31%,rgba(6,9,18,0) 64%,rgba(6,9,18,.7) 69%,rgba(6,9,18,.92) 100%)}
+.theme-studio.canvas-vertical .bs-ov .col{left:70px;top:236px;bottom:380px;width:870px;gap:16px}
+.theme-studio.canvas-vertical .bs-ov .eb{font-size:28px}
+.theme-studio.canvas-vertical .bs-ov .hd{font-size:72px}
+.theme-studio.canvas-vertical .bs-ov .rows{margin-top:auto;gap:18px}
+.theme-studio.canvas-vertical .bs-ov .row{max-width:870px;font-size:38px;gap:22px}
+.theme-studio.canvas-vertical .bs-ov .row img,.theme-studio.canvas-vertical .bs-ov .row .ic{width:68px;height:68px}
+.theme-studio.canvas-vertical .bs-ov .row .ic svg{width:36px!important;height:36px!important}
+/* phone type: the column scales by ~1.0-1.1 (vfit), so every small line starts at 30px and reads at 28px+ (probe SMALL) */
+.theme-studio.canvas-vertical .cf-card small,.theme-studio.canvas-vertical .cf-chip,.theme-studio.canvas-vertical .cf-txt.lbl,
+.theme-studio.canvas-vertical .cf-who .nm,.theme-studio.canvas-vertical .cf-logo b{font-size:30px}
+.theme-studio.canvas-vertical .cf-card b{font-size:36px}
+
+
+
+/* ======================= studio: the desk's palette and pieces ======================= */
+#stage.theme-studio{
+  --bg0:#141518; --bg1:#1C1D21; --bg2:#25272C; --bd:#34373D; --bd2:#474B52;
+  --tx:#EEE9DE; --tx2:#BDB6A8; --tx3:#948E82;
+  --lamp:#F2A33A; --led:#7BD88F; --hot:#FF5F56;
+  --rose:#FF6B6B; --violet:#B39DFF; --blue:#5CB8FF; --teal:#2DD4BF; --green:#7BD88F; --amber:#F2A33A; --orange:#FF8A3D;
+  --glass:linear-gradient(180deg,#26282D,#1B1C20);
+  background:#141518;
+}
+#stage.theme-studio.transparent{background:transparent}   /* theme trap 1 */
+#stage.theme-studio.transparent .bgfx{display:none}
+#stage.theme-studio .caps{width:max-content}                /* theme trap 2 */
+.theme-studio .bgfx .grid{background:repeating-linear-gradient(90deg,rgba(255,255,255,.016) 0 2px,transparent 2px 6px);opacity:1;-webkit-mask:none;mask:none}
+.theme-studio .bgfx .glow.a{background:radial-gradient(60% 45% at 50% 0%,rgba(242,163,58,.10),transparent 70%)}
+.theme-studio .bgfx .glow.b{background:radial-gradient(55% 40% at 50% 115%,rgba(92,184,255,.07),transparent 70%)}
+.theme-studio .bgfx .vig{background:radial-gradient(120% 100% at 50% 40%,transparent 50%,rgba(0,0,0,.65))}
+.theme-studio .eyebrow{color:var(--acc,var(--lamp))}
+#stage.theme-studio .eyebrow::before{border-radius:3px;background:var(--hot);box-shadow:0 0 12px var(--hot)}   /* the desk's red "on air" lamp */
+#stage.theme-studio .h1 em{color:var(--acc,var(--lamp))}
+.theme-studio .cf-card{border-radius:12px;border:1px solid var(--bd);box-shadow:0 22px 50px rgba(0,0,0,.5),inset 0 1px 0 rgba(255,255,255,.07),inset 0 4px 0 var(--cbar,rgba(255,255,255,.1))}
+.theme-studio .cf-chip{background:#1E2024;border:1px solid var(--bd2)}
+.theme-studio .cf-chip.fill-a{background:var(--lamp);border-color:var(--lamp);color:#1A1205}
+.theme-studio .cf-edge.v{stroke:var(--violet);filter:drop-shadow(0 0 8px rgba(179,157,255,.6))}
+.theme-studio .bs-arw.v{--pc:var(--violet)}
+.theme-studio .cf-stamp.v{color:var(--violet);border-color:var(--violet)}
+.theme-studio .bs-ov .row.v{--rc:var(--violet)} .theme-studio .bs-ov .row.v .ic,.theme-studio .bs-ov .row.v b{color:var(--violet)}
+.theme-studio .bs-ov .eb{color:var(--acc,var(--lamp))} .theme-studio .bs-ov .hd em{color:var(--acc,var(--lamp))}
+#stage.theme-studio.transparent.canvas-horizontal .slide.split::before{background:radial-gradient(55% 40% at 30% 0%,rgba(242,163,58,.08),transparent 70%),#141518;box-shadow:-6px 0 0 var(--lamp),-40px 0 80px rgba(0,0,0,.55)}
+
+/* the ground: rack ears with screws down both edges, a column of knobs that turn slowly and LED ladders that breathe */
+.theme-studio .bs-ground .wm{stroke:#D9CDB4}
+.theme-studio .bs-ground .st-g{position:absolute;inset:0}
+.theme-studio .bs-ground .ear{position:absolute;top:0;bottom:0;width:46px;background:linear-gradient(90deg,#1A1B1F,#212328 50%,#1A1B1F);opacity:.85;box-shadow:inset -1px 0 0 rgba(255,255,255,.05)}
+.theme-studio .bs-ground .ear.l{left:0} .theme-studio .bs-ground .ear.r{right:0;box-shadow:inset 1px 0 0 rgba(255,255,255,.05)}
+.theme-studio .bs-ground .ear i{position:absolute;left:15px;width:16px;height:16px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#5a5d63,#232428 70%);box-shadow:inset 0 0 0 1px #111}
+.theme-studio .bs-ground .ear i::after{content:"";position:absolute;left:3px;right:3px;top:7px;height:2px;background:#151618}
+.theme-studio .bs-ground .gk{position:absolute;width:var(--s);height:var(--s);border-radius:50%;opacity:.13;
+  background:radial-gradient(circle at 40% 35%,#6a6d73,#1e2024 70%)}
+.theme-studio .bs-ground .gk b{position:absolute;left:calc(50% - 2px);top:8%;width:4px;height:34%;border-radius:2px;background:var(--lamp);transform-origin:2px calc(var(--s) * .42)}
+.theme-studio .bs-ground .gl{position:absolute;display:flex;flex-direction:column-reverse;gap:4px;opacity:.16}
+.theme-studio .bs-ground .gl i{width:20px;height:7px;border-radius:2px;background:#3a3c40}
+.theme-studio .bs-ground .gl i.on{background:var(--led)} .theme-studio .bs-ground .gl i.on.w{background:var(--lamp)} .theme-studio .bs-ground .gl i.on.r{background:var(--hot)}
+
+/* ---------- a panel: brushed metal, four screws, a silk-screened label ---------- */
+.theme-studio .st-panel{position:absolute;inset:0;border-radius:16px;background:linear-gradient(180deg,#26282D,#1A1B1F);border:1px solid #34373D;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.08),0 26px 60px rgba(0,0,0,.5)}
+.theme-studio .st-panel::before{content:"";position:absolute;inset:0;border-radius:16px;background:repeating-linear-gradient(90deg,rgba(255,255,255,.018) 0 2px,transparent 2px 5px)}
+.theme-studio .st-panel .sc{position:absolute;width:12px;height:12px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#5a5d63,#232428 70%)}
+.theme-studio .st-panel .lb{position:absolute;left:24px;top:14px;font:700 17px JB;letter-spacing:.22em;text-transform:uppercase;color:var(--tx3)}
+
+/* ---------- knobs ---------- */
+.theme-studio .st-knobs{position:relative;width:100%;height:100%}
+.theme-studio .st-knob{position:absolute;display:flex;flex-direction:column;align-items:center;gap:10px}
+.theme-studio .st-knob .kn{position:relative;width:var(--ks);height:var(--ks);border-radius:50%;
+  background:radial-gradient(circle at 40% 35%,#5a5d63,#202226 70%);box-shadow:0 6px 14px rgba(0,0,0,.6),inset 0 1px 1px rgba(255,255,255,.22)}
+.theme-studio .st-knob .kn::before{content:"";position:absolute;inset:-9px;border-radius:50%;
+  background:conic-gradient(from 225deg,rgba(255,255,255,.18) 0 270deg,transparent 270deg);-webkit-mask:radial-gradient(circle,transparent 62%,#000 63%,#000 66%,transparent 67%);mask:radial-gradient(circle,transparent 62%,#000 63%,#000 66%,transparent 67%)}
+.theme-studio .st-knob .pt{position:absolute;inset:0}
+.theme-studio .st-knob .pt::after{content:"";position:absolute;left:calc(50% - 3px);top:9%;width:6px;height:32%;border-radius:3px;background:var(--lamp);box-shadow:0 0 10px rgba(242,163,58,.6)}
+.theme-studio .st-knob .v{font:600 22px JB;color:var(--lamp);min-width:4ch;text-align:center}
+.theme-studio .st-knob .v.n{color:var(--tx2)}
+.theme-studio .st-knob.tuned .pt::after{background:var(--led);box-shadow:0 0 10px rgba(123,216,143,.6)}
+.theme-studio .st-knob.tuned .v{color:var(--led)}
+.theme-studio .st-knobs.sm .v{font-size:18px}
+
+/* ---------- LED meters ---------- */
+.theme-studio .st-vu{position:relative;display:flex;flex-direction:column;align-items:center;gap:12px;height:100%}
+.theme-studio .st-vu .lad{flex:1;display:flex;flex-direction:column-reverse;gap:5px;width:46px}
+.theme-studio .st-vu .lad i{flex:1;border-radius:3px;background:#34363b}
+.theme-studio .st-vu .lad i.on{background:var(--led);box-shadow:0 0 8px rgba(123,216,143,.45)}
+.theme-studio .st-vu .lad i.on.w{background:var(--lamp);box-shadow:0 0 8px rgba(242,163,58,.45)}
+.theme-studio .st-vu .lad i.on.r{background:var(--hot);box-shadow:0 0 8px rgba(255,95,86,.5)}
+.theme-studio .st-vu b{font:600 24px JB;color:var(--tx)} .theme-studio .st-vu s{text-decoration:none;font:700 22px JB;color:var(--lamp)}
+
+/* ---------- probability bars ---------- */
+.theme-studio .st-probs{display:flex;flex-direction:column;gap:18px;width:100%;height:100%;justify-content:center}
+.theme-studio .st-probs .pr{display:grid;grid-template-columns:var(--lw,220px) 1fr 140px;align-items:center;gap:22px}
+.theme-studio .st-probs .l{font:500 32px JB;color:var(--tx);text-align:right;white-space:pre}
+.theme-studio .st-probs .tr{display:block;height:46px;border-radius:8px;background:#212328;box-shadow:inset 0 0 0 1px #34373D;overflow:hidden}
+.theme-studio .st-probs .f{display:block;height:100%;width:100%;transform-origin:0 50%;border-radius:8px;background:#6E7380}
+.theme-studio .st-probs .pr.hot .f{background:linear-gradient(90deg,#3f9e5a,var(--led));box-shadow:0 0 18px rgba(123,216,143,.4)}
+.theme-studio .st-probs .pr.hot .l{color:var(--led)}
+.theme-studio .st-probs .pr.y .f{background:#C9A227}
+.theme-studio .st-probs .v{font:700 30px JB;color:var(--tx)} .theme-studio .st-probs .pr.hot .v{color:var(--led)}
+
+/* ---------- a waveform: static noise that smooths into music ---------- */
+.theme-studio .st-wave{position:relative;width:100%;height:100%;border-radius:12px;background:#0E0F11;box-shadow:inset 0 0 0 1px #2c2e33}
+.theme-studio .st-wave svg{position:absolute;inset:0;width:100%;height:100%}
+.theme-studio .st-wave path{fill:none;stroke:var(--hot);stroke-width:3;stroke-linejoin:round}
+.theme-studio .st-wave.clean path{stroke:var(--led)}
+.theme-studio .st-wave .mid{stroke:#2c2e33;stroke-width:1.5}
+
+/* ---------- the network: layers of nodes, a small knob on every line ---------- */
+.theme-studio .st-net{position:relative;width:100%;height:100%}
+.theme-studio .st-net svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.theme-studio .st-net .e{stroke:#4a4e56;stroke-width:2.5}
+.theme-studio .st-net .n{fill:#2A2C31;stroke:#8C877C;stroke-width:3}
+.theme-studio .st-net .n.in{stroke:var(--blue)} .theme-studio .st-net .n.out{stroke:var(--led)}
+.theme-studio .st-net .kb{fill:#3a3d43;stroke:#111;stroke-width:1}
+.theme-studio .st-net .kp{stroke:var(--lamp);stroke-width:2.5;stroke-linecap:round}
+.theme-studio .st-net .bk{fill:none;stroke:var(--hot);stroke-width:5;stroke-linecap:round;filter:drop-shadow(0 0 6px rgba(255,95,86,.6))}
+.theme-studio .st-net .bh{fill:var(--hot)}
+.theme-studio .st-net .fw{fill:none;stroke:var(--blue);stroke-width:5;stroke-linecap:round;filter:drop-shadow(0 0 6px rgba(92,184,255,.6))}
+.theme-studio .st-net .lt{font:600 20px JB;fill:var(--tx3);letter-spacing:.12em}
+
+/* ---------- the road map ---------- */
+.theme-studio .st-road{position:relative;width:100%;height:100%;display:flex;align-items:center;justify-content:space-between}
+.theme-studio .st-road .sta{position:relative;width:var(--sw,180px);height:var(--sh,150px);border-radius:14px;background:var(--glass);border:1.5px solid var(--bd);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;gap:10px;color:var(--tx3);box-shadow:0 18px 40px rgba(0,0,0,.45)}
+.theme-studio .st-road .sta .num{position:absolute;left:16px;top:12px;font:700 17px JB;color:var(--tx3)}
+.theme-studio .st-road .sta svg{width:46px;height:46px;stroke:currentColor;fill:none;stroke-width:1.9;stroke-linecap:round;stroke-linejoin:round}
+.theme-studio .st-road .sta b{font:800 24px ID;text-align:center;line-height:1.1;color:var(--tx2)}
+.theme-studio .st-road .sta .q{font:800 54px ID;color:#5b5f68}
+.theme-studio .st-road .sta.done{color:var(--led);border-color:rgba(123,216,143,.45)} .theme-studio .st-road .sta.done b{color:var(--tx)}
+.theme-studio .st-road .sta.on{color:var(--lamp);border-color:var(--lamp);box-shadow:0 0 0 3px rgba(242,163,58,.25),0 0 40px rgba(242,163,58,.3),0 18px 40px rgba(0,0,0,.45)}
+.theme-studio .st-road .sta.on b{color:#fff}
+.theme-studio .st-road .sta .led{position:absolute;right:12px;top:12px;width:10px;height:10px;border-radius:50%;background:#3a3c40}
+.theme-studio .st-road .sta.on .led{background:var(--lamp);box-shadow:0 0 10px var(--lamp)} .theme-studio .st-road .sta.done .led{background:var(--led);box-shadow:0 0 8px var(--led)}
+.theme-studio .st-road .ar{flex:1;height:4px;margin:0 6px;background:#3a3d43;position:relative}
+.theme-studio .st-road .ar::after{content:"";position:absolute;right:-2px;top:-7px;border:9px solid transparent;border-left:12px solid #3a3d43;border-right:0}
+.theme-studio .st-road .ar.lit{background:var(--led)} .theme-studio .st-road .ar.lit::after{border-left-color:var(--led)}
+
+/* ---------- tokens (tokenizer colours, on the dark desk) ---------- */
+.theme-studio .st-toks{display:flex;flex-wrap:wrap;gap:14px 10px;align-items:flex-start;justify-content:center}
+.theme-studio .st-tok{display:flex;flex-direction:column;align-items:center;gap:8px}
+.theme-studio .st-tok .t{font:500 var(--tfs,40px) JB;padding:6px 12px;border-radius:10px;color:#141518;white-space:pre}
+.theme-studio .st-tok .i{font:700 24px JB;color:var(--tx2)}
+.theme-studio .st-tok.c1 .t{background:#9FD0FF} .theme-studio .st-tok.c2 .t{background:#FFC58F} .theme-studio .st-tok.c3 .t{background:#A9E6A0}
+.theme-studio .st-tok.c4 .t{background:#E8B5F0} .theme-studio .st-tok.c5 .t{background:#FFE48A} .theme-studio .st-tok.c6 .t{background:#9FE8DD}
+.theme-studio .st-tok.cq .t{background:#2a2c31;color:var(--lamp);box-shadow:inset 0 0 0 2px var(--lamp)}
+.theme-studio .st-tok.dim{opacity:.4}
+
+/* ---------- attention: arcs from one word back to the earlier ones ---------- */
+.theme-studio .st-att{position:relative;width:100%;height:100%}
+.theme-studio .st-att .ws{position:absolute;left:0;right:0;bottom:30px;display:flex;justify-content:center;gap:18px}
+.theme-studio .st-att .w{font:600 36px Inter;color:var(--tx2);padding:6px 12px;border-radius:10px}
+.theme-studio .st-att .w.she{color:#141518;background:var(--violet)} .theme-studio .st-att .w.sarah{color:var(--tx);box-shadow:inset 0 0 0 2px var(--violet)}
+.theme-studio .st-att .w.fut{color:#4e525a}
+.theme-studio .st-att svg{position:absolute;inset:0;width:100%;height:100%;overflow:visible}
+.theme-studio .st-att path{fill:none;stroke:var(--violet);stroke-linecap:round}
+
+/* ---------- the causal mask ---------- */
+.theme-studio .st-mask{display:grid;gap:6px}
+.theme-studio .st-mask .h{font:600 22px JB;color:var(--tx2);display:flex;align-items:center;justify-content:center}
+.theme-studio .st-mask .h.col{writing-mode:vertical-rl;transform:rotate(180deg);justify-content:flex-start;align-items:center;padding-bottom:8px}
+.theme-studio .st-mask .h.r{justify-content:flex-end;padding-right:10px}
+.theme-studio .st-mask .c{border-radius:6px;background:#2A2C31;box-shadow:inset 0 0 0 1px #34373D}
+.theme-studio .st-mask .c.ok.on{background:var(--violet);box-shadow:0 0 12px rgba(179,157,255,.45)}
+.theme-studio .st-mask .c.no{background:repeating-linear-gradient(45deg,#1b1c20 0 8px,#222428 8px 16px);display:flex;align-items:center;justify-content:center}
+.theme-studio .st-mask .c.no svg{width:22px;height:22px;stroke:#5b5f68;fill:none;stroke-width:2}
+
+/* big numbers, formulas, labels */
+.theme-studio .cf-txt.big{font:800 120px ID;color:var(--tx);letter-spacing:-.03em;white-space:nowrap}
+.theme-studio .cf-txt.big.a{color:var(--lamp)} .theme-studio .cf-txt.big.g{color:var(--led)} .theme-studio .cf-txt.big.r{color:var(--hot)}
+.theme-studio .cf-txt.mono{font:600 34px JB;color:var(--tx);white-space:nowrap}
+.theme-studio .cf-txt.lbl{font:700 20px JB;letter-spacing:.18em;text-transform:uppercase;color:var(--tx3);white-space:nowrap}
+.theme-studio .cf-txt.fx{font:500 40px JB;color:var(--tx);white-space:nowrap;background:#0E0F11;border:1px solid #34373D;border-radius:12px;padding:22px 30px}
+.theme-studio .cf-txt.fx .a{color:var(--lamp)} .theme-studio .cf-txt.fx .g{color:var(--led)} .theme-studio .cf-txt.fx .r{color:var(--hot)} .theme-studio .cf-txt.fx .b{color:var(--blue)} .theme-studio .cf-txt.fx .v{color:var(--violet)}
+.theme-studio .cf-txt.fx.lit{box-shadow:0 0 0 2px var(--lamp),0 0 30px rgba(242,163,58,.25)}
+/* the analogy tag: taught solid once, then quiet on every scene that uses it (house rule) */
+.theme-studio .cf-txt.atag{font:600 16px JB;letter-spacing:.14em;text-transform:uppercase;color:var(--tx3);border:1.5px dashed var(--bd2);border-radius:8px;padding:6px 12px;white-space:nowrap}
+.theme-studio .cf-txt.atag.solid{color:#1A1205;background:var(--lamp);border:0;font-size:20px;padding:8px 16px}
+
+/* a compact knob strip inside an over-the-face row (studio.js ST_OVK) */
+.theme-studio .st-ovk{display:flex;gap:14px;margin-top:6px}
+.theme-studio .st-ovk .k{display:flex;flex-direction:column;align-items:center;gap:6px}
+.theme-studio .st-ovk .kn{position:relative;display:block;width:52px;height:52px;border-radius:50%;background:radial-gradient(circle at 40% 35%,#5a5d63,#202226 70%);box-shadow:0 4px 10px rgba(0,0,0,.6)}
+.theme-studio .st-ovk .pt{position:absolute;inset:0}
+.theme-studio .st-ovk .pt::after{content:"";position:absolute;left:calc(50% - 2.5px);top:8%;width:5px;height:34%;border-radius:3px;background:var(--lamp)}
+.theme-studio .st-ovk em{font:600 18px JB;font-style:normal;color:var(--lamp)}
+
+/* the rebuilt tokenizer's header strip (tiktokenizer: title, model picker, token count) */
+.theme-studio .st-tkbar{display:flex;align-items:center;gap:30px;height:96px;padding:0 30px;border-radius:14px;background:var(--glass);border:1px solid var(--bd)}
+.theme-studio .st-tkbar .nm{font:800 40px ID;color:var(--tx)}
+.theme-studio .st-tkbar .md{font:600 24px JB;color:var(--tx);padding:10px 18px;border-radius:10px;border:1px solid var(--bd2);background:#141518}
+.theme-studio .st-tkbar .ct{margin-left:auto;font:600 24px Inter;color:var(--tx2)} .theme-studio .st-tkbar .ct b{font:800 40px JB;color:var(--lamp);margin-left:12px}
+
+/* a chat reply (the assistant's bubble): wraps inside its box */
+.theme-studio .st-reply{display:flex;gap:18px;align-items:flex-start;padding:24px 28px;border-radius:20px 20px 20px 6px;background:#24262B;border:1px solid var(--bd2);box-shadow:0 20px 50px rgba(0,0,0,.45)}
+.theme-studio .st-reply .av{flex:none;width:52px;height:52px;border-radius:50%;background:var(--lamp);display:grid;place-items:center}
+.theme-studio .st-reply .av svg{width:30px;height:30px;stroke:#1A1205;fill:none;stroke-width:2}
+.theme-studio .st-reply p{margin:0;font:500 28px/1.4 Inter;color:var(--tx)} .theme-studio .st-reply p b{color:var(--lamp)}
+.theme-studio .st-reply.user{border-radius:20px 20px 6px 20px;background:#2E3440} .theme-studio .st-reply.user .av{background:var(--blue)}
+.theme-studio .st-net .bk{opacity:.85}
+.theme-studio .st-road .sta .nm{display:flex;flex-direction:column;align-items:center;gap:10px}   /* icon above the label (builder D) */
+
+/* the progress tracker, top right through the video (studio.js trkHtml): seven stages, the current one named and lit */
+.theme-studio .st-trk{position:absolute;right:64px;top:34px;display:flex;align-items:center;gap:8px;z-index:20;padding:8px 14px;border-radius:12px;background:rgba(20,21,24,.82);border:1px solid var(--bd)}
+.theme-studio .st-trk span{display:flex;align-items:center;gap:8px}
+.theme-studio .st-trk i{width:12px;height:12px;border-radius:50%;background:#3a3c40}
+.theme-studio .st-trk span.done i{background:var(--led);box-shadow:0 0 8px rgba(123,216,143,.5)}
+.theme-studio .st-trk span.on i{background:var(--lamp);box-shadow:0 0 10px var(--lamp)}
+.theme-studio .st-trk b{display:none;font:700 18px Inter;color:var(--tx);white-space:nowrap}
+.theme-studio .st-trk span.on b{display:inline}
+.theme-studio .st-trk span.q i{background:transparent;box-shadow:inset 0 0 0 2px #4a4e56}
+.theme-studio .slide.ovs .st-trk,#stage.transparent .slide .st-trk{display:none}

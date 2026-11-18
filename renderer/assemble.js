@@ -18,6 +18,7 @@ const { assembleMp4, bitrateCeiling } = require('./video');
 const { loadTimeline, validateTimeline } = require('./timeline');
 const { findVo } = require('./transcribe');
 const { buildCaptions, srt } = require('./captions');
+const { clearPreviews } = require('./previews');
 const TL = require('../core/timeline');
 
 /* o.transparent = capture on alpha; o.capsOnly = alpha capture of the caption band alone (dual-render's reveal layer) */
@@ -46,7 +47,10 @@ async function captureTimeline(cfg, L, o) {
       for (let k = a; k < b; k++) {
         const f = todo[k];
         await page.evaluate(T => window.setTime(T), f / cfg.fps);
-        await stage.screenshot({ path: path.join(o.dir, String(f).padStart(5, '0') + '.png'), omitBackground: !!o.transparent, optimizeForSpeed: true });
+        /* captureBeyondViewport false: an element screenshot defaults to true, which makes Chrome re-lay out the page for every
+           capture. The stage is the viewport, so nothing beyond it is ever needed. (The 4K drop-outs on undo-git-mistakes s12
+           were not this but the ground's glow layers, core/styles/base.css.) */
+        await stage.screenshot({ path: path.join(o.dir, String(f).padStart(5, '0') + '.png'), omitBackground: !!o.transparent, optimizeForSpeed: true, captureBeyondViewport: false });
         done[f] = 1; tick();
         if (count % 300 === 0) save();   // a long 4K capture that gets interrupted continues with --resume instead of starting over
       }
@@ -122,12 +126,8 @@ async function main() {
   if (!args.keepFrames) fs.rmSync(dir, { recursive: true, force: true });
   const bytes = fs.statSync(out).size;
   if (bytes > cfg.maxSize) console.warn(`  ! ${(bytes / 1e9).toFixed(2)} GB is over the ${(cfg.maxSize / 1e9).toFixed(2)} GB budget (raise --max-size or --crf)`);
-  /* the user (2026-11-04): "once you're done with the main render, delete the preview". A full master (not a
-     --from/--to stretch) replaces its draft and the draft's .srt */
-  if (!args.preview && args.from == null && args.to == null) for (const ext of ['.mp4', '.srt']) {
-    const p = path.join(cfg.previewDir, cfg.outName + '-preview' + ext);
-    if (fs.existsSync(p)) { fs.rmSync(p); console.log(`  removed preview ${path.relative(cfg.root, p)}`); }
-  }
+  /* a full master (not a --from/--to stretch) clears every preview of the project (renderer/previews.js) */
+  if (!args.preview && args.from == null && args.to == null) clearPreviews(cfg);
   console.log(`done → ${path.relative(cfg.root, out)}  ${(bytes / 1e6).toFixed(0)} MB  (capture ${capT.toFixed(0)}s, total ${((Date.now() - t0) / 1000).toFixed(0)}s${vo && fs.existsSync(vo) ? ', voiceover ' + path.basename(vo) : ', no voiceover'}${beds.length ? ', ' + beds.length + ' bed(s)' : ''})`);
 }
 if (require.main === module) main().catch(e => { console.error(e.message || e); process.exit(1); });

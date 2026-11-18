@@ -27,6 +27,8 @@
                 minDeck (seconds, default 2.5: a deck stretch between two face windows is never shorter; the face shot
                 before it ends earlier, so no slide flickers between face shots; window edges on an edit cut, never dissolve),
                 facePush (default 0.06: each face shot eases in by this fraction over its length; 0 holds it still),
+                faceZoom (optional, < 1: a wider crop shown as a band zoom x the frame's height over a blurred copy, so the
+                shot shows more than the head) + faceY (the band's top, px on the 1080 stage; default centred),
                 openFace (seconds, default 10: the opening face shot hands over to the full deck on the slide boundary
                 nearest this; 0 keeps the whole window),
                 stack (optional: a STACKED cut, for a deck whose slides have no 9:16 layout. No deck is built: `source`
@@ -163,7 +165,7 @@ function paneClip(file, pieces, f, fps, out) {
   parts.push(pieces.map((_, j) => `[c${j}]`).join('') + `concat=n=${pieces.length}:v=1:a=0[v]`);
   ffmpeg([...ins, '-filter_complex', parts.join(';'), '-map', '[v]', '-c:v', 'libx264', '-preset', 'fast', '-crf', '12', '-pix_fmt', 'yuv420p', ...COLOR, out]);
 }
-function buildSource(deck, source, r, faceWins, out, fps, screen, mute, audio, overs, facePush, faceSrc) {
+function buildSource(deck, source, r, faceWins, out, fps, screen, mute, audio, overs, facePush, faceSrc, frame) {
   const inputs = ['-i', deck], parts = [`[0:v]fps=${fps},setpts=PTS-STARTPTS,scale=${W}:${H},setsar=1[dv]`], m = r.laid.length;
   const nIn = () => inputs.filter(x => x === '-i').length;
   r.laid.forEach((s, j) => {
@@ -246,9 +248,23 @@ function buildSource(deck, source, r, faceWins, out, fps, screen, mute, audio, o
       const len = b - a, d = Math.min(0.25, len / 2).toFixed(3), fin = a > 0.05 && !edge(a), fout = !edge(b);
       /* cuts.json facePush (default 0.06): the shot eases in by that much over its length (a slow push keeps a long
          talking-head stretch moving; ai-can-clone-apps: "add any other improvements"), centred on the crop */
-      const push = facePush > 0 ? `scale=w='${W}*(1+${facePush}*t/${len.toFixed(3)})':h=-2:eval=frame:flags=bicubic,crop=${W}:${H},` : '';
-      parts.push(`[s${k}]trim=start=${a}:end=${b},setpts=PTS-STARTPTS,crop=${cw}:ih:${SC.faceCropPx(x, S.w, cw)}:0,scale=${W}:${H}:flags=lanczos,${push}setsar=1,`
-        + `format=yuva420p,${fin ? `fade=t=in:st=0:d=${d}:alpha=1,` : ''}${fout ? `fade=t=out:st=${(len - d).toFixed(3)}:d=${d}:alpha=1,` : ''}setpts=PTS+${a}/TB[f${k}]`);   // a cut that opens on the face shows it from frame 0
+      const fades = `format=yuva420p,${fin ? `fade=t=in:st=0:d=${d}:alpha=1,` : ''}${fout ? `fade=t=out:st=${(len - d).toFixed(3)}:d=${d}:alpha=1,` : ''}setpts=PTS+${a}/TB[f${k}]`;   // a cut that opens on the face shows it from frame 0
+      const zoom = frame && frame.zoom > 0 && frame.zoom < 1 ? frame.zoom : 1;
+      if (zoom === 1) {
+        const push = facePush > 0 ? `scale=w='${W}*(1+${facePush}*t/${len.toFixed(3)})':h=-2:eval=frame:flags=bicubic,crop=${W}:${H},` : '';
+        parts.push(`[s${k}]trim=start=${a}:end=${b},setpts=PTS-STARTPTS,crop=${cw}:ih:${SC.faceCropPx(x, S.w, cw)}:0,scale=${W}:${H}:flags=lanczos,${push}setsar=1,` + fades);
+      } else {
+        /* cuts.json faceZoom (< 1; undo-git-mistakes best-of: "zoom the video out so it shows more than my head"): a crop
+           1/zoom wider shown as a band zoom x the frame's height at faceY (px on the 1080 stage), over a blurred, darkened
+           copy of the 9:16 crop that fills the frame above and below it; the room left over carries the over slides' heading
+           and rows clear of the face */
+        const cwz = Math.min(S.w, even(cw / zoom)), bh = even(H * zoom), by = Math.round((frame.y != null ? frame.y : (H - bh) / 2 * 1080 / W) * W / 1080);
+        const push = facePush > 0 ? `scale=w='${W}*(1+${facePush}*t/${len.toFixed(3)})':h=-2:eval=frame:flags=bicubic,crop=${W}:${bh},` : '';
+        parts.push(`[s${k}]trim=start=${a}:end=${b},setpts=PTS-STARTPTS,split[z${k}a][z${k}b]`,
+          `[z${k}a]crop=${cwz}:ih:${SC.faceCropPx(x, S.w, cwz)}:0,scale=${W}:${bh}:flags=lanczos,${push}setsar=1[z${k}f]`,
+          `[z${k}b]crop=${cw}:ih:${SC.faceCropPx(x, S.w, cw)}:0,scale=${even(W / 8)}:${even(H / 8)},boxblur=8:2,scale=${W}:${H}:flags=bicubic,eq=brightness=-0.22:saturation=0.75,setsar=1[z${k}g]`,
+          `[z${k}g][z${k}f]overlay=0:${by},` + fades);
+      }
       parts.push(`[${k ? `o${k - 1}` : base}][f${k}]overlay=eof_action=pass:enable='between(t,${a},${b})'${k === n - 1 ? '[vb]' : `[o${k}]`}`);
     });
   }
@@ -454,11 +470,12 @@ async function render(dir, cutName, o) {
     // 2. the talking head and the voice over it
     src = path.join(work, `source${tag}.mp4`);
     const facePush = spec.facePush != null ? spec.facePush : 0.06;
-    const stamp = JSON.stringify({ faceSrc: spec.faceSource || null, vo: r.vo, laid: r.laid, faceWins, screenWins, dryWins, muteWins, source, audio, overs, deck: fs.statSync(deckFile).mtimeMs, fps, srcCrf, facePush });
+    const frame = { zoom: spec.faceZoom, y: spec.faceY };
+    const stamp = JSON.stringify({ faceSrc: spec.faceSource || null, vo: r.vo, laid: r.laid, faceWins, screenWins, dryWins, muteWins, source, audio, overs, deck: fs.statSync(deckFile).mtimeMs, fps, srcCrf, facePush, frame });
     const stampFile = path.join(work, `.source${tag}.json`);
     if (o.force || !fs.existsSync(src) || !fs.existsSync(stampFile) || fs.readFileSync(stampFile, 'utf8') !== stamp) {
       console.log(`source ${cut.name}: ${r.vo.length} span(s), ${faceWins.length} face window(s), ${screenWins.length} screen window(s), ${fmt(r.length)}`);
-      buildSource(deckFile, source, r, faceWins, src, fps, screen, muteWins, audio, overs, facePush, spec.faceSource ? path.resolve(dir, spec.faceSource) : null);
+      buildSource(deckFile, source, r, faceWins, src, fps, screen, muteWins, audio, overs, facePush, spec.faceSource ? path.resolve(dir, spec.faceSource) : null, frame);
       fs.writeFileSync(stampFile, stamp);
     }
   }

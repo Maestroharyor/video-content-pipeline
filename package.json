@@ -26,7 +26,7 @@
     "thumb-check": "node scripts/thumb-check.js",
     "render:all": "node renderer/cli.js --slide all --format all",
     "assemble": "node renderer/assemble.js",
-    "test": "node --test test/timeline.test.js test/dual.test.js test/pipeline.test.js test/projects.test.js test/assemble.test.js test/social.test.js test/socialcut.test.js test/deliver.test.js test/thumb.test.js",
+    "test": "node --test test/timeline.test.js test/dual.test.js test/pipeline.test.js test/projects.test.js test/assemble.test.js test/social.test.js test/socialcut.test.js test/deliver.test.js test/thumb.test.js test/roughcut.test.js test/pauses.test.js test/previews.test.js",
     "setup": "node scripts/setup.js",
     "doctor": "node scripts/setup.js --check",
     "dual": "node scripts/dual-render.js",
@@ -40,7 +40,8 @@
     "social-cut": "node scripts/social-cut.js",
     "deliver": "node scripts/deliver.js",
     "pauses": "node scripts/pauses.js",
-    "check-code": "node scripts/check-code.js"
+    "check-code": "node scripts/check-code.js",
+    "rough-cut": "node scripts/rough-cut.js"
   },
   "devDependencies": {
     "puppeteer": "^25.11.0",

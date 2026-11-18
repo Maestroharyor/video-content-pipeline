@@ -45,9 +45,11 @@ function beats(c) {
   return { on, c, M, at, p, group, mark };
 }
 /* eyebrow + headline. B: a beats() resolver (or the old numeric t). Beat mode: eyebrow 0–.35s, headline wipe .10–.90s;
-   an `em` beat draws the accent underline on its word instead of with the headline. */
+   an `em` beat draws the accent underline on its word instead of with the headline. o.pre: already up from the first frame
+   (a slide cut onto the same heading as the one before it, so the cut changes nothing on screen). */
 function headIn(B, p, o) {
   o = o || {};
+  if (o.pre) { up(p + 'eb', 1); h1In(p + 'h1', 1); const h = el(p + 'h1'); if (h) h.style.setProperty('--ul', '1'); return; }
   if (typeof B === 'number' || !B.on) { const t = typeof B === 'number' ? B : B.c.t, a = o.a || ENTER.head; up(p + 'eb', seg(t, a, a + .12)); h1In(p + 'h1', seg(t, a + .03, a + .24)); }
   else { const c = B.c; up(p + 'eb', seg(c.local, 0, .35)); h1In(p + 'h1', seg(c.local, .10, .90)); }
   const emb = typeof B !== 'number' && B.M && B.M.em;

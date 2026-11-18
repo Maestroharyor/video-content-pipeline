@@ -16,8 +16,9 @@ const RDL = { fs: 28, lh: 28 * 1.42, cw: 28 * .6, tabs: 58, gut: 74, padR: 20, m
 
 /* ---------- syntax colouring (Dart, TSX, CSS): escape first, then wrap tokens in spans ---------- */
 const RL_KW = { dart: 'class|extends|const|super|final|required|this|void|static|true|false|null', tsx: 'const|function|let|true|false', css: '',
-  js: 'const|function|let|new|this|true|false|null', prisma: 'model|enum|datasource|generator' };
-const RL_CTL = { dart: 'import|return|if|else', tsx: 'import|from|export|return|default|if|else', css: '', js: 'import|from|export|return|await|if|else', prisma: '' };
+  js: 'const|function|let|new|this|true|false|null', prisma: 'model|enum|datasource|generator',
+  ts: 'const|function|let|new|this|true|false|null|interface|type|async|string|number|boolean|void|readonly' };
+const RL_CTL = { dart: 'import|return|if|else', tsx: 'import|from|export|return|default|if|else', css: '', js: 'import|from|export|return|await|if|else', prisma: '', ts: 'import|from|export|return|await|if|else|throw' };
 function rlEsc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;'); }
 /* VS Code Dark+ colouring: storage keywords blue, control flow and imports purple, types and components teal,
    functions yellow, properties / attributes / named keys light blue, strings orange, numbers green */

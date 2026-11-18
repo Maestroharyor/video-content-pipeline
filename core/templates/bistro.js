@@ -22,12 +22,15 @@
      chrome {url, title?, html (the page), fav?}
      aws    {spec (awsConsole), s?}
    split: true   inside a split reveal the slide sits in the right two thirds beside the face (dual-render's split window)
-   over: {rows?: [{html, icon?, logo?, b?, cls?}], eyebrow?, h1?}   inside an `over` reveal the slide's own content hides
+   over: {rows?: [{html, icon?, logo?, b?, cls?}], eyebrow?, h1?, term?}   inside an `over` reveal the slide's own content hides
      and the left of the frame darkens under a gradient; the heading sits top-left and every row is its own line with
-     its own entrance (projects/backend-one-click's overlay; never a card on the face). */
+     its own entrance (projects/backend-one-click's overlay; never a card on the face).
+     over.term = a term item's {lines, type? | blocks?, cps?, prompt?, h?}: a small Terminal under the rows that types on the
+     same beats as the deck's (undo-git review 2: the key clicks played over the face with nothing typing on screen). */
 (function () {
   const esc = s => String(s).replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  const PROMPT = 'josh@MacBook-Pro ~ % ';   // a neutral made-up user (house rule: no real names on screen)
+  // a neutral made-up user (house rule: no real names on screen); PROJECT.prompt overrides it per video
+  const PROMPT = (window.PROJECT && PROJECT.prompt) || 'josh@MacBook-Pro ~ % ';
 
   /* ---------- syntax colouring, VS Code Dark+ ---------- */
   function hlConf(line, caddy) {
@@ -58,16 +61,52 @@
     return esc(line).replace(/(^|\s)(-{1,2}[\w-]+)/g, '$1<span class="k">$2</span>').replace(/(https?:\/\/[^\s<]+)/g, '<span class="s">$1</span>')
       .replace(/^(\w[\w-]*)/, '<span class="fn">$1</span>');
   }
+  /* SQL in VS Code Dark+ colours (postgres-for-everything: .sql files fell back to the JS tokenizer): keywords blue,
+     strings orange, numbers green, -- comments green, function calls yellow, $1 parameters light blue */
+  const SQLK = /^(select|from|where|and|or|not|in|is|null|order|by|group|having|limit|offset|insert|into|values|update|set|delete|create|table|index|on|using|as|begin|commit|rollback|for|skip|locked|nowait|join|left|right|inner|outer|desc|asc|distinct|case|when|then|else|end|with|returning|unlogged|materialized|view|refresh|partition|of|range|primary|key|references|default|listen|notify|explain|analyze|extension|if|exists|true|false|text|jsonb|json|int|integer|bigint|numeric|date|timestamptz|vector|serial)$/i;
+  function hlSql(line) {
+    const out = []; let i = 0;
+    const push = (cls, t) => out.push(cls ? `<span class="${cls}">${esc(t)}</span>` : esc(t));
+    while (i < line.length) {
+      const r = line.slice(i); let m;
+      if ((m = /^--.*/.exec(r))) { push('c', m[0]); i += m[0].length; continue; }
+      if ((m = /^\$\$[\s\S]*?(\$\$|$)/.exec(r))) { push('s', m[0]); i += m[0].length; continue; }
+      if ((m = /^'(?:[^']|'')*'?/.exec(r))) { push('s', m[0]); i += m[0].length; continue; }
+      if ((m = /^\$\d+/.exec(r))) { push('v', m[0]); i += m[0].length; continue; }
+      if ((m = /^\d+(\.\d+)?/.exec(r))) { push('n', m[0]); i += m[0].length; continue; }
+      if ((m = /^[A-Za-z_][\w.]*/.exec(r))) {
+        const w = m[0], call = /^\s*\(/.test(line.slice(i + w.length));
+        push(SQLK.test(w) ? 'k' : call ? 'fn' : '', w); i += w.length; continue;
+      }
+      push('', r[0]); i++;
+    }
+    return out.join('');
+  }
   function hl(line, lang) {
+    if (lang === 'sql') return hlSql(line);
     if (lang === 'nginx') return hlConf(line, false);
     if (lang === 'caddy') return hlConf(line, true);
     if (lang === 'sh') return hlSh(line);
-    return typeof rlHl === 'function' ? rlHl(line, 'js') : esc(line);
+    return typeof rlHl === 'function' ? rlHl(line, lang === 'ts' ? 'ts' : 'js') : esc(line);
   }
-  const LANG = { js: 'JavaScript', nginx: 'Nginx', caddy: 'Caddyfile', sh: 'Shell Script' };
-  const FI = { js: ['#F7DF1E', 'JS'], nginx: ['#3CB44A', 'N'], caddy: ['#1F88C0', 'C'], sh: ['#89E051', '$'], json: ['#CBCB41', '{}'], md: ['#519ABA', 'M'] };
-  const ext = f => /\.js$/.test(f) ? 'js' : /\.conf$/.test(f) ? 'nginx' : /Caddyfile/.test(f) ? 'caddy' : /\.json$/.test(f) ? 'json' : /\.md$/.test(f) ? 'md' : /\.sh$/.test(f) ? 'sh' : '';
-  const ficon = f => { const e = FI[ext(f)] || ['#8A8A8A', '≡']; return `<i class="fi" style="color:${e[0]}">${e[1]}</i>`; };
+  const LANG = { sql: 'SQL', js: 'JavaScript', ts: 'TypeScript', nginx: 'Nginx', caddy: 'Caddyfile', sh: 'Shell Script' };
+  const FI = { js: ['#F7DF1E', 'JS'], ts: ['#3178C6', 'TS'], nginx: ['#3CB44A', 'N'], caddy: ['#1F88C0', 'C'], sh: ['#89E051', '$'], json: ['#CBCB41', '{}'], md: ['#519ABA', 'M'] };
+  const ext = f => /\.js$/.test(f) ? 'js' : /\.ts$/.test(f) ? 'ts' : /\.conf$/.test(f) ? 'nginx' : /Caddyfile/.test(f) ? 'caddy' : /\.json$/.test(f) ? 'json' : /\.md$/.test(f) ? 'md' : /\.sh$/.test(f) ? 'sh' : /\.css$/.test(f) ? 'css' : /\.sql$/.test(f) ? 'sql' : '';
+  /* file icons from Material Icon Theme (material-extensions/vscode-material-icon-theme @ced21b9, MIT; assets/SOURCES.md),
+     the icon pack most VS Code setups show (undo-git review 5: "CSS icon is wrong … use material icons for ts, css, md
+     etc everywhere"). Inline, so a frame never waits on an image load. A type without one keeps the letter glyph (FI). */
+  const MI = {
+    ts: '<svg viewBox="0 0 16 16"><path fill="#0288d1" d="M2 2v12h12V2zm4 6h3v1H8v4H7V9H6zm5 0h2v1h-2v1h1a1.003 1.003 0 0 1 1 1v1a1.003 1.003 0 0 1-1 1h-2v-1h2v-1h-1a1.003 1.003 0 0 1-1-1V9a1.003 1.003 0 0 1 1-1"/></svg>',
+    js: '<svg viewBox="0 0 16 16"><path fill="#ffca28" d="M2 2v12h12V2zm6 6h1v4a1.003 1.003 0 0 1-1 1H7a1.003 1.003 0 0 1-1-1v-1h1v1h1zm3 0h2v1h-2v1h1a1.003 1.003 0 0 1 1 1v1a1.003 1.003 0 0 1-1 1h-2v-1h2v-1h-1a1.003 1.003 0 0 1-1-1V9a1.003 1.003 0 0 1 1-1"/></svg>',
+    css: '<svg viewBox="0 0 32 32"><path fill="#7e57c2" d="M20 18h-2v-2h-2v2c0 .193 0 .703 1.254 1.033A3.345 3.345 0 0 1 20 22h2v2h2v-2c0-.388-.562-.851-1.254-1.034C20.356 20.34 20 18.84 20 18m-3.254 2.966C14.356 20.34 14 18.84 14 18h-2v-2h-2v8h2v-2h4v2h2v-2c0-.388-.562-.851-1.254-1.034"/><path fill="#7e57c2" d="M24 4H4v20a4 4 0 0 0 4 4h16.16A3.84 3.84 0 0 0 28 24.16V8a4 4 0 0 0-4-4m2 14h-2v-2h-2v2c0 .193 0 .703 1.254 1.033A3.345 3.345 0 0 1 26 22v2a2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2 2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2 2 2 0 0 1-2 2h-2a2 2 0 0 1-2-2v-8a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2 2 2 0 0 1 2-2h2a2 2 0 0 1 2 2 2 2 0 0 1 2-2h2a2 2 0 0 1 2 2Z"/></svg>',
+    md: '<svg viewBox="0 0 32 32"><path fill="#42a5f5" d="m14 10-4 3.5L6 10H4v12h4v-6l2 2 2-2v6h4V10zm12 6v-6h-4v6h-4l6 8 6-8z"/></svg>',
+    json: '<svg viewBox="0 -960 960 960"><path fill="#f9a825" d="M560-160v-80h120q17 0 28.5-11.5T720-280v-80q0-38 22-69t58-44v-14q-36-13-58-44t-22-69v-80q0-17-11.5-28.5T680-720H560v-80h120q50 0 85 35t35 85v80q0 17 11.5 28.5T840-560h40v160h-40q-17 0-28.5 11.5T800-360v80q0 50-35 85t-85 35zm-280 0q-50 0-85-35t-35-85v-80q0-17-11.5-28.5T120-400H80v-160h40q17 0 28.5-11.5T160-600v-80q0-50 35-85t85-35h120v80H280q-17 0-28.5 11.5T240-680v80q0 38-22 69t-58 44v14q36 13 58 44t22 69v80q0 17 11.5 28.5T280-240h120v80z"/></svg>',
+    sh: '<svg viewBox="0 0 16 16"><path fill="#ff7043" d="M2 2a1 1 0 0 0-1 1v10c0 .554.446 1 1 1h12c.554 0 1-.446 1-1V3a1 1 0 0 0-1-1zm0 3h12v8H2zm1 2 2 2-2 2 1 1 3-3-3-3zm5 3.5V12h5v-1.5z"/></svg>',
+    nginx: '<svg viewBox="0 0 32 32"><path fill="#43a047" d="M16 0 2 8v16l14 8 14-8V8Zm8 23a1 1 0 0 1-1 1h-2.52a1 1 0 0 1-.78-.375L12 14v9a1 1 0 0 1-1 1H9a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1h2.52a1 1 0 0 1 .78.375L20 18V9a1 1 0 0 1 1-1h2a1 1 0 0 1 1 1Z"/></svg>',
+  };
+  const ficon = f => { const m = MI[ext(f)]; if (m) return `<i class="fi mi">${m}</i>`; const e = FI[ext(f)] || ['#8A8A8A', '≡']; return `<i class="fi" style="color:${e[0]}">${e[1]}</i>`; };
+  MI.mjs = MI.cjs = MI.js;   // Material Icon Theme gives ES / CommonJS modules the same JS icon (sessions-vs-jwt review 4)
+  window.BS_FILE_ICON = f => MI[ext(f)] || null;   // gitgraph's file chips draw the same icon
   const AB = ['M3 4.5h7l2 2h9v13H3z', 'M10.5 4a6.5 6.5 0 1 1 0 13 6.5 6.5 0 0 1 0-13zM15.3 15.3 21 21', 'M6 3v12M6 15a3 3 0 1 0 0 6 3 3 0 0 0 0-6zM18 9a3 3 0 1 0 0-6 3 3 0 0 0 0 6zM18 9c0 5-12 3-12 6',
     'M7 4l12 8-12 8z', 'M4 4h7v7H4zM13 13h7v7h-7zM4 13h7v7H4zM15 3l5 5-5 5-5-5z'];
   const svg = d => `<svg viewBox="0 0 24 24"><path d="${d}"/></svg>`;
@@ -93,11 +132,11 @@
         <div class="ea"><div class="tabs"><span class="tab on">${ficon(it.file)}<span>${esc(it.file)}</span><i class="x">×</i></span></div>
           <div class="bc"><span>${esc(it.title || 'shop-app')}</span><b>›</b>${ficon(it.file)}<span>${esc(it.file)}</span></div>
           <div class="cd" id="${p}${it.id}-code">${rows}</div></div></div>
-      <div class="sb"><span class="rm">${svg('M8 7l-5 5 5 5M16 7l5 5-5 5')}</span><span>⎇ main</span><span>⊗ 0 ⚠ 0</span><span class="sp"></span><span>${it.ln || 'Ln ' + it.lines.length + ', Col 1'}</span><span>Spaces: ${lang === 'js' ? 2 : 4}</span><span>UTF-8</span><span>LF</span><span>${LANG[lang] || lang}</span></div></div>`;
+      <div class="sb"><span class="rm">${svg('M8 7l-5 5 5 5M16 7l5 5-5 5')}</span><span>⎇ main</span><span>⊗ 0 ⚠ 0</span><span class="sp"></span><span>${it.ln || 'Ln ' + it.lines.length + ', Col 1'}</span><span>Spaces: ${lang === 'js' || lang === 'ts' ? 2 : 4}</span><span>UTF-8</span><span>LF</span><span>${LANG[lang] || lang}</span></div></div>`;
   }
   function termHtml(p, it) {
     const rows = it.lines.map((ln, i) => /^\$ /.test(ln)
-      ? `<div class="ln cmd" id="${p}${it.id}-r${i + 1}"><span class="pr">${esc(PROMPT)}</span><span class="t">${hlSh(ln.slice(2))}</span></div>`
+      ? `<div class="ln cmd" id="${p}${it.id}-r${i + 1}"><span class="pr">${esc(it.prompt || PROMPT)}</span><span class="t">${hlSh(ln.slice(2))}</span></div>`
       : `<div class="ln" id="${p}${it.id}-r${i + 1}"><span class="t">${esc(ln) || '&nbsp;'}</span></div>`).join('');
     return `<div class="bs-term"><div class="tb"><span class="dots"><i></i><i></i><i></i></span><span class="tt">${esc(it.title || 'josh — -zsh — 120×30')}</span></div><div class="bd">${rows}</div></div>`;
   }
@@ -147,16 +186,21 @@
   }
   /* the overlay: a left-side darkening, the heading top-left, every row its own line */
   // the overlay's subscribe bar: one options object for its markup and its motion (the cursor's targets scale with k)
-  const SUB_OV = { x: 0, y: 0, k: .37, name: 'LifeTech Facts', handle: '@lifetechfacts' };
+  const SUB_OV = { x: 0, y: 0, k: .37, name: 'LifeTechFacts', handle: '@lifetechfacts' };
   function overHtml(p, d) {
     const o = d.over === true ? {} : d.over;
     const acc = ACCENT_VAR[o.acc || d.accent] ? `;--acc:var(${ACCENT_VAR[o.acc || d.accent]})` : '';
     const rows = (o.rows || []).map((r, i) => `<div class="row ${r.cls || ''}" id="${p}ovr${i + 1}">${r.logo ? `<img src="${logo(r.logo, true)}" alt="">` : r.img ? `<img src="${r.img}" alt="">` : r.icon ? `<span class="ic"><svg viewBox="0 0 24 24"><use href="#i-${r.icon}"/></svg></span>` : ''}<span>${r.html}</span>${r.side ? `<img class="sd" src="${r.side}" alt="">` : ''}</div>`).join('');
     // o.sub = {b}: the channel's subscribe bar (core/components/subscribe.js) under the rows, its clicks playing from that word
     const sub = o.sub ? `<div class="sbw">${SUB.html(p + 'ov', SUB_OV)}</div>` : '';
-    return `<div class="bs-ov" id="${p}ov" style="${acc}"><div class="shade"></div><div class="col"><span class="eb">${o.eyebrow || d.eyebrow}</span><b class="hd">${o.h1 || d.h1}</b><div class="rows">${rows}</div>${sub}</div></div>`;
+    const term = o.term ? `<div class="ovt" id="${p}ovtw" style="height:${o.term.h || 200}px">${termHtml(p, Object.assign({ id: 'ovt' }, o.term))}</div>` : '';
+    // o.win = {url, title, html, h, b}: a real browser window in the overlay column (sessions-vs-jwt review 3: the attacker's laptop), rising in on its word
+    const win = o.win ? `<div class="ovt ovw" id="${p}ovww" style="height:${o.win.h || 220}px">${chromeHtml(p, Object.assign({ id: 'ovw', page: o.win.html }, o.win))}</div>` : '';
+    return `<div class="bs-ov" id="${p}ov" style="${acc}"><div class="shade"></div><div class="col"><span class="eb">${o.eyebrow || d.eyebrow}</span><b class="hd">${o.h1 || d.h1}</b><div class="rows">${rows}</div>${term}${win}${sub}</div></div>`;
   }
-  const overBeats = d => (d.over && d.over !== true ? (d.over.rows || []).map(r => r.b).concat(d.over.sub ? [d.over.sub.b] : []) : []).filter(Boolean);
+  const overTerm = o => o.term ? Object.assign({ id: 'ovt', __term: true }, o.term) : null;
+  const overBeats = d => (d.over && d.over !== true ? (d.over.rows || []).map(r => r.b).concat(d.over.sub ? [d.over.sub.b] : [], d.over.win ? [d.over.win.b] : [],
+    d.over.term ? blocksOf(overTerm(d.over)).map(b => b.b) : []) : []).filter(Boolean);
   function blocksOf(it) {
     const n = it.lines.length, pre = it.pre || 0;
     if (it.blocks) return it.blocks;
@@ -171,10 +215,18 @@
        view had already scrolled back to the top, so keys sounded over code no one could see (review 7) */
     const blocks = blocksOf(it).map(bk => ({ s: B.at(bk.b, .1, .3, 'enter', { focal: false }).s, from: bk.from, to: bk.to,
       by: bk.by ? B.at(bk.by, .1, .3, 'enter', { focal: false }).s : null }));
+    /* a highlight that lights a row of a block is the explanation of that code, so the block's typing must be done before
+       it (sessions-vs-jwt review 1: "We didn't finish typing before the explanation already passed. Maybe we type faster"):
+       the earliest hl beat after the block starts that lights one of its rows (or a later one) is a deadline like `by`,
+       and the speed may climb to 160 chars/s to meet it */
+    const hlAt = (it.hl || []).map(h => ({ s: B.at(h.b, .1, .3, 'enter', { focal: false }).s, rows: [].concat(h.rows || h.row || []) }));
     blocks.forEach((bk, k) => {
-      const next = Math.min(blocks[k + 1] ? blocks[k + 1].s - .1 : exit, bk.by != null ? bk.by - .1 : Infinity);
-      let chars = 0; for (let i = bk.from; i <= bk.to; i++) chars += outLine(i) ? 0 : it.lines[i - 1].replace(/^\$ /, '').trim().length;
-      const cps = Math.min(90, Math.max(it.cps || 24, chars / Math.max(.3, next - bk.s - .3)));
+      const lit = hlAt.filter(h => h.s > bk.s + .2 && h.rows.some(r => r >= bk.from)).map(h => h.s - .15);
+      const next = Math.min(blocks[k + 1] ? blocks[k + 1].s - .1 : exit, bk.by != null ? bk.by - .1 : Infinity, ...lit);
+      let chars = 0, gaps = 0;
+      for (let i = bk.from; i <= bk.to; i++) { chars += outLine(i) ? 0 : it.lines[i - 1].replace(/^\$ /, '').trim().length; gaps += outLine(i) ? .35 : .06; }
+      // the per-line pauses below come out of the same budget, or a long block overruns its deadline by n x .06 s
+      const cps = Math.min(160, Math.max(it.cps || 24, chars / Math.max(.3, next - bk.s - .3 - gaps)));
       let t = bk.s;
       for (let i = bk.from; i <= bk.to; i++) {
         const L = outLine(i) ? 0 : it.lines[i - 1].replace(/^\$ /, '').trim().length, d = outLine(i) ? .05 : Math.max(.05, L / cps);
@@ -265,6 +317,7 @@
     return [b[0] - a[0], b[1] - a[1]];
   }
 
+  window.BS_groundFrame = groundFrame;   // slate's ON push draws the same moving ground on its sliding plate
   /* the ground (revision 3, "have elements moving and transparent like the backend video"): grain, faint dashed routes
      with arrows creeping along them, and the story's objects (server, lock, plate, globe, routes) watermarked at ~5%,
      each drifting on its own slow sine so nothing visibly loops. Added to core/bg.js's .bgfx and driven by its bgFrame. */
@@ -279,16 +332,25 @@
   const G_MARKS = [['server', 210, 210, 220], ['lock', 1640, 250, 170], ['cloche', 1500, 820, 240], ['globe', 330, 820, 200],
     ['fork', 960, 140, 150], ['route', 1180, 560, 180], ['server', 720, 900, 150], ['route', 90, 520, 140]];
   const G_ROUTES = ['M-40 300 H700 V620 H1960', 'M-40 860 H420 V180 H1300 V760 H1960', 'M240 -40 V400 H1580 V1120'];
+  /* a theme built on bistro brings its own ground objects: window.BS_GROUND = {theme, icons, marks, routes, nodes?}
+     (nodes: [[x, y, lane class, r?]] rings drawn on the routes; html() + frame(el, T): a theme's own animated layer)
+     (core/templates/gitgraph.js); without it the restaurant's are drawn */
+  const GR = () => window.BS_GROUND || { icons: G_ICONS, marks: G_MARKS, routes: G_ROUTES };
   // the ground's markup, by class only (it is drawn twice: once on the stage, once inside every split slide's plate)
-  const groundHtml = () => '<i class="grain"></i><svg class="rt" viewBox="0 0 1920 1080" preserveAspectRatio="none">' +
-    G_ROUTES.map(d => `<path class="rp" d="${d}"/>`).join('') + G_ROUTES.map(() => '<path class="ah" d="M-12 -8 L6 0 L-12 8 Z"/>').join('') + '</svg>' +
-    G_MARKS.map(m => `<svg class="wm" viewBox="0 0 24 24" style="left:${m[1]}px;top:${m[2]}px;width:${m[3]}px;height:${m[3]}px"><path d="${G_ICONS[m[0]]}"/></svg>`).join('');
+  const groundHtml = () => { const g = GR(); return '<i class="grain"></i><svg class="rt" viewBox="0 0 1920 1080" preserveAspectRatio="none">' +
+    g.routes.map(d => `<path class="rp" d="${d}"/>`).join('') + g.routes.map(() => '<path class="ah" d="M-12 -8 L6 0 L-12 8 Z"/>').join('') +
+    (g.nodes || []).map(n => `<circle class="nd l${n[2] || 0}" cx="${n[0]}" cy="${n[1]}" r="${n[3] || 9}"/>`).join('') + '</svg>' +
+    g.marks.map(m => `<svg class="wm" viewBox="0 0 24 24" style="left:${m[1]}px;top:${m[2]}px;width:${m[3]}px;height:${m[3]}px"><path d="${g.icons[m[0]]}"/></svg>`).join('') +
+    (g.html ? g.html() : ''); };
   // one deterministic frame of a ground at T seconds of the video
   function groundFrame(g, T) {
     const w = 2 * Math.PI * (T || 0);
     g.querySelectorAll('.wm').forEach((e, i) => {
       e.style.transform = `translate(${(26 * Math.sin(w / (41 + i * 7) + i)).toFixed(1)}px,${(20 * Math.cos(w / (53 + i * 5) + i * 2)).toFixed(1)}px) rotate(${(6 * Math.sin(w / (67 + i * 3) + i)).toFixed(2)}deg)`;
     });
+    // g.nodes (a theme's commit rings on its lanes): each breathes on its own slow sine, never in step with its neighbours
+    g.querySelectorAll('.nd').forEach((e, i) => { e.style.opacity = (.55 + .45 * Math.sin(w / (9 + (i % 5) * 2.3) + i * 1.7)).toFixed(3); });
+    if (GR().frame) GR().frame(g, T || 0);   // a theme's own animated ground (BS_GROUND.frame), drawn in its BS_GROUND.html
     const rp = g.querySelectorAll('.rp'), ah = g.querySelectorAll('.ah');
     rp.forEach((r, i) => {
       const L = r.__len || (r.__len = r.getTotalLength()), d = ((T || 0) * 46 + i * 600) % L, pt = r.getPointAtLength(d), pn = r.getPointAtLength(Math.min(L, d + 2));
@@ -299,7 +361,7 @@
      with arrows creeping along them, and the story's objects watermarked at ~5%, each drifting on its own slow sine so
      nothing visibly loops. Added to core/bg.js's .bgfx and driven by its bgFrame. */
   function installGround() {
-    if (!window.PROJECT || PROJECT.theme !== 'bistro') return;
+    if (!window.PROJECT || PROJECT.theme !== (window.BS_GROUND ? window.BS_GROUND.theme : 'bistro')) return;
     const fx = document.querySelector('#stage .bgfx'); if (!fx || fx.querySelector('.bs-ground')) return;
     const g = document.createElement('div'); g.className = 'bs-ground'; g.innerHTML = groundHtml();
     fx.insertBefore(g, fx.querySelector('.vig'));
@@ -308,6 +370,7 @@
     window.bgFrame(0);
   }
   installGround();
+  window.bsInstallGround = installGround;   // a theme that sets BS_GROUND after this file loads installs its ground with this
 
   defineTemplate('bistro', {
     check: (d, def) => { prep(d); T().check(d, def); },
@@ -394,14 +457,18 @@
          overlay rows goes split instead). Outside a render (posters, preview) the slide's own data.split / data.over decide. */
       const RV = (window.PROJECT && Array.isArray(window.PROJECT.reveals)) ? window.PROJECT.reveals : [];
       const win = c.T != null && c.T !== c.local ? RV.find(r => c.T >= r.at - (r.in || 0) - .001 && c.T < r.to + (r.out || 0)) : null;
-      const asSplit = win ? (!!win.split || (!!win.over && !d.over)) : !!d.split;
+      /* inside an over window's ramps (before `at`, after `to`) a slide with no overlay rows is the plain deck fading over
+         the face (undo-git review 2: s18, first slide after the s17 window, drew as a split for the 0.3 s fade out) */
+      const ramp = win && (c.T < win.at || c.T >= win.to);
+      const asSplit = win ? (!!win.split || (!!win.over && !d.over && !ramp)) : !!d.split;
       const asOver = win ? (!asSplit && !!win.over && !!d.over) : (!d.split && !!d.over);
       const root0 = el(c.id);
       if (root0) { root0.classList.toggle('split', asSplit); root0.classList.toggle('ovs', asOver); root0.classList.remove('wiping'); }
       /* the split ramp is a wipe (review 6: crossfading the split and full layouts showed two half-opaque editors): over the
          window's `in` seconds the plate shrinks from full frame to the right two thirds, over its `out` seconds it grows back
          over the face. dual-render lays this capture on the face third with no dissolve (scripts/dual-render.js, split.wipe). */
-      if (root0 && asSplit && win && win.split && win.split.wipe) {
+      // the wipe is the default (postgres review 3: "the split view transition should be the default in the pipeline"); split.wipe: false opts out
+      if (root0 && asSplit && win && win.split && win.split.wipe !== false) {
         let k = 1;
         if (win.in && c.T < win.at) k = (c.T - (win.at - win.in)) / win.in;
         else if (win.out && c.T >= win.to) k = 1 - (c.T - win.to) / win.out;
@@ -418,8 +485,13 @@
         const o0 = o.from || 0;
         st(p + 'ov', { opacity: String(eo(seg(c.local, o0, o0 + .6))) });
         // a row enters on its word (b), at a set second of the slide (at), or staggered; it rises 24px as it fades in
-        if (o.sub) { const sb = o.sub.b && c.beats && c.beats[o.sub.b], t0 = sb ? sb.s : o.sub.at != null ? o.sub.at : 1; st(p + 'ovsb', { opacity: String(eo(seg(c.local, t0 - .3, t0))) }); SUB.frame(p + 'ov', Math.max(0, c.local - t0), SUB_OV); }
+        // o.sub.lead: start the tour that many seconds before the word, so its Subscribe click (SUB.CLICK) lands on it
+        if (o.sub) { const sb = o.sub.b && c.beats && c.beats[o.sub.b], t0 = (sb ? sb.s : o.sub.at != null ? o.sub.at : 1) - (o.sub.lead || 0); st(p + 'ovsb', { opacity: String(eo(seg(c.local, t0 - .3, t0))) }); SUB.frame(p + 'ov', Math.max(0, c.local - t0), SUB_OV); }
         (o.rows || []).forEach((r, i) => { const rb = r.b && c.beats && c.beats[r.b], s = rb ? rb.s : r.at != null ? r.at : .5 + i * .35; up(p + 'ovr' + (i + 1), seg(c.local, s, s + BEAT.enter * 1.4), 24); });
+        if (o.win) { const wb = o.win.b && c.beats && c.beats[o.win.b], s0 = wb ? wb.s : o.win.at != null ? o.win.at : .5; up(p + 'ovww', seg(c.local, s0, s0 + BEAT.enter * 1.4), 24); }
+        // over.term: the window rises in just before its first command types, then types on the deck's own beats
+        if (o.term) { const ti = overTerm(o), b0 = c.beats && c.beats[blocksOf(ti)[0].b], s0 = (b0 ? b0.s : .5) - .35;
+          up(p + 'ovtw', seg(c.local, s0, s0 + BEAT.enter * 1.4), 24); typeRows(c, B, ti, i => p + 'ovt-r' + i, i => !/^\$ /.test(ti.lines[i - 1])); }
       }
     },
   });

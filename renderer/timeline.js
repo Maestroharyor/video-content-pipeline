@@ -111,8 +111,8 @@ function resolveBeats(items, words, start, end, { lead = TL.LEAD, phraseLead = T
 }
 /* placeholder slides for cue-sheet-only runs (--words/--dry before any slide file exists): ids derive from the slug number like the registry */
 function slidesFromRows(rows, dur = 5) {
-  return rows.map((r, i) => { const slug = r.file.replace(/\.js$/, ''), m = slug.match(/^(\d+)/);
-    return { id: 's' + (m ? m[1].padStart(2, '0') : String(i + 1).padStart(2, '0')), slug, dur, audio: null, template: r.template || null, beats: null, beatNames: null }; });
+  return rows.map((r, i) => { const slug = r.file.replace(/\.js$/, ''), m = slug.match(/^(\d+[a-z]?)(?![a-z])/);
+    return { id: 's' + (m ? m[1].replace(/^\d+/, d => d.padStart(2, '0')) : String(i + 1).padStart(2, '0')), slug, dur, audio: null, template: r.template || null, beats: null, beatNames: null }; });
 }
 /* snap a row's start to the first word of its line in vo.json; searches ±win seconds around the cue start, never before floor */
 function anchor(row, words, floor = 0, win = 1.5) {

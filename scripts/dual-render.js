@@ -54,6 +54,7 @@ const { defaultInject, openDeck } = require('../renderer/browser');
 const { defaultJobs } = require('../renderer/pool');
 const { captureTimeline } = require('../renderer/assemble');
 const { run: deliver } = require('../renderer/deliver');
+const { clearPreviews } = require('../renderer/previews');
 const { loadTimeline, validateTimeline } = require('../renderer/timeline');
 const { bitrateCeiling, toYuv } = require('../renderer/video');
 const TL = require('../core/timeline');
@@ -83,7 +84,7 @@ function muteExpr(chunks, a, b) {
 /* every chunk boundary, with reveal ramps kept whole */
 function plan(total, chunk, reveals, fps, forced) {
   // ?? not ||: `out: 0` is how a reveal says "run the footage straight into the splice", and || turned it into .45
-  const spans = reveals.map(r => ({ a: r.at - (r.in ?? .45), b: r.to + (r.out ?? .45), at: r.at, to: r.to, over: !!r.over, split: r.split || null, push: r.push || null, pull: r.pull || null }));
+  const spans = reveals.map(r => ({ a: r.at - (r.in ?? .45), b: r.to + (r.out ?? .45), at: r.at, to: r.to, over: !!r.over, split: r.split || null, push: r.push || null, pull: r.pull || null, wipe: r.split ? !!r.split.wipe : !!r.wipe }));
   spans.sort((x, y) => x.a - y.a);
   spans.forEach((s, i) => { if (i && s.a < spans[i - 1].b) throw new Error(`reveals overlap near ${s.at}s`); });
   const cuts = new Set([0, total]);
@@ -105,8 +106,13 @@ function plan(total, chunk, reveals, fps, forced) {
        (`win`), not with bare full-frame footage: fading over the plain A-roll flashed the whole talking head with no
        graphics for the length of the ramp, between a split view and the full deck (ai-concepts, review 3). */
     const ramp = mode === 'out' || mode === 'in';
+    /* a split ramp that meets an ON window (the face full frame on one side, the split on the other) slides: the face moves
+       to the left third as the deck's panel slides in from the right, or back (postgres-for-everything review 3, item 3) */
+    const near = (x, y) => Math.abs(x - y) < .01;
+    const onAt = v => spans.some(o => o !== s && o.over && !o.split && (near(o.b, v) || near(o.a, v)));
+    const slide = ramp && s && s.split && s.wipe && ((mode === 'out' && onAt(s.a)) || (mode === 'in' && onAt(s.b))) ? mode : null;
     if (f1 > f0) out.push({ i: out.length, t0: a, t1: b, f0, f1, n: f1 - f0, mode, split: (mode === 'over' || ramp) && s.split ? s.split : null,
-      win: ramp && s.over, push: s && s.push ? { at: s.at, to: s.to, z: s.push } : null, pull: s && s.pull ? { at: s.at, z: s.pull } : null });
+      win: ramp && s.over, wipe: ramp && !!s.wipe, slide, push: s && s.push ? { at: s.at, to: s.to, z: s.push } : null, pull: s && s.pull ? { at: s.at, z: s.pull } : null });
   }
   return out;
 }
@@ -141,6 +147,15 @@ async function main() {
   if (args.captions === 'off') delete inject.CAPTIONS;
   if (inject.CAPTIONS) console.log(`  captions: burning ${inject.CAPTIONS.groups ? inject.CAPTIONS.groups.length : ''} caption group(s) into both masters`);
   const probe = await openDeck(cfg, { inject });
+  /* the split wipe is the default (postgres-for-everything review 3: "the split view transition should be the default in the
+     pipeline"): a split window's ramps move the deck's own plate on and off the face, with no dissolve. Only bistro and the
+     themes built on it (slate, heap, studio, signed, gitgraph) draw that wipe, so other decks keep the dissolve; split.wipe:
+     false opts a window out. */
+  const wipeOK = await probe.page.evaluate(() => !!(window.TEMPLATES && window.TEMPLATES.bistro)).catch(() => false);
+  reveals.forEach(r => { if (r.split && r.split.wipe == null) r.split.wipe = wipeOK; });
+  /* ON windows (over, no split) push instead of dissolving where the theme draws it (slate onPush); wipe: false opts out */
+  const pushOK = await probe.page.evaluate(() => !!(window.TEMPLATES && window.TEMPLATES.slate && window.PROJECT && PROJECT.theme === 'slate')).catch(() => false);
+  reveals.forEach(r => { if (r.over && !r.split && r.wipe == null) r.wipe = pushOK; });
   await probe.browser.close();
   if (probe.errors.length) throw new Error(probe.errors.join('\n'));
   validateTimeline(tl, probe.slides).forEach(w => console.warn('  warn', w));
@@ -149,11 +164,29 @@ async function main() {
      push-exit renders it at plateAlpha x (1-out)^3: the outgoing slide swims up out of the footage and is then
      replaced by the next one. Reveal edges and slide windows are both snapped to voice lines, so they collide
      unless the return is put on the boundary itself. Leaving is fine to overlap: both are on their way out. */
+  /* An edge a few ms off a slide boundary leaves the frames between them in the wrong layout (postgres-for-everything
+     review 3: the hook window ended at 7.600, its next slide started at 7.604, so one frame of the hook's deck version
+     flashed before the cut). Every edge within 50 ms of a boundary must sit on it exactly. */
+  const offEdge = [];
+  reveals.forEach(r => [r.at, r.to, r.at - (r.in ?? .45), r.to + (r.out ?? .45)].forEach(v => L.forEach(e => {
+    const d = Math.abs(v - e.start); if (d > .0005 && d < .05) offEdge.push(`${r3(v)}s is ${Math.round(d * 1000)} ms off ${e.id}'s start (${e.start}s)`);
+  })));
+  if (offEdge.length && !args.force) throw new Error('reveal edges near but not on a slide boundary (a one-frame flash of the wrong layout):\n  ' + offEdge.join('\n  ') + '\n  put them on the boundary, or pass --force');
   reveals.forEach(r => L.forEach(e => {
     if (e.xfOut > 0 && r.to < e.end && r.to + (r.out ?? .45) > e.end - e.xfOut)
       console.warn(`  warn reveal returning at ${r.to}s lands inside ${e.id}'s exit (${r3(e.end - e.xfOut)}-${e.end}s):` +
         ` move it to a slide boundary, or that slide fades up just before it is replaced`);
   }));
+  /* A ramp-in runs from at - in to at. If that stretch reaches back into the slide before the one at `at`, the earlier
+     slide is captured in its over/alpha layout, and a slide with no over rows draws its whole diagram over the face
+     (sessions-vs-jwt review 1: s21's cards floated over the face for the 0.3 s before the subscribe aside). A window
+     that opens on a slide boundary takes in: 0 (the next slide cuts in with the face), or starts a ramp inside its slide. */
+  reveals.forEach(r => {
+    const inn = r.in ?? .45, a = r.at - inn;
+    if (inn <= 0) return;
+    const prev = L.find(e => a < e.end - .001 && e.end <= r.at + .001 && a >= e.start - .001);
+    if (prev) console.warn(`  warn reveal starting at ${r.at}s ramps in from ${r3(a)}s, inside ${prev.id} (ends ${prev.end}s): that slide is drawn over the face. Use in: 0 on the boundary, or start the window ${r3(inn)}s inside its slide`);
+  });
   /* A window edge a moment away from a slide boundary leaves a sliver of the full deck: the slide shows for half a
      second between the face and the next slide (ai-concepts, review 4: "it shows a frame for half a second and moves
      to the next"). Put the edge on the boundary instead, or move it a clear 1.5 s inside. */
@@ -185,6 +218,8 @@ async function main() {
   if (sp && sp.at != null) forced.push(r3(sp.at));
   ctaWins.forEach(w => forced.push(r3(w.at), r3(w.to)));
   let chunks = plan(total, args.chunk || 20, reveals, fps, forced);
+  // PROJECT.punch: the project's own default, so the preview and the master punch alike (--punch overrides)
+  if (args.punch == null && P.punch) args.punch = P.punch;
   /* --punch: the hero beat of every slide that plays inside a reveal window (clear of its ramps) */
   const punches = !args.punch ? [] : tl.slides.map(s => s.hero && s.beats && s.beats[s.hero] ? s.beats[s.hero][0] : null)
     .filter(t => t != null && reveals.some(r => r.over && t >= r.at + .8 && t <= r.to - 2.2));
@@ -342,11 +377,21 @@ async function main() {
            face third + plate) underneath, the opaque deck fading over it, so the cut between layouts is one dissolve */
         fs.rmSync(framesOv, { recursive: true, force: true });
         await captureTimeline(cfg, L, { dir: framesOv, jobs: args.jobs || defaultJobs(), inject, from: c.t0, to: c.t1, transparent: true });
-        const { base, hold } = winBase(c.split);
+        let { base, hold } = winBase(c.split);
+        if (c.slide) {
+          /* the face slides between full frame and the split's third: the footage is laid at x = -shift x E(t), E the same
+             ease-in-out the deck's panel uses (slate splitWipe), so face and panel move as one. Needs split.zoom 1. */
+          const third = Math.round(W / 3 / 2) * 2, shift = Math.round(W * c.split.x - third / 2), off = r3(c.f0 / fps - c.t0);
+          const p = `min(1,max(0,(t+${off})/${r3(c.t1 - c.t0)}))`, e = `if(lt(${p},.5),4*pow(${p},3),1-pow(-2*${p}+2,3)/2)`;
+          const E = c.slide === 'out' ? e : `(1-${e})`;
+          base = `color=c=${c.split.plate || '0x050913'}:s=${W}x${H}:r=${fps}:d=${dur}[cv];[1:v]${fit},fps=${fps},setpts=PTS-STARTPTS[ft];` +
+            `[cv][ft]overlay=x='-${shift}*${E}':y=0:eval=frame:shortest=1[bg]`;
+          hold = 0;
+        }
         /* split.wipe: the deck's own capture already moves between the layouts (its plate grows over the face or shrinks
            off it, core/templates/bistro.js), so the ramp is that capture on the face third with no dissolve over it.
            A dissolve drew both layouts at half strength, and an editor read as see-through (reverse-proxy-lb-gateway, review 6). */
-        const fade = c.split && c.split.wipe ? null : c.mode === 'out' ? `fade=t=out:st=0:d=${dur}:alpha=1` : `fade=t=in:st=0:d=${dur}:alpha=1`;
+        const fade = c.wipe ? null : c.mode === 'out' ? `fade=t=out:st=0:d=${dur}:alpha=1` : `fade=t=in:st=0:d=${dur}:alpha=1`;
         const ovSeq = ['-framerate', String(fps), '-start_number', String(c.f0), '-i', path.join(framesOv, '%05d.png')];
         run(['-reinit_filter', '0', ...seq, '-ss', String(hold ? r3(ss + hold) : ss), '-t', String(dur), '-i', source, ...ovSeq, ...capSeq,
           '-filter_complex', `${base};[2:v]${toYuv(cfg, 'yuva444p')}[ov];[bg][ov]overlay=0:0:format=auto:eof_action=pass` + (fade
@@ -459,21 +504,12 @@ async function main() {
     scratch.forEach(f => fs.rmSync(f, { force: true }));
     const MB = (fs.statSync(out).size / 1e6).toFixed(0);
     console.log(`done ${tag} → ${path.relative(cfg.root, out)}  ${MB} MB  ${r3(probeDur(out))}s${parts.length > 1 ? ` (${parts.length} parts)` : ''}`);
-    /* the user (2026-11-04): "once you're done with the main render, delete the preview". The master is written, so
-       its review draft (named from cfg.outName, as the --preview pass names it) has done its job */
-    if (!args.preview && !partial) removePreview(path.join(cfg.previewDir, (tag === 'A' ? cfg.outName + varTag : cfg.outName + '-reveal' + setTag + varTag) + '-preview.mp4'));
   }
-  if (!args.preview && !partial) {
-    removePreview(path.join(cfg.frameDir, 'dual' + setTag + varTag + '-preview'));   // the draft's chunk cache
-    if (fs.existsSync(cfg.previewDir) && !fs.readdirSync(cfg.previewDir).length) fs.rmdirSync(cfg.previewDir);
-  }
+  /* a finished master clears every preview of the project (renderer/previews.js: "Whenever you render 4k, delete all
+     previews"), its own draft and chunk cache included */
+  if (!args.preview && !partial) clearPreviews(cfg);
   console.log(`total ${((Date.now() - t0) / 1000 / 60).toFixed(1)} min`);
   if (!args.preview && !partial) deliver(cfg.projectDir);
-}
-function removePreview(p) {
-  if (!fs.existsSync(p)) return;
-  fs.rmSync(p, { recursive: true, force: true });
-  console.log(`  removed preview ${path.relative(process.cwd(), p)}`);
 }
 if (require.main === module) main().catch(e => { console.error(e.message || e); process.exit(1); });
 module.exports = { plan, muteExpr };

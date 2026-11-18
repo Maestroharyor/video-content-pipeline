@@ -101,13 +101,19 @@ const CLIP = ['.rowbar', '.chip', '.badge', '.aws-btn', '.aws-bill .bl', '.chk .
             const rg = document.createRange(); rg.setStartBefore(tn[0]); rg.setEndAfter(tn[tn.length - 1]);
             let b = rg.getBoundingClientRect(); if (b.width < 2 || b.height < 2) return;
             b = { l: b.left, t: b.top, r: b.right, b: b.bottom };
+            const raw = Object.assign({}, b);
             for (let x = e.parentElement; x && x !== sl; x = x.parentElement) { if (getComputedStyle(x).overflow === 'visible') continue;
               const q = x.getBoundingClientRect(); b = { l: Math.max(b.l, q.left), t: Math.max(b.t, q.top), r: Math.min(b.r, q.right), b: Math.min(b.b, q.bottom) }; }
+            /* CLIP (undo-git review 1, "page C · the bug" cut off by its tile): text a box cuts off is overflow too. Editors,
+               terminals and pages scroll by design, so they are exempt. */
+            const cut = Math.max(b.l - raw.l, raw.r - b.r, b.t - raw.t, raw.b - b.b);
+            if (cut > 2 && !e.closest('.bs-term,.bs-vsc,.bs-chrome,.aws,.gg-win') && !(illus && e.closest(illus))) out.push('CLIP ' + (e.id || e.className.toString().slice(0, 20) || e.tagName.toLowerCase()) + ' "' + e.textContent.trim().slice(0, 22) + '" cut by ' + cut.toFixed(0) + 'px');
             if (b.r - b.l < 2 || b.b - b.t < 2) return;
             runs.push({ e, b, nm: (e.id || e.className.toString().slice(0, 20) || e.tagName.toLowerCase()) + ' "' + e.textContent.trim().slice(0, 22) + '"' });
           });
           // the block a run belongs to: its nearest positioned item (a card, chip, tile, window), so two lines of one card never collide
-          const block = e => { for (let x = e; x && x !== sl; x = x.parentElement) { const pa = x.parentElement;
+          /* a thumbnail hook's lines are one heading too (.pt-title, the -thumbs kits): its tight stack is drawn on purpose, so it neither collides with itself nor spills */
+          const block = e => { if (e.closest('.pt-title')) return 'heading'; for (let x = e; x && x !== sl; x = x.parentElement) { const pa = x.parentElement;
             if (pa && (pa.classList.contains('cf-world') || pa.classList.contains('rows') || pa.classList.contains('content'))) return x; } return e.closest('.eyebrow,.h1') ? 'heading' : e; };   // eyebrow + headline are one heading
           const P2 = 3;
           for (let i = 0; i < runs.length; i++) for (let j = i + 1; j < runs.length; j++) {
@@ -120,12 +126,65 @@ const CLIP = ['.rowbar', '.chip', '.badge', '.aws-btn', '.aws-bill .bl', '.chk .
              than its card). The TIGHT check skips gradient panels, so this measures every run against its item's box. */
           runs.forEach(rn => {
             // name tags under characters, labels under bars and an arrow's own label sit outside their item by design
-            if (rn.e.closest('.nm,.cf-bar > b,.bs-arw')) return;
+            if (rn.e.closest('.nm,.cf-bar > b,.bs-arw,.sub-cta')) return;   // .sub-cta: the subscribe bar's notification menu hangs above the bar by design
             const it = block(rn.e); if (typeof it === 'string' || it === rn.e) return;
             const q = it.getBoundingClientRect(), k = q.width / (it.offsetWidth || q.width) || 1;
             const over = Math.max(q.left - rn.b.l, rn.b.r - q.right, q.top - rn.b.t, rn.b.b - q.bottom) / k;
             if (over > 2) out.push('SPILL ' + rn.nm + ' runs ' + over.toFixed(0) + 'px out of ' + (it.id || it.className.toString().slice(0, 20)));
           });
+          /* PAD (undo-git review 1, "not enough padding" on a dark card): the TIGHT check above skips gradient panels, so text
+             was allowed to touch a glass card's edge. Every run inside an item that shows a fill or a border (a card, a
+             panel, a chip) must keep CARD_PAD px from that item's edges, gradients included. */
+          const CARD_PAD = 10, shows = x => { const c = getComputedStyle(x); const bg = (c.backgroundColor.match(/[\d.]+/g) || []).map(Number);
+            return c.backgroundImage !== 'none' || (bg.length >= 4 ? bg[3] > .3 : bg.length === 3) || parseFloat(c.borderTopWidth) > 0; };
+          runs.forEach(rn => {
+            if (rn.e.closest('.nm,.cf-bar > b,.bs-arw,.bs-term,.bs-vsc,.bs-chrome,.gg-win,.gg-ref,.gg-file b,.cf-stamp,.sub-cta') || (illus && rn.e.closest(illus))) return;
+            const it = block(rn.e); if (typeof it === 'string' || it === rn.e) return;
+            let box = null; for (let x = rn.e.parentElement; x && x !== it.parentElement; x = x.parentElement) if (shows(x)) { box = x; break; }
+            if (!box || box.classList.contains('slide')) return;
+            const q = box.getBoundingClientRect(), k = q.width / (box.offsetWidth || q.width) || 1;
+            const gap = Math.min(rn.b.l - q.left, q.right - rn.b.r, rn.b.t - q.top, q.bottom - rn.b.b) / k;
+            if (gap > -2 && gap < CARD_PAD - .5) out.push('TIGHT ' + rn.nm + ' ' + gap.toFixed(1) + 'px from its card edge');
+          });
+          /* LAID (undo-git review 2, "text touching edges"): a commit laid on a panel is its own item, so the PAD check above
+             never measured it against the panel under it. Every run whose centre sits on another item's panel (a Git client
+             panel, a card) keeps CARD_PAD px from that panel's edges. */
+          const panels = [...sl.querySelectorAll('.gg-area,.cf-card')].filter(x => x.offsetWidth && getComputedStyle(x).visibility !== 'hidden');
+          runs.forEach(rn => {
+            if (rn.e.closest('.nm,.bs-arw,.bs-term,.bs-vsc,.bs-chrome,.gg-win,.sub-cta,.fx-emoji,.cf-stamp,.cf-bubble') || (illus && rn.e.closest(illus))) return;
+            const cx = (rn.b.l + rn.b.r) / 2, cy = (rn.b.t + rn.b.b) / 2;
+            panels.forEach(pn => {
+              if (pn.contains(rn.e)) return;
+              const q = pn.getBoundingClientRect(); if (cx < q.left || cx > q.right || cy < q.top || cy > q.bottom) return;
+              const k = q.width / (pn.offsetWidth || q.width) || 1;
+              const gap = Math.min(rn.b.l - q.left, q.right - rn.b.r, rn.b.t - q.top, q.bottom - rn.b.b) / k;
+              if (gap < CARD_PAD - .5) out.push('TIGHT ' + rn.nm + ' ' + gap.toFixed(1) + 'px from the edge of the panel under it');
+            });
+          });
+          /* TERM (undo-git review 2, "terminal gets cut off", "terminal padding bottom"): Terminal and editor windows do not
+             scroll, so at the end pose every row must sit inside the window with room to spare below the last one. */
+          sl.querySelectorAll('.bs-term .bd,.bs-vsc .cd').forEach(bd => {
+            const rows = [...bd.children].filter(r => r.offsetHeight && getComputedStyle(r).display !== 'none'); if (!rows.length) return;
+            const q = bd.getBoundingClientRect(), k = q.height / (bd.offsetHeight || q.height) || 1, last = rows[rows.length - 1].getBoundingClientRect();
+            const room = (q.bottom - last.bottom) / k, need = bd.closest('.bs-term') ? 14 : 0;
+            if (room < need - .5) out.push('TERM ' + (bd.closest('[id]') || bd).id + ' last row ' + (room < 0 ? 'cut by ' + (-room).toFixed(0) + 'px' : room.toFixed(0) + 'px from the bottom (min ' + need + ')'));
+          });
+          /* OVERLAP between items (same review: a chip laid into a terminal window; the text-only check never saw it): two
+             scene items whose boxes cross without one holding the other. Things meant to sit on others are exempt: a
+             speech bubble, a sticker, a character, a stamp, a backdrop window (z 0). */
+          {
+            const items = [...sl.querySelectorAll('.cf-world > *')].filter(x => {
+              const c = getComputedStyle(x); if (c.display === 'none' || c.visibility === 'hidden' || parseFloat(c.opacity) < .5) return false;
+              if (x.matches('.cf-who,.cf-bubble,.cf-stamp,.bs-arw,.gg-winw,.cf-edges,svg') || x.querySelector(':scope > .gg-win')) return false;
+              const b = x.getBoundingClientRect(); return b.width > 4 && b.height > 4;
+            }).map(x => ({ x, b: x.getBoundingClientRect() }));
+            const holds = (a, b) => a.left <= b.left + 2 && a.top <= b.top + 2 && a.right >= b.right - 2 && a.bottom >= b.bottom - 2;
+            for (let i = 0; i < items.length; i++) for (let j = i + 1; j < items.length; j++) {
+              const A = items[i].b, Bq = items[j].b;
+              const w = Math.min(A.right, Bq.right) - Math.max(A.left, Bq.left), h = Math.min(A.bottom, Bq.bottom) - Math.max(A.top, Bq.top);
+              if (w > 3 && h > 3 && !holds(A, Bq) && !holds(Bq, A)) out.push('OVERLAP item ' + (items[i].x.id || items[i].x.className.toString().slice(0, 20)) + ' × ' + (items[j].x.id || items[j].x.className.toString().slice(0, 20)));
+            }
+          }
           // a diagram edge drawn through a label: sample the visible path every 6px
           sl.querySelectorAll('path.cf-edge').forEach(pe => {
             const cs = getComputedStyle(pe); if (cs.display === 'none' || parseFloat(cs.opacity) < .3 || cs.visibility === 'hidden') return;

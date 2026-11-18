@@ -32,6 +32,7 @@ function resolve(o = {}) {
     fps: o.fps || (o.preview ? DEFAULTS.previewFps : project.fps || DEFAULTS.fps), hold: pick(o.hold, project.hold, DEFAULTS.hold),
     dur: project.dur != null ? project.dur : DEFAULTS.dur,
     transition: project.transition || null,   // the deck's default slide transition; scripts/timeline.js uses it unless --xf is given
+    tail: project.tail != null ? +project.tail : null,   // the last slide's length (scripts/timeline.js; --tail wins): the outro, 5-6 s
     crf: pick(o.crf, project.crf, DEFAULTS.crf), preset: o.preset || project.preset || DEFAULTS.preset,
     /* 9:16 (vertical masters, social cuts): never above 512 MB, whatever project.js or --max-size asks (the user's rule,
        2026-11-08: every vertical / social-media video stays under 512 MB). 16:9 keeps the 2 GB budget. */

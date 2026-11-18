@@ -19,8 +19,11 @@ const SUB = {
     bell: { x: 1264, y: 40, w: 96, h: 96 },
     menu: { x: 1020, y: -198, w: 340, h: 180, pad: 14, row: 76 },
   },
+  /* o.menuAt {x, y}: the menu somewhere else in bar-local units, for a deck bar with text right above it (sessions-vs-jwt 36,
+     review 5: opened upward it covered the tagline, so it opens beside the bell). The cursor's click on All follows it. */
+  menu: o => o && o.menuAt ? Object.assign({}, SUB.L.menu, o.menuAt) : SUB.L.menu,
   html: (p, o) => {
-    const k = o.k || 1, L = SUB.L, M = L.menu, px = v => (v * k).toFixed(1) + 'px';
+    const k = o.k || 1, L = SUB.L, M = SUB.menu(o), px = v => (v * k).toFixed(1) + 'px';
     const box = b => `left:${px(b.x)};top:${px(b.y)};width:${px(b.w)};height:${px(b.h)}`;
     const row = (i, ico, label) => `<div class="sb-mrow" id="${p}sbm${i}" style="height:${px(M.row)};padding:0 ${px(22)};gap:${px(18)};font-size:${px(30)}">
       <span class="mi" style="width:${px(38)};height:${px(38)}"><svg viewBox="0 0 24 24"><use href="#${ico}"/></svg></span><span>${label}</span>
@@ -78,7 +81,7 @@ const SUB = {
 
     /* Cursor: one leg per stop, each easing in and out, so it visibly travels between the four buttons instead of
        teleporting. The waypoint times are the click times; it sets off far enough ahead to arrive on the beat. */
-    const M = L.menu, mr1 = { x: K(M.x + M.w / 2), y: K(M.y + M.pad + M.row / 2) };
+    const M = SUB.menu(o), mr1 = { x: K(M.x + M.w / 2), y: K(M.y + M.pad + M.row / 2) };
     const legs = [[1.24, SUB.LIKE, { x: K(330), y: K(300) }, mid(L.like)],
       [SUB.LIKE + .12, SUB.CLICK, mid(L.like), mid(L.btn)],
       [SUB.CLICK + .12, SUB.BELL, mid(L.btn), mid(L.bell)],

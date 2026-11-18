@@ -102,7 +102,7 @@
       case 'html': return it.html;
       case 'bubble': return `<span>${it.html}</span>`;
       case 'row': return '';
-      case 'sub': return SUB.html(p, { x: 0, y: 0, k: it.kk || 1, name: it.name || 'LifeTechFacts', handle: it.handle || '@lifetechfacts' });
+      case 'sub': return SUB.html(p, { x: 0, y: 0, k: it.kk || 1, name: it.name || 'LifeTechFacts', handle: it.handle || '@lifetechfacts', menuAt: it.menuAt });
       default: return '';
     }
   }
@@ -113,7 +113,7 @@
       n.push(nameOf(it)); (it.moves || []).forEach(m => n.push(m.b)); if (it.out) n.push(it.out.b); if (it.dim) n.push(it.dim);
       (it.on || []).forEach(o => { n.push(o.b); if (o.until) n.push(o.until); }); (it.states || []).forEach(o => n.push(o.b)); ['swap', 'count', 'type', 'reveal', 'press'].forEach(k => it[k] && n.push(it[k].b));
     });
-    (d.edges || []).forEach(e => n.push(e.b || e.id));
+    (d.edges || []).forEach(e => { n.push(e.b || e.id); if (e.out) n.push(e.out.b); });
     return Array.from(new Set(n.filter(Boolean)));
   }
   function center(d, ref) {
@@ -133,7 +133,18 @@
        restates only where things go and keeps every id and beat (core/registry.js has already merged data.v) */
     check: d => {
       req(d, ['eyebrow', 'h1', 'items'], 'cafe');
-      if (d.pos) { const pos = d.pos; delete d.pos; d.items = d.items.map(it => pos[it.id] ? Object.assign({}, it, pos[it.id]) : it); }
+      /* pos.pts (a walking item, bistro's packet): the new path, keeping the walk's beat, speed and loop */
+      if (d.pos) {
+        const pos = d.pos; delete d.pos;
+        /* pos[id].drop: the item is left out of the portrait scene (a social cut that no longer sets it up, e.g. an
+           analogy tag whose analogy was cut: sessions-vs-jwt best-of) */
+        d.items = d.items.filter(it => !(pos[it.id] && pos[it.id].drop)).map(it => {
+          const q = pos[it.id]; if (!q) return it;
+          const o = Object.assign({}, it, q);
+          if (q.pts && it.walk) { o.walk = Object.assign({}, it.walk, { pts: q.pts }); delete o.pts; }
+          return o;
+        });
+      }
     },
     beats: d => cfBeats(d),
     html: (d, c) => {
@@ -155,7 +166,7 @@
     },
     frame: (t, c) => {
       const p = c.p, d = c.data, B = beats(c), n = d.items.length;
-      headIn(B, p);
+      headIn(B, p, { pre: d.headPre });
       if (d.sec) up(p + 'sec', seg(c.local, 0, .35), -12);
       const alias = {};
       d.items.forEach((it, i) => {
@@ -206,7 +217,7 @@
         if (it.k === 'sub') {
           const r0 = B.at(nm, fa, fa + .1, 'enter', { focal: false });
           // t0: seconds the bar already ran on the previous slide (a cut carries its click tour across)
-          SUB.frame(p, it.done ? 30 : Math.max(0, c.local + (it.t0 || 0) - (it.pre ? 0 : r0.s)), { x: 0, y: 0, k: it.kk || 1, name: it.name || 'LifeTechFacts', handle: it.handle || '@lifetechfacts' });
+          SUB.frame(p, it.done ? 30 : Math.max(0, c.local + (it.t0 || 0) - (it.pre ? 0 : r0.s)), { x: 0, y: 0, k: it.kk || 1, name: it.name || 'LifeTechFacts', handle: it.handle || '@lifetechfacts', menuAt: it.menuAt });
         }
         if (it.reveal) {
           const rv = B.at(it.reveal.b, fa, fa + .3, 'enter', { focal: false }), kids = e.querySelectorAll(it.reveal.sel || '.rr');
@@ -234,10 +245,11 @@
         const nm = ed.b || ed.id;
         /* the edge is a bare <path>: draw it on, then (flow) hand the stroke to a moving dash, or (dash) a still one */
         const pe = el(p + ed.id); if (!pe) return;
-        const q = B.p(nm, .3 + .5 * i / Math.max(1, d.edges.length), .4 + .5 * i / Math.max(1, d.edges.length), 'draw', { focal: false });
+        // pre: drawn from the first frame (a scene carried over a cut); out: {b} fades away from that beat
+        const q = ed.pre ? 1 : B.p(nm, .3 + .5 * i / Math.max(1, d.edges.length), .4 + .5 * i / Math.max(1, d.edges.length), 'draw', { focal: false });
         if (pe.dataset.mk === undefined) { pe.dataset.mk = pe.getAttribute('marker-end') || ''; pe.dataset.len = pe.getTotalLength(); }
-        const L = +pe.dataset.len;
-        pe.style.opacity = q > 0 ? 1 : 0;
+        const L = +pe.dataset.len, gone = ed.out ? B.p(ed.out.b, .9, .95, 'enter', { focal: false }) : 0;
+        pe.style.opacity = q > 0 ? (1 - eo(gone) * (1 - (ed.out && ed.out.o != null ? ed.out.o : 0))).toFixed(3) : 0;
         if (q < 1) { pe.style.strokeDasharray = L + ' ' + L; pe.style.strokeDashoffset = (L * (1 - eo(q))).toFixed(1); }
         else if (ed.flow) { pe.style.strokeDasharray = '14 12'; pe.style.strokeDashoffset = (-c.local * 40 % 26).toFixed(1); }
         else if (ed.dash) { pe.style.strokeDasharray = '12 12'; pe.style.strokeDashoffset = '0'; }
